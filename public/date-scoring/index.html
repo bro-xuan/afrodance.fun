@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Date Scoring</title>
+<meta property="og:title" content="Date Scoring">
+<meta property="og:description" content="Everyone starts at 100. Few survive. Rate your date across 8 categories and get your verdict.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bro-xuan.github.io/date-scoring/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Date Scoring">
+<meta name="twitter:description" content="Everyone starts at 100. Few survive. Rate your date across 8 categories and get your verdict.">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0a;--card:#1e1e2e;--card-hover:#262640;
+  --red:#ff3b5c;--green:#00ff88;--gold:#ffd700;
+  --text:#e0e0e0;--muted:#888;--border:#333;
+  --orange:#ff9800;--deep-red:#b71c1c;
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;overflow-x:hidden;
+}
+
+/* ── Wizard wrapper ── */
+.wizard{position:relative;width:100%;min-height:100vh}
+
+/* ── Step screens ── */
+.step{
+  position:absolute;top:0;left:0;width:100%;min-height:100vh;
+  opacity:0;pointer-events:none;
+  transition:opacity .35s ease,transform .35s ease;
+  transform:translateX(60px);
+  display:flex;flex-direction:column;
+}
+.step.active{opacity:1;pointer-events:auto;transform:translateX(0);position:relative}
+.step.exit-left{opacity:0;transform:translateX(-60px);position:absolute}
+
+/* ── Start screen ── */
+.start-screen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;text-align:center;padding:40px 20px;
+}
+.start-screen h1{
+  font-size:clamp(2.5rem,8vw,4.5rem);font-weight:900;letter-spacing:6px;
+  background:linear-gradient(135deg,var(--red),#ff6b8a);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.start-screen .tagline{
+  color:var(--muted);margin-top:12px;font-size:1.1rem;font-style:italic;
+}
+.start-screen .instruction{
+  color:var(--muted);margin-top:24px;font-size:0.9rem;
+}
+.start-btn{
+  margin-top:40px;padding:18px 60px;border:none;border-radius:14px;
+  background:linear-gradient(135deg,var(--red),#ff6b8a);color:#fff;
+  font-size:1.2rem;font-weight:800;letter-spacing:2px;cursor:pointer;
+  transition:transform .15s,box-shadow .15s;
+}
+.start-btn:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(255,59,92,0.4)}
+
+/* ── Top bar (steps) ── */
+.top-bar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,10,10,0.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:12px 20px;
+}
+.top-bar-inner{
+  max-width:700px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.step-indicator{font-size:0.8rem;color:var(--muted);white-space:nowrap}
+.mini-score{
+  font-size:1.4rem;font-weight:900;transition:color .3s;
+}
+.progress-dots{display:flex;gap:6px;align-items:center}
+.dot{
+  width:10px;height:10px;border-radius:50%;background:var(--border);
+  transition:background .3s,transform .3s;cursor:pointer;
+}
+.dot.completed{background:var(--red)}
+.dot.current{background:var(--red);transform:scale(1.3);animation:pulse 1.5s infinite}
+.dot.green-dot.completed{background:var(--green)}
+.dot.green-dot.current{background:var(--green);transform:scale(1.3)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes scorePulse{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+.score-flash{animation:scorePulse .3s ease}
+
+/* ── Step content ── */
+.step-content{
+  max-width:700px;margin:0 auto;padding:20px 16px 100px;width:100%;
+}
+.step-header{
+  text-align:center;margin-bottom:24px;
+}
+.step-header h2{
+  font-size:1.5rem;font-weight:900;text-transform:uppercase;letter-spacing:2px;
+}
+.step-header h2.red{color:var(--red)}
+.step-header h2.green{color:var(--green)}
+.step-header .step-desc{color:var(--muted);font-size:0.85rem;margin-top:6px}
+
+/* ── Trait cards ── */
+.trait{
+  display:flex;align-items:center;gap:12px;
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:12px 16px;margin-bottom:8px;cursor:pointer;
+  transition:background .15s,border-color .15s;position:relative;
+  -webkit-user-select:none;user-select:none;
+}
+.trait:hover{background:var(--card-hover)}
+.trait.checked{border-color:var(--red)}
+.trait.checked.bonus-trait{border-color:var(--green)}
+
+.trait input{display:none}
+.checkmark{
+  width:22px;height:22px;min-width:22px;border-radius:6px;
+  border:2px solid var(--border);display:flex;align-items:center;
+  justify-content:center;transition:all .15s;font-size:13px;
+}
+.trait.checked .checkmark{background:var(--red);border-color:var(--red);color:#fff}
+.trait.checked.bonus-trait .checkmark{background:var(--green);border-color:var(--green);color:#000}
+
+.trait-info{flex:1;min-width:0}
+.trait-name{font-weight:600;font-size:0.95rem}
+.trait-tooltip{
+  font-size:0.78rem;color:var(--muted);margin-top:2px;
+  max-height:0;overflow:hidden;transition:max-height .25s ease;
+}
+.trait.show-tip .trait-tooltip{max-height:60px}
+
+.trait-points{
+  font-weight:800;font-size:0.9rem;white-space:nowrap;min-width:40px;text-align:right;
+}
+.trait-points.neg{color:var(--red)}
+.trait-points.pos{color:var(--green)}
+
+/* ── Navigation ── */
+.nav-row{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:24px;gap:12px;
+}
+.nav-btn{
+  padding:14px 32px;border:none;border-radius:10px;
+  font-weight:700;font-size:0.95rem;cursor:pointer;transition:opacity .15s,transform .1s;
+}
+.nav-btn:hover{opacity:0.85}
+.nav-btn:active{transform:scale(0.97)}
+.nav-next{background:var(--red);color:#fff}
+.nav-next.green-next{background:var(--green);color:#000}
+.nav-back{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.nav-back:hover{color:var(--text);border-color:var(--text)}
+.nav-finish{background:linear-gradient(135deg,var(--green),#00cc6a);color:#000;font-size:1rem;letter-spacing:1px}
+
+/* ── Results screen ── */
+.results{
+  max-width:700px;margin:0 auto;padding:40px 16px 60px;width:100%;
+}
+.results-score{text-align:center;margin-bottom:32px}
+.results-score .big-score{
+  font-size:clamp(4rem,12vw,7rem);font-weight:900;line-height:1;
+  transition:color .3s;
+}
+.results-score .tier-label{
+  font-size:clamp(1.3rem,4vw,2rem);font-weight:900;margin-top:8px;
+  letter-spacing:2px;
+}
+.results-score .verdict-msg{
+  color:var(--muted);font-size:1rem;font-style:italic;margin-top:8px;line-height:1.5;
+}
+
+/* Breakdown */
+.section-card{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:24px;margin-bottom:20px;
+}
+.section-card h3{
+  font-size:1rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;
+  margin-bottom:16px;
+}
+.breakdown-row{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px;
+}
+.breakdown-label{
+  font-size:0.85rem;min-width:130px;color:var(--muted);
+}
+.breakdown-bar-wrap{
+  flex:1;height:8px;background:#222;border-radius:8px;overflow:hidden;
+}
+.breakdown-bar{
+  height:100%;border-radius:8px;transition:width .5s ease;min-width:2px;
+}
+.breakdown-val{
+  font-size:0.85rem;font-weight:700;min-width:40px;text-align:right;
+}
+
+/* Profile */
+.profile-text{
+  font-size:0.95rem;line-height:1.8;color:var(--text);
+  font-style:italic;letter-spacing:0.01em;
+}
+
+/* Trait summary columns */
+.trait-summary-cols{
+  display:grid;grid-template-columns:1fr 1fr;gap:20px;
+}
+@media(max-width:500px){
+  .trait-summary-cols{grid-template-columns:1fr}
+}
+.trait-summary-col h4{
+  font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  margin-bottom:10px;
+}
+.trait-summary-col h4.red-h{color:var(--red)}
+.trait-summary-col h4.green-h{color:var(--green)}
+.trait-summary-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:6px 0;border-bottom:1px solid var(--border);
+  font-size:0.85rem;
+}
+.trait-summary-item:last-child{border-bottom:none}
+.trait-summary-item .pts{font-weight:700}
+.trait-summary-item .pts.neg{color:var(--red)}
+.trait-summary-item .pts.pos{color:var(--green)}
+.empty-col{color:var(--muted);font-style:italic;font-size:0.85rem}
+
+/* Action buttons */
+.share-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  max-width:400px;margin:0 auto;
+}
+.share-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px 16px;border:none;border-radius:10px;font-weight:700;
+  font-size:0.85rem;cursor:pointer;transition:opacity .15s,transform .1s;
+  text-decoration:none;color:#fff;
+}
+.share-btn:hover{opacity:0.85}
+.share-btn:active{transform:scale(0.97)}
+.share-btn.x-btn{background:#000;border:1px solid #333}
+.share-btn.ig-btn{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)}
+.share-btn.copy-btn{background:var(--green);color:#000}
+.share-btn.link-btn{background:#4a9eff;color:#fff}
+.share-btn svg{width:18px;height:18px;fill:currentColor;flex-shrink:0}
+.btn-row{display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.btn{
+  padding:14px 32px;border:none;border-radius:10px;font-weight:700;
+  font-size:0.95rem;cursor:pointer;transition:opacity .15s,transform .1s;
+}
+.btn:hover{opacity:0.85}
+.btn:active{transform:scale(0.97)}
+.btn-back{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-back:hover{color:var(--text);border-color:var(--text)}
+.btn-reset{background:var(--red);color:#fff}
+
+/* Footer */
+.footer{text-align:center;padding:40px 20px;color:var(--muted);font-size:0.8rem;line-height:1.6}
+
+/* Animations */
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+.pop{animation:pop .25s ease}
+@keyframes countUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.count-up{animation:countUp .5s ease forwards}
+
+/* Mobile */
+@media(max-width:500px){
+  .trait{padding:10px 12px;gap:10px}
+  .top-bar{padding:10px 12px}
+  .breakdown-label{min-width:90px;font-size:0.78rem}
+  .nav-btn{padding:12px 20px;font-size:0.9rem}
+}
+</style>
+</head>
+<body>
+
+<div class="wizard" id="wizard"></div>
+
+<script>
+const DATA = [
+  { title:"Communication", desc:"How she texts and talks", type:"deduction", traits:[
+    {name:"One-Word Texter",pts:-10,tip:"'K.' 'Sure.' 'Lol.' That's the whole vocabulary."},
+    {name:"Takes 24h+ to Reply",pts:-10,tip:"She saw it. She just doesn't care."},
+    {name:"Only Talks About Herself",pts:-15,tip:"You're not in a conversation, you're an audience."},
+    {name:"Always on Phone During Dates",pts:-15,tip:"You're competing with TikTok. You're losing."},
+    {name:"Argues About Word Choices",pts:-5,tip:"You said 'fine' not 'good' — 3-hour fight incoming."},
+    {name:"Voice Notes Instead of Texts",pts:-5,tip:"Sending a 4-minute voice memo to say 'yes.'"},
+  ]},
+  { title:"Personality", desc:"Who she really is", type:"deduction", traits:[
+    {name:'"All My Exes Are Crazy"',pts:-20,tip:"Plot twist: she's the common denominator."},
+    {name:"Drama Magnet",pts:-15,tip:"If drama finds her everywhere, she IS the drama."},
+    {name:"Love-Bombs First Date",pts:-15,tip:"'I've never felt this way before' — it's been 45 minutes."},
+    {name:"Zero Hobbies",pts:-10,tip:"Netflix is not a hobby. Neither is shopping."},
+    {name:"Chronically Late",pts:-10,tip:"'5 min away!' She hasn't left the house."},
+    {name:'"Brutally Honest"',pts:-10,tip:"Translation: rude and proud of it."},
+    {name:"Can't Cook and Proud",pts:-5,tip:"Uber Eats stock 📈 your wallet 📉"},
+    {name:"Never Apologizes",pts:-15,tip:"It's always your fault. Always."},
+  ]},
+  { title:"Lifestyle", desc:"How she lives her life", type:"deduction", traits:[
+    {name:"Has an OnlyFans",pts:-20,tip:"Everyone's seen more of her than you have."},
+    {name:"MLM Boss Babe",pts:-20,tip:"'Hey hun! Want to be your own boss?' No."},
+    {name:"Party Girl",pts:-20,tip:"Her liver has more miles than your car."},
+    {name:"Still Talks to Her Ex",pts:-15,tip:"'He's just a friend' and other hilarious jokes."},
+    {name:"Instagram Influencer",pts:-15,tip:"Every meal is a 20-minute photoshoot."},
+    {name:'"I\'m Not Like Other Girls"',pts:-10,tip:"She is, in fact, exactly like other girls."},
+    {name:"More Than 3 Cats",pts:-10,tip:"You're dating a cat colony manager."},
+    {name:"Vegan and Won't Shut Up",pts:-5,tip:"You'll hear about it before, during, and after every meal."},
+    {name:"Hard Drug User",pts:-25,tip:"81% of singles say instant dealbreaker. They're right."},
+  ]},
+  { title:"Financial", desc:"How she handles money", type:"deduction", traits:[
+    {name:"Expensive Taste, No Job",pts:-20,tip:"Champagne dreams on your beer budget."},
+    {name:"Never Offers to Split",pts:-10,tip:"Her wallet is purely decorative."},
+    {name:"Shopping Addiction",pts:-10,tip:"Your doorstep is now an Amazon warehouse."},
+    {name:"Venmos You After the Date",pts:-10,tip:"61% of singles say red flag. Math checks out."},
+    {name:"Crypto Bro Female Edition",pts:-5,tip:"'Babe have you heard about this new altcoin?'"},
+  ]},
+  { title:"Social Media", desc:"Her online presence", type:"deduction", traits:[
+    {name:"Posts Cryptic Relationship Quotes",pts:-10,tip:"Subliminal stories are her love language."},
+    {name:"Heavily Filtered/AI Photos",pts:-10,tip:"56% instant turnoff. She doesn't look like that."},
+    {name:"Stalks Your Old Posts",pts:-10,tip:"She liked your beach pic from 2019. At 2 AM."},
+    {name:"Uses Astrology as Personality",pts:-10,tip:"'I can't help it, I'm a Scorpio.'"},
+    {name:"Keeps Phone Face-Down",pts:-10,tip:"What's she hiding? Everything."},
+    {name:"Posts Every Meal",pts:-5,tip:"Your food gets cold while she finds the right angle."},
+  ]},
+  { title:"Dating Behavior", desc:"Red flags on the date itself", type:"deduction", traits:[
+    {name:"From Dubai",pts:-15,tip:"If you know, you know..."},
+    {name:"Single Mom",pts:-15,tip:"You're not #1 priority, champ."},
+    {name:"Coworker",pts:-15,tip:"HR has entered the chat."},
+    {name:"Looks Nothing Like Her Photos",pts:-15,tip:"41% lose attraction. Catfish energy."},
+    {name:"Mentions Her Ex Repeatedly",pts:-15,tip:"63% say this ends the date on the spot."},
+    {name:"Feminist",pts:-5,tip:"Every dinner bill is a political debate."},
+    {name:"Nurse",pts:-5,tip:"12-hour shifts mean she's never home... or always tired."},
+    {name:"Teacher",pts:-5,tip:"Will grade your performance. Literally."},
+    {name:"Lawyer",pts:-10,tip:"She will win every argument. Every. Single. One."},
+  ]},
+  { title:"The Ick Factor", desc:"Quirky dealbreakers", type:"deduction", traits:[
+    {name:"Chews With Mouth Open",pts:-10,tip:"The soundtrack nobody asked for."},
+    {name:"Has Tattoos",pts:-3,tip:"Every tattoo has a story you'll hear 47 times."},
+    {name:"Baby Talk",pts:-5,tip:"'Does my widdle baby want some din-din?' You're 28."},
+    {name:"Car Full of Trash",pts:-10,tip:"Her passenger seat is an archaeological dig site."},
+    {name:"Claps When the Plane Lands",pts:-5,tip:"'We are not the same species.'"},
+  ]},
+  { title:"Green Flags", desc:"The good stuff", type:"bonus", traits:[
+    {name:"Can Actually Cook",pts:10,tip:"A home-cooked meal hits different."},
+    {name:"Laughs at Your Jokes",pts:10,tip:"Even the bad ones. Especially the bad ones."},
+    {name:"Watches Sports With You",pts:10,tip:"Sunday football just got an upgrade."},
+    {name:"Low Maintenance",pts:10,tip:"Ready in 15 minutes. No drama. Just vibes."},
+    {name:"Gets Along With Your Boys",pts:10,tip:"The boys approve. This is non-negotiable."},
+    {name:"Has Her Own Money",pts:10,tip:"Independent queen. Your wallet breathes easy."},
+    {name:"Good Relationship With Her Dad",pts:10,tip:"Daddy issues? Not here."},
+    {name:"Kind to Waitstaff",pts:10,tip:"How she treats them is how she'll treat you."},
+    {name:"Remembers Small Details",pts:10,tip:"She remembered your coffee order from 3 weeks ago."},
+    {name:"Gym Girl",pts:5,tip:"She takes care of herself. Respect."},
+    {name:"No Social Media Drama",pts:5,tip:"No vague-posting. No subliminal stories. Peace."},
+    {name:"Texts Back Fast",pts:5,tip:"She actually wants to talk to you. Wild concept."},
+    {name:"Comfortable With Silence",pts:5,tip:"You can just... exist together. No pressure."},
+    {name:"Genuinely Curious About You",pts:5,tip:"She asks about your hobbies AND actually listens."},
+  ]},
+];
+
+const TIERS = [
+  {min:95,label:"Wifey Material",msg:"Lock her down immediately. Do NOT fumble this.",color:"var(--green)"},
+  {min:80,label:"Solid Choice",msg:"She's a keeper. Minor flaws, but who's perfect?",color:"#66bb6a"},
+  {min:60,label:"Proceed with Caution",msg:"She's got potential, but keep your eyes open, king.",color:"var(--gold)"},
+  {min:40,label:"Situationship at Best",msg:"Don't catch feelings. Seriously.",color:"var(--orange)"},
+  {min:20,label:"For the Streets",msg:"She belongs to the streets. You know it.",color:"#ff5722"},
+  {min:0,label:"RUN.",msg:"Delete her number. Block. Move cities if needed.",color:"var(--red)"},
+  {min:-Infinity,label:"WITNESS PROTECTION",msg:"This isn't a date, it's a crime scene.",color:"var(--deep-red)"},
+];
+
+// State
+const checked = {}; // "catIdx_traitIdx" -> bool
+let currentStep = 0; // 0 = start, 1-8 = categories, 9 = results
+const TOTAL_STEPS = DATA.length; // 8
+
+function getTier(score){
+  return TIERS.find(t=>score>=t.min);
+}
+
+function calcScore(){
+  let s=100;
+  DATA.forEach((cat,ci)=>{
+    cat.traits.forEach((t,ti)=>{
+      if(checked[ci+'_'+ti]) s+=t.pts;
+    });
+  });
+  return s;
+}
+
+function catScore(ci){
+  let s=0;
+  DATA[ci].traits.forEach((t,ti)=>{
+    if(checked[ci+'_'+ti]) s+=t.pts;
+  });
+  return s;
+}
+
+function getCheckedTraits(){
+  const reds=[], greens=[];
+  DATA.forEach((cat,ci)=>{
+    cat.traits.forEach((t,ti)=>{
+      if(checked[ci+'_'+ti]){
+        if(t.pts<0) reds.push({name:t.name,pts:t.pts,cat:cat.title});
+        else greens.push({name:t.name,pts:t.pts,cat:cat.title});
+      }
+    });
+  });
+  return {reds,greens};
+}
+
+// ── Trait-theme mapping ──
+const T={
+    // Communication
+    "One-Word Texter":{g:"unavailable",d:"monosyllabic digital correspondence"},
+    "Takes 24h+ to Reply":{g:"unavailable",d:"calculated 24-hour response delays"},
+    "Only Talks About Herself":{g:"self-absorbed",d:"a conversational monopoly where you serve as live studio audience"},
+    "Always on Phone During Dates":{g:"disengaged",d:"chronic device dependency mid-date (you are ambient company)"},
+    "Argues About Word Choices":{g:"difficult",d:"micro-linguistic policing ('fine' vs 'good' — 3-hour tribunal)"},
+    "Voice Notes Instead of Texts":{g:"chaotic",d:"replacing texts with unsolicited 4-minute audio memoirs"},
+    // Personality
+    '"All My Exes Are Crazy"':{g:"delusional",d:"a conspicuous failure to identify herself as the common denominator"},
+    "Drama Magnet":{g:"chaotic",d:"a statistically improbable frequency of interpersonal conflict"},
+    "Love-Bombs First Date":{g:"chaotic",d:"declaring soulmate status within the first 45 minutes"},
+    "Zero Hobbies":{g:"low-effort",d:"a recreational vacuum filled entirely by Netflix and online shopping"},
+    "Chronically Late":{g:"difficult",d:"chronic temporal delinquency ('5 min away' — hasn't left the house)"},
+    '"Brutally Honest"':{g:"difficult",d:"weaponized candor where the brutality is the feature, not the honesty"},
+    "Can't Cook and Proud":{g:"low-effort",d:"culinary abstinence worn as a badge of honor"},
+    "Never Apologizes":{g:"difficult",d:"a conflict-resolution framework that omits the apology module entirely"},
+    // Lifestyle
+    "Has an OnlyFans":{g:"wild-card",d:"monetized public content creation (everyone's seen more of her than you)"},
+    "MLM Boss Babe":{g:"delusional",d:"participation in a reverse-revenue business model she calls entrepreneurship"},
+    "Party Girl":{g:"chaotic",d:"a nightlife frequency that qualifies as a second career"},
+    "Still Talks to Her Ex":{g:"trust-issue",d:"active communication with a theoretically former partner"},
+    "Instagram Influencer":{g:"image-obsessed",d:"a content-creation lifestyle cosplaying as a personality"},
+    '"I\'m Not Like Other Girls"':{g:"delusional",d:"aggressively proclaimed uniqueness that is, ironically, extremely common"},
+    "More Than 3 Cats":{g:"eccentric",d:"a feline-to-human ratio exceeding clinical norms"},
+    "Vegan and Won't Shut Up":{g:"difficult",d:"unsolicited dietary evangelism before, during, and after every meal"},
+    "Hard Drug User":{g:"wild-card",d:"substance use classified as an instant dealbreaker by 81% of the dating population"},
+    // Financial
+    "Expensive Taste, No Job":{g:"financial-risk",d:"champagne expectations on an unemployment timeline"},
+    "Never Offers to Split":{g:"financial-risk",d:"a wallet that serves a purely decorative function"},
+    "Shopping Addiction":{g:"financial-risk",d:"an Amazon delivery frequency that rivals the postal service"},
+    "Venmos You After the Date":{g:"financial-risk",d:"post-date invoice generation (61% of singles say disqualifying)"},
+    "Crypto Bro Female Edition":{g:"delusional",d:"unsolicited cryptocurrency proselytizing"},
+    // Social Media
+    "Posts Cryptic Relationship Quotes":{g:"image-obsessed",d:"subliminal broadcast messaging as emotional processing"},
+    "Heavily Filtered/AI Photos":{g:"image-obsessed",d:"photographic self-representation with creative liberties"},
+    "Stalks Your Old Posts":{g:"trust-issue",d:"forensic social media archaeology dating back years (she liked your 2019 beach pic at 2 AM)"},
+    "Uses Astrology as Personality":{g:"delusional",d:"outsourcing personal accountability to planetary alignment"},
+    "Keeps Phone Face-Down":{g:"trust-issue",d:"the classic face-down phone maneuver (what's she hiding? everything)"},
+    "Posts Every Meal":{g:"image-obsessed",d:"compulsive food photography before anyone is permitted to eat"},
+    // Dating Behavior
+    "From Dubai":{g:"wild-card",d:"Dubai provenance — the implications are left as an exercise for the reader"},
+    "Single Mom":{g:"situational",d:"pre-existing priority hierarchies (you are not #1, champ)"},
+    "Coworker":{g:"situational",d:"a workplace-proximity entanglement (HR has entered the chat)"},
+    "Looks Nothing Like Her Photos":{g:"image-obsessed",d:"a material divergence between digital and physical presentation"},
+    "Mentions Her Ex Repeatedly":{g:"trust-issue",d:"ex-partner references at academic-citation frequency"},
+    "Feminist":{g:"difficult",d:"every dinner bill is now a referendum on gender politics"},
+    "Nurse":{g:"situational",d:"a schedule optimized for professional heroism, not personal availability"},
+    "Teacher":{g:"situational",d:"professional evaluation habits that bleed into personal life"},
+    "Lawyer":{g:"difficult",d:"professional-grade argumentation training (every disagreement is a deposition)"},
+    // The Ick Factor
+    "Chews With Mouth Open":{g:"ick",d:"audible open-mouth mastication — the soundtrack nobody asked for"},
+    "Has Tattoos":{g:"ick",d:"a body-art portfolio with mandatory 47-time narration"},
+    "Baby Talk":{g:"ick",d:"infantilized speech patterns from a full-grown adult"},
+    "Car Full of Trash":{g:"ick",d:"a passenger seat that doubles as an archaeological dig site"},
+    "Claps When the Plane Lands":{g:"ick",d:"applause for routine commercial aviation achievements"},
+    // Green Flags
+    "Can Actually Cook":{g:"keeper",d:"genuine culinary competence"},
+    "Laughs at Your Jokes":{g:"keeper",d:"humor receptivity (even for your worst material)"},
+    "Watches Sports With You":{g:"keeper",d:"shared recreational enthusiasm (Sunday football upgraded)"},
+    "Low Maintenance":{g:"keeper",d:"minimal operational overhead — ready in 15, no drama"},
+    "Gets Along With Your Boys":{g:"keeper",d:"peer-group social integration (the boys approve)"},
+    "Has Her Own Money":{g:"keeper",d:"verified financial self-sufficiency"},
+    "Good Relationship With Her Dad":{g:"keeper",d:"healthy paternal attachment patterns (no daddy issues detected)"},
+    "Kind to Waitstaff":{g:"keeper",d:"unprompted kindness to service workers"},
+    "Remembers Small Details":{g:"keeper",d:"high-resolution interpersonal memory (your coffee order from 3 weeks ago)"},
+    "Gym Girl":{g:"keeper",d:"consistent physical self-investment"},
+    "No Social Media Drama":{g:"keeper",d:"admirable digital restraint — no vague-posting, no subliminals"},
+    "Texts Back Fast":{g:"keeper",d:"prompt communication reciprocity"},
+    "Comfortable With Silence":{g:"keeper",d:"secure-attachment silence tolerance"},
+    "Genuinely Curious About You":{g:"keeper",d:"authentic interpersonal curiosity (asks AND listens)"},
+};
+
+// ── Profile generator: COLLECT → CLASSIFY → COMPOSE → SEAL pipeline ──
+
+// 3a. Seed functions for deterministic variety
+function primarySeed(score,redCount,greenCount){
+  return Math.abs(score*7+redCount*13+greenCount*19);
+}
+function secondarySeed(items){
+  let h=0;
+  for(let i=0;i<items.length;i++) h=(h*31+items[i].name.charCodeAt(0))>>>0;
+  return h;
+}
+function pick(arr,seed){return arr[seed%arr.length];}
+
+// 3b. Strategy classifier
+function classifyTier(score){
+  if(score>=95) return 'wifey';
+  if(score>=80) return 'solid';
+  if(score>=60) return 'caution';
+  if(score>=40) return 'situationship';
+  if(score>=20) return 'streets';
+  if(score>=0) return 'run';
+  return 'witness_protection';
+}
+
+// 3c. Trait weavers — combine 1, 2, or 3+ descriptions into prose
+function weaveTraits(descs,seed){
+  if(descs.length===0) return '';
+  if(descs.length===1) return descs[0];
+  if(descs.length===2){
+    const t=[
+      (a,b)=>`${a} paired with ${b}`,
+      (a,b)=>`${a} and, compounding matters, ${b}`,
+      (a,b)=>`${a} alongside ${b}`
+    ];
+    return pick(t,seed)(descs[0],descs[1]);
+  }
+  const t=[
+    ds=>`${ds.slice(0,-1).join(', ')}, and ${ds[ds.length-1]}`,
+    ds=>`${ds[0]}, ${ds[1]}, and ${ds.length>3?ds.slice(2).join(', '):ds[2]}`,
+    ds=>`a constellation including ${ds.slice(0,-1).join(', ')}, and ${ds[ds.length-1]}`
+  ];
+  return pick(t,seed)(descs);
+}
+
+// 3c. Theme commentary — punchy one-liners per theme tag
+const THEME_LINES={
+  "unavailable":["Her communication style makes carrier pigeons look responsive.","You rank somewhere between her spam folder and a push notification she hasn't enabled.","Emotional availability: out of office, return date pending."],
+  "disengaged":["You are not a companion — you are ambient background noise while she scrolls.","Her phone gets more eye contact than you do.","Competing with a 6-inch screen for attention is a losing proposition."],
+  "self-absorbed":["You are not a participant in dialogue — you are a captive audience with a dinner reservation.","The conversational dynamic features a pronounced asymmetry in topic distribution.","Every conversation is a one-woman TED Talk you didn't sign up for."],
+  "difficult":["The operational overhead of this relationship registers in the upper percentile of the maintenance spectrum.","Patience here is not a virtue — it is a full-time job requirement.","The energy expenditure required to maintain equilibrium may exceed any conceivable return."],
+  "chaotic":["Her life operates on a crisis-to-crisis momentum that would exhaust a first responder.","Predictability is not on the menu. Neither, to be fair, is boredom.","Strap in — this is less a relationship and more a weather event."],
+  "delusional":["The gap between self-perception and observable behavior could comfortably house a mid-size sedan.","Her relationship with objective reality is best described as 'loosely affiliated.'","A recurring pattern of reality-adjacent thinking emerges across the data."],
+  "image-obsessed":["The curated self has largely consumed the actual self — you are, in practice, dating a brand.","What you see is, by careful design, not what you get.","Image management is the primary occupation; actual life serves as raw content."],
+  "trust-issue":["The trust infrastructure here is structurally compromised.","Transparency in this dynamic is a theoretical concept, not an operational policy.","The foundation you'd build on has pre-existing fractures."],
+  "financial-risk":["Your wallet is not an accessory in this arrangement — it is load-bearing infrastructure.","The ROI calculation requires a spreadsheet, a stiff drink, and a strong stomach.","She treats your finances as a shared resource — without the sharing part."],
+  "low-effort":["Growth is not on the roadmap. Comfortable stagnation is both the destination and the journey.","The effort-to-output ratio suggests a philosophical commitment to the status quo.","Ambition levels register at 'comfortably flatlined.'"],
+  "wild-card":["These are not red flags so much as signal flares visible from low orbit.","Certain data points defy conventional categorization — welcome to the tail of the distribution.","Risk analysts would classify this under 'genuinely unprecedented.'"],
+  "ick":["The ick does not negotiate. These are neurological events, not preferences.","Once observed, these cannot be un-observed. They will resurface at 3 AM. Guaranteed.","Certain behaviors trigger involuntary aversion that no amount of charm can override."],
+  "situational":["These are not character flaws per se — circumstantial factors that affect the cost-benefit analysis.","Beyond personality, logistical complexity enters the calculus.","The situation introduces variables that personality alone cannot resolve."],
+  "eccentric":["Eccentricity is not disqualifying, but it requires a flexible definition of 'normal.'","Lifestyle choices comfortably outside standard deviation detected.","Unconventional is one word. Concerning is another. The truth is somewhere between."]
+};
+
+// 3c. Template fragment library
+
+const GREEN_LEAD=[
+  (traits,commentary)=>`The subject presents a remarkably clean dossier. The evidence — ${traits} — paints a portrait of genuine long-term relationship capital. ${commentary}`,
+  (traits,commentary)=>`The green-flag portfolio here is, by any objective metric, substantial. Documented strengths include ${traits}. ${commentary}`,
+  (traits,commentary)=>`On initial assessment, the data is encouraging. Key indicators: ${traits}. In a dating pool where the bar is famously subterranean, she clears it with daylight to spare. ${commentary}`
+];
+
+const RED_LEAD=[
+  (traits,commentary)=>`The primary concerns emerge early and often. The dossier catalogs ${traits}. ${commentary}`,
+  (traits,commentary)=>`A pattern of risk factors dominates the assessment. Chief among them: ${traits}. ${commentary}`,
+  (traits,commentary)=>`The data paints a concerning picture from the opening line. Field observations include ${traits}. ${commentary}`
+];
+
+const RED_ROAST=[
+  (traits,commentary)=>`The subject's behavioral profile reads less like a dating prospect and more like a cautionary tale distributed at orientation. Documented evidence: ${traits}. ${commentary}`,
+  (traits,commentary)=>`Where to begin. The clinical record presents ${traits} — each item alone warrants concern; together, they constitute a symphony of red flags. ${commentary}`,
+  (traits,commentary)=>`The file on this individual was flagged by the system before a human even opened it. Highlights include ${traits}. ${commentary}`
+];
+
+const RED_CATASTROPHE=[
+  (traits,commentary)=>`This is not a personality profile — it is a disaster assessment. The subject exhibits ${traits}. ${commentary} The threat level has been upgraded from 'concerning' to 'existential.'`,
+  (traits,commentary)=>`The dossier arrived pre-stamped with a biohazard warning. Analysis reveals ${traits}. ${commentary} The data doesn't just suggest risk — it files a restraining order on your behalf.`
+];
+
+const BALANCED_OPEN=[
+  (gTraits,rTraits)=>`The committee is split on this one. On the positive side of the ledger: ${gTraits}. On the other side, the file also contains ${rTraits}.`,
+  (gTraits,rTraits)=>`This is a study in contradictions. The subject demonstrates genuine strengths — ${gTraits} — while simultaneously presenting ${rTraits}.`,
+  (gTraits,rTraits)=>`The assessment panel has convened and remains, diplomatically, divided. Green-flag evidence includes ${gTraits}. Red-flag evidence counters with ${rTraits}.`
+];
+
+const RED_FOOTNOTE=[
+  descs=>`The file does contain minor notes — ${descs} — but in context, these register as charming quirks rather than structural concerns.`,
+  descs=>`For the record, the dossier flags ${descs}. These are catalogued but ultimately cosmetic blemishes on an otherwise impressive specimen.`,
+  descs=>`Noted imperfections include ${descs}. The review board acknowledges them and moves on — the fundamentals more than compensate.`
+];
+
+const RED_CONCERN=[
+  descs=>`The red flags — ${descs} — merit honest consideration. These are not dealbreakers in isolation, but they form a pattern worth monitoring.`,
+  descs=>`On the risk side, ${descs} introduces legitimate concern. The data warrants vigilance, not panic, but vigilance all the same.`,
+  descs=>`Counterbalancing the positives: ${descs}. These demand acknowledgment — they are real, measurable, and relevant to the final assessment.`
+];
+
+const GREEN_INSUFFICIENT=[
+  descs=>`In the subject's defense, the file does note ${descs}. However, in the current context, these read less like strengths and more like participation trophies.`,
+  descs=>`The green-flag section is not empty — ${descs} earns mention. But against the weight of the red-flag evidence, it is insufficient to shift the verdict.`
+];
+
+const GREEN_CONSOLATION=[
+  descs=>`The sole consolation: ${descs}. It is noted the way a coroner notes the deceased had excellent bone structure.`,
+  descs=>`For what it's worth, ${descs} appears in the record. Consider it a parting gift from the universe — ironic, insufficient, but technically present.`
+];
+
+const GREEN_BLANK='The green-flag section of this dossier is, quite literally, a blank page. Not a single positive indicator was recorded. This absence is, itself, the loudest data point in the file.';
+
+const CLOSERS={
+  wifey:[
+    score=>`Final assessment at ${score} points: the data is unequivocal. This individual exceeds benchmark expectations across multiple dimensions. The peer-reviewed recommendation, stated with full academic conviction: lock it down. Immediately.`,
+    score=>`Composite score: ${score}. The clinical recommendation is as clear as it gets — secure this commitment before someone with better data-reading skills does.`,
+    score=>`At ${score}, the verdict writes itself. This is not a drill. Initiate relationship-securing protocols at earliest opportunity.`
+  ],
+  solid:[
+    score=>`The composite score of ${score} indicates a high-quality match with tolerable deviations from the theoretical ideal. In portfolio terms: strong hold with bullish long-term outlook.`,
+    score=>`At ${score} points, the assessment is favorable. Minor imperfections noted, none material. The recommendation: proceed with confidence.`,
+    score=>`Score: ${score}. A strong showing by any standard. The minor footnotes in this file do not alter the conclusion — this is a sound investment.`
+  ],
+  caution:[
+    score=>`At ${score} points, the prospect shows real potential tempered by non-trivial risk factors. The recommendation: proceed with eyes open and expectations carefully calibrated.`,
+    score=>`A score of ${score} means the jury is out, but leaning favorable. Invest cautiously — the upside is real, but so are the risks.`,
+    score=>`Composite assessment: ${score}. Not a green light, not a red light — a yellow that demands you actually look both ways.`
+  ],
+  situationship:[
+    score=>`A score of ${score} places this squarely in uncertain territory — a holding pattern with no scheduled landing. Proceed with emotional guardrails firmly installed.`,
+    score=>`At ${score}, the data advises against emotional investment exceeding what you can afford to lose. This is a lease, not a purchase.`,
+    score=>`Score: ${score}. The clinical recommendation: maintain strategic distance. Feelings are a liability in this risk environment.`
+  ],
+  streets:[
+    score=>`With a composite score of ${score}, the risk rating would make any relationship underwriter nervous. She belongs, per the peer-reviewed literature, to the streets.`,
+    score=>`At ${score} points, the exit signs are illuminated and clearly marked. The recommendation: use them.`,
+    score=>`Score: ${score}. The data has spoken, and it is recommending you save your emotional capital for a more solvent prospect.`
+  ],
+  run:[
+    score=>`Final score: ${score}. The aggregate data recommends the Witness Protection protocol — new city, new phone number, scorched-earth digital cleanse. This is not pessimism. It is actuarial science.`,
+    score=>`At ${score} points, the only clinical recommendation is immediate and sustained retreat. Delete, block, relocate.`,
+    score=>`Score: ${score}. The system has auto-generated an exit strategy. You are advised to follow it without deviation.`
+  ],
+  witness_protection:[
+    score=>`Final clinical assessment at ${score}: this is not a dating prospect — it is an incident report in the making. The recommended intervention is immediate and complete geographic relocation.`,
+    score=>`Score: ${score}. The file has been forwarded to the appropriate authorities. Your recommended next step is a new identity and a head start.`
+  ]
+};
+
+// 3d. Composition pipeline
+function generateProfile(){
+  // ── COLLECT ──
+  const items=[];
+  DATA.forEach((cat,ci)=>{
+    cat.traits.forEach((t,ti)=>{
+      if(checked[ci+'_'+ti]){
+        const a=T[t.name];
+        if(a) items.push({tag:a.g, desc:a.d, name:t.name, pts:t.pts});
+      }
+    });
+  });
+
+  if(items.length===0)
+    return "No data points were recorded. The subject either presented zero observable characteristics — which is itself a characteristic — or the evaluator fell asleep mid-assessment. Inconclusive. Retry with caffeine.";
+
+  const score=calcScore();
+  const {reds,greens}=getCheckedTraits();
+  const redItems=items.filter(i=>i.pts<0);
+  const greenItems=items.filter(i=>i.pts>=0);
+  const redDescs=redItems.map(i=>i.desc);
+  const greenDescs=greenItems.map(i=>i.desc);
+
+  // ── CLASSIFY ──
+  const tier=classifyTier(score);
+  const ps=primarySeed(score,reds.length,greens.length);
+  const ss=secondarySeed(items);
+
+  // Pick theme commentary for the dominant red-flag theme
+  const redGroups={};
+  redItems.forEach(i=>{
+    if(!redGroups[i.tag]) redGroups[i.tag]=[];
+    redGroups[i.tag].push(i);
+  });
+  const topRedTag=Object.keys(redGroups).sort((a,b)=>{
+    const sa=redGroups[a].reduce((s,i)=>s+Math.abs(i.pts),0);
+    const sb=redGroups[b].reduce((s,i)=>s+Math.abs(i.pts),0);
+    return sb-sa;
+  })[0];
+  const themeComment=topRedTag&&THEME_LINES[topRedTag]?pick(THEME_LINES[topRedTag],ss):'';
+  const greenThemeComment=greenDescs.length>0?'In a dating pool where the bar is famously subterranean, these indicators carry real weight.':'';
+
+  // ── COMPOSE ──
+  const paras=[];
+
+  if(tier==='wifey'||tier==='solid'){
+    // Green lead
+    if(greenDescs.length>0){
+      const woven=weaveTraits(greenDescs,ss);
+      paras.push(pick(GREEN_LEAD,ps)(woven,greenThemeComment));
+    }
+    // Red as footnote (skip if no reds)
+    if(redDescs.length>0){
+      const woven=weaveTraits(redDescs,ss);
+      if(greenDescs.length>0){
+        paras.push(pick(RED_FOOTNOTE,ps)(woven));
+      } else {
+        // High score but only reds checked (rare edge case: base 100 minus small deduction)
+        paras.push('The dossier is light on specifics, but the baseline remains strong. Minor notes include '+woven+' — nothing that materially alters the outlook.');
+      }
+    }
+    // Closer
+    const closerArr=CLOSERS[tier];
+    paras.push(pick(closerArr,ps)(score));
+
+  } else if(tier==='caution'){
+    // Balanced open
+    if(greenDescs.length>0&&redDescs.length>0){
+      paras.push(pick(BALANCED_OPEN,ps)(weaveTraits(greenDescs,ss),weaveTraits(redDescs,ss)));
+      // Red analysis — theme commentary, not re-listing traits
+      if(themeComment) paras.push('The concern is not any single item but the pattern they form. '+themeComment+' These warrant honest monitoring, not dismissal.');
+      else paras.push('The concern is not any single item but the cumulative pattern. Each flag alone is manageable; together, they form a risk profile that demands attention.');
+    } else if(greenDescs.length>0){
+      const woven=weaveTraits(greenDescs,ss);
+      paras.push(pick(GREEN_LEAD,ps)(woven,greenThemeComment));
+    } else {
+      const woven=weaveTraits(redDescs,ss);
+      paras.push(pick(RED_LEAD,ps)(woven,themeComment));
+    }
+    paras.push(pick(CLOSERS.caution,ps)(score));
+
+  } else if(tier==='situationship'){
+    // Red lead
+    if(redDescs.length>0){
+      const woven=weaveTraits(redDescs,ss);
+      paras.push(pick(RED_LEAD,ps)(woven,themeComment));
+    }
+    // Green insufficient
+    if(greenDescs.length>0){
+      const woven=weaveTraits(greenDescs,ss);
+      paras.push(pick(GREEN_INSUFFICIENT,ps)(woven));
+    } else {
+      paras.push(GREEN_BLANK);
+    }
+    paras.push(pick(CLOSERS.situationship,ps)(score));
+
+  } else if(tier==='streets'){
+    // Red lead
+    if(redDescs.length>0){
+      const woven=weaveTraits(redDescs,ss);
+      paras.push(pick(RED_LEAD,ps)(woven,themeComment));
+    }
+    // Green consolation
+    if(greenDescs.length>0){
+      const woven=weaveTraits(greenDescs,ss);
+      paras.push(pick(GREEN_CONSOLATION,ps)(woven));
+    } else {
+      paras.push(GREEN_BLANK);
+    }
+    paras.push(pick(CLOSERS.streets,ps)(score));
+
+  } else if(tier==='run'){
+    // Red roast
+    if(redDescs.length>0){
+      const woven=weaveTraits(redDescs,ss);
+      paras.push(pick(RED_ROAST,ps)(woven,themeComment));
+    } else {
+      paras.push('The file is thin on specifics but thick with foreboding. What data exists points unambiguously toward the exit.');
+    }
+    // Green consolation if any
+    if(greenDescs.length>0){
+      const woven=weaveTraits(greenDescs,ss);
+      paras.push(pick(GREEN_CONSOLATION,ps)(woven));
+    }
+    paras.push(pick(CLOSERS.run,ps)(score));
+
+  } else {
+    // witness_protection (score < 0)
+    if(redDescs.length>0){
+      const woven=weaveTraits(redDescs,ss);
+      paras.push(pick(RED_CATASTROPHE,ps)(woven,themeComment));
+    } else {
+      paras.push('The subject has achieved a negative score through sheer force of problematic will. The details are classified for your own protection.');
+    }
+    if(greenDescs.length>0){
+      const woven=weaveTraits(greenDescs,ss);
+      paras.push(pick(GREEN_CONSOLATION,ps)(woven));
+    }
+    paras.push(pick(CLOSERS.witness_protection,ps)(score));
+  }
+
+  // ── SEAL — enforce max 4 paragraphs ──
+  return paras.slice(0,4).join('<br><br>');
+}
+
+function getProfileText(){
+  const raw=generateProfile();
+  return raw?raw.replace(/<br><br>/g,'\n\n'):'';
+}
+
+// ── Render ──
+function render(){
+  const wiz=document.getElementById('wizard');
+  let html='';
+
+  // Start screen (step 0)
+  html+=`<div class="step${currentStep===0?' active':''}" id="step-0">
+    <div class="start-screen">
+      <h1>DATE SCORING</h1>
+      <p class="tagline">Everyone starts at 100. Few survive.</p>
+      <p class="instruction">Check off traits across 8 categories. Get your verdict.</p>
+      <button class="start-btn" onclick="goTo(1)">START</button>
+    </div>
+  </div>`;
+
+  // Category steps (1-8)
+  DATA.forEach((cat,ci)=>{
+    const stepNum=ci+1;
+    const isBonus=cat.type==='bonus';
+    const isActive=currentStep===stepNum;
+    const isGreen=isBonus;
+    html+=`<div class="step${isActive?' active':''}" id="step-${stepNum}">
+      <div class="top-bar">
+        <div class="top-bar-inner">
+          <div class="step-indicator">${stepNum} of ${TOTAL_STEPS}</div>
+          <div class="mini-score" id="mini-score-${stepNum}">${Math.max(0,Math.min(100,calcScore()))}</div>
+          <div class="progress-dots">${DATA.map((_,i)=>{
+            const s=i+1;
+            let cls='dot';
+            if(isGreen&&i===ci) cls+=' green-dot';
+            else if(i===DATA.length-1) cls+=' green-dot';
+            if(s<stepNum) cls+=' completed';
+            else if(s===stepNum) cls+=' current';
+            return `<div class="${cls}" onclick="event.stopPropagation();goTo(${s})"></div>`;
+          }).join('')}</div>
+        </div>
+      </div>
+      <div class="step-content">
+        <div class="step-header">
+          <h2 class="${isGreen?'green':'red'}">${cat.title}</h2>
+          <div class="step-desc">${cat.desc}</div>
+        </div>
+        ${cat.traits.map((t,ti)=>{
+          const key=ci+'_'+ti;
+          const on=!!checked[key];
+          const bonusCls=isBonus?' bonus-trait':'';
+          return `<div class="trait${on?' checked':''}${bonusCls}" data-key="${key}" onclick="toggleTrait(this,'${key}')">
+            <input type="checkbox"${on?' checked':''}>
+            <div class="checkmark">${on?'&#10003;':''}</div>
+            <div class="trait-info">
+              <div class="trait-name">${t.name}</div>
+              <div class="trait-tooltip">"${t.tip}"</div>
+            </div>
+            <div class="trait-points ${t.pts<0?'neg':'pos'}">${t.pts>0?'+':''}${t.pts}</div>
+          </div>`;
+        }).join('')}
+        <div class="nav-row">
+          <button class="nav-btn nav-back" onclick="goTo(${stepNum-1})">${stepNum===1?'Home':'Back'}</button>
+          ${stepNum<TOTAL_STEPS
+            ?`<button class="nav-btn nav-next${isGreen?' green-next':''}" onclick="goTo(${stepNum+1})">Next</button>`
+            :`<button class="nav-btn nav-finish" onclick="goTo(${TOTAL_STEPS+1})">See Results</button>`
+          }
+        </div>
+      </div>
+    </div>`;
+  });
+
+  // Results screen (step 9)
+  const resultsStep=TOTAL_STEPS+1;
+  if(currentStep===resultsStep){
+    const score=calcScore();
+    const tier=getTier(score);
+    const {reds,greens}=getCheckedTraits();
+    const fallbackProfile=generateProfile();
+
+    // Category breakdown data
+    const breakdownHTML=DATA.map((cat,ci)=>{
+      const cs=catScore(ci);
+      if(cs===0) return '';
+      const isPos=cs>0;
+      const maxAbs=Math.max(...DATA.map((_,i)=>Math.abs(catScore(i))),1);
+      const pct=Math.round(Math.abs(cs)/maxAbs*100);
+      return `<div class="breakdown-row">
+        <div class="breakdown-label">${cat.title}</div>
+        <div class="breakdown-bar-wrap">
+          <div class="breakdown-bar" style="width:${pct}%;background:${isPos?'var(--green)':'var(--red)'}"></div>
+        </div>
+        <div class="breakdown-val" style="color:${isPos?'var(--green)':'var(--red)'}">${cs>0?'+':''}${cs}</div>
+      </div>`;
+    }).join('');
+
+    html+=`<div class="step active" id="step-${resultsStep}">
+      <div class="results">
+        <div class="results-score">
+          <div class="big-score count-up" style="color:${tier.color}">${Math.max(0,Math.min(100,score))}</div>
+          <div class="tier-label" style="color:${tier.color}">${tier.label}</div>
+          <div class="verdict-msg">"${tier.msg}"</div>
+        </div>
+
+        ${breakdownHTML?`<div class="section-card">
+          <h3>Category Breakdown</h3>
+          ${breakdownHTML}
+        </div>`:''}
+
+        ${fallbackProfile?`<div class="section-card">
+          <h3>Personality Profile</h3>
+          <div class="profile-text" id="profile-text">${fallbackProfile}</div>
+        </div>`:''}
+
+        <div class="section-card">
+          <h3>Trait Summary</h3>
+          <div class="trait-summary-cols">
+            <div class="trait-summary-col">
+              <h4 class="red-h">Red Flags (${reds.length})</h4>
+              ${reds.length?reds.map(r=>`<div class="trait-summary-item">
+                <span>${r.name}</span><span class="pts neg">${r.pts}</span>
+              </div>`).join(''):`<div class="empty-col">None checked</div>`}
+            </div>
+            <div class="trait-summary-col">
+              <h4 class="green-h">Green Flags (${greens.length})</h4>
+              ${greens.length?greens.map(g=>`<div class="trait-summary-item">
+                <span>${g.name}</span><span class="pts pos">+${g.pts}</span>
+              </div>`).join(''):`<div class="empty-col">None checked</div>`}
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <h3>Share Your Results</h3>
+          <div class="share-grid">
+            <button class="share-btn x-btn" onclick="shareToX()">
+              <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              Post on X
+            </button>
+            <button class="share-btn ig-btn" onclick="copyForIG()">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+              Copy for IG
+            </button>
+            <button class="share-btn link-btn" onclick="copyLink()">
+              <svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+              Copy Link
+            </button>
+            <button class="share-btn copy-btn" onclick="copyText()">
+              <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              Copy Text
+            </button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-back" onclick="goTo(${TOTAL_STEPS})">Back to Questions</button>
+          <button class="btn btn-reset" onclick="resetAll()">Start Over</button>
+        </div>
+
+        <div class="footer">
+          <p>This is satire. Please do not actually score your dates.<br>
+          Made for laughs, not life decisions.</p>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  wiz.innerHTML=html;
+
+  // Attach tooltip listeners
+  document.querySelectorAll('.trait').forEach(el=>{
+    el.addEventListener('mouseenter',()=>el.classList.add('show-tip'));
+    el.addEventListener('mouseleave',()=>el.classList.remove('show-tip'));
+    el.addEventListener('touchstart',()=>el.classList.toggle('show-tip'),{passive:true});
+  });
+
+}
+
+function toggleTrait(el,key){
+  checked[key]=!checked[key];
+  const on=checked[key];
+  // Toggle checked class and checkbox directly
+  if(on) el.classList.add('checked'); else el.classList.remove('checked');
+  el.querySelector('input').checked=on;
+  el.querySelector('.checkmark').innerHTML=on?'&#10003;':'';
+  // Update mini-score with pulse animation
+  const ms=document.getElementById('mini-score-'+currentStep);
+  if(ms){
+    ms.textContent=Math.max(0,Math.min(100,calcScore()));
+    ms.classList.remove('score-flash');
+    void ms.offsetWidth;
+    ms.classList.add('score-flash');
+  }
+}
+
+function goTo(step){
+  currentStep=step;
+  render();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+function resetAll(){
+  Object.keys(checked).forEach(k=>delete checked[k]);
+  currentStep=0;
+  render();
+}
+
+const SITE_URL='https://bro-xuan.github.io/date-scoring/';
+
+function getShareText(){
+  const score=calcScore();
+  const tier=getTier(score);
+  const profile=getProfileText();
+  let text=`DATE SCORE: ${Math.max(0,Math.min(100,score))} — ${tier.label}\n"${tier.msg}"\n\n`;
+  if(profile) text+=profile+'\n\n';
+  text+=`Rate your date: ${SITE_URL}`;
+  return text;
+}
+
+function getFullText(){
+  const score=calcScore();
+  const tier=getTier(score);
+  const {reds,greens}=getCheckedTraits();
+  const profile=getProfileText();
+  let text=`DATE SCORE: ${Math.max(0,Math.min(100,score))} — ${tier.label}\n"${tier.msg}"\n\n`;
+  if(profile) text+=profile+'\n\n';
+  if(reds.length) text+=`🚩 Red Flags: ${reds.map(r=>r.name).join(', ')}\n`;
+  if(greens.length) text+=`✅ Green Flags: ${greens.map(g=>g.name).join(', ')}\n`;
+  text+=`\nRate your date: ${SITE_URL}`;
+  return text;
+}
+
+function flashBtn(btn,msg){
+  const orig=btn.innerHTML;
+  const origText=btn.textContent;
+  btn.textContent='✓ '+msg;
+  setTimeout(()=>btn.innerHTML=orig,1500);
+}
+
+function shareToX(){
+  const score=Math.max(0,Math.min(100,calcScore()));
+  const tier=getTier(calcScore());
+  const text=`DATE SCORE: ${score} — ${tier.label}\n"${tier.msg}"\n\nRate your date: ${SITE_URL}`;
+  const url='https://x.com/intent/tweet?text='+encodeURIComponent(text);
+  window.open(url,'_blank','noopener');
+}
+
+function copyForIG(){
+  const text=getFullText();
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.querySelector('.ig-btn');
+    flashBtn(btn,'Copied! Paste in IG');
+  }).catch(()=>{});
+}
+
+function copyLink(){
+  navigator.clipboard.writeText(SITE_URL).then(()=>{
+    const btn=document.querySelector('.link-btn');
+    flashBtn(btn,'Link Copied!');
+  }).catch(()=>{});
+}
+
+function copyText(){
+  const text=getFullText();
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.querySelector('.copy-btn');
+    flashBtn(btn,'Copied!');
+  }).catch(()=>{});
+}
+
+// Init
+render();
+</script>
+</body>
+</html>
