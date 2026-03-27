@@ -92,7 +92,8 @@ export default function CorporateTranslatorPage() {
           </p>
           <div className="flex flex-col flex-1 gap-2 p-2">
             <textarea
-              className="nes-textarea font-body w-full text-sm flex-1"
+              className="nes-textarea font-body w-full flex-1"
+              style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", lineHeight: "1.5" }}
               rows={10}
               placeholder="Paste your corporate email here and watch the magic happen..."
               value={inputText}
