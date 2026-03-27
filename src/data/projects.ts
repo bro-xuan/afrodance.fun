@@ -142,6 +142,13 @@ export const projects: Project[] = [
     color: "warning",
   },
   {
+    title: "ADHD Saver",
+    description: "A tool to help you stay focused and beat ADHD distractions.",
+    url: "/adhd_saver",
+    emoji: "🧠",
+    color: "warning",
+  },
+  {
     title: "Date Scoring",
     description: "A satirical app to rate your date on a 1–100 scale with red flags and green flags. Made for laughs.",
     url: "/date-scoring",
