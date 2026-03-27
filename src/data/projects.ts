@@ -121,9 +121,9 @@ export const seedGuestbookMessages: GuestbookMessage[] = [
 
 export const projects: Project[] = [
   {
-    title: "afrodance.fun",
+    title: "Analog Camera Museum",
     description: "This very site! A pixel-art portfolio for my fun projects.",
-    url: "https://afrodance.fun",
+    url: "https://analogcams.com",
     emoji: "🎮",
     color: "primary",
   },
