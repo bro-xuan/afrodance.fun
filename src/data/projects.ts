@@ -162,4 +162,11 @@ export const projects: Project[] = [
     emoji: "🤖",
     color: "error",
   },
+  {
+    title: "Corporate Translator",
+    description: "Translates corporate jargon into straight-forward Gen Z speak. No more synergies.",
+    url: "/corperate_translator",
+    emoji: "💼",
+    color: "success",
+  },
 ];
