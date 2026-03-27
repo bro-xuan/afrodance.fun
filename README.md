@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# afrodance.fun
+
+A pixel-art portfolio site for showcasing fun side projects. Built with Next.js, NES.css, and Tailwind CSS.
+
+## Projects
+
+| Project | Description |
+|---------|-------------|
+| **Analog Camera Museum** | Pixel-art portfolio for fun projects |
+| **Predictooor** | Real-time Polymarket whale tracker with smart alerts and wallet analytics |
+| **Earl** | AI-powered bespoke portraiture — turn any photo into a classical artwork |
+| **ADHD Saver** | Webcam-based focus monitor that plays escalating alerts when you look away |
+| **Date Scoring** | Satirical app to rate your date on a 1-100 scale |
+| **InstaClaw** | Deploy OpenClaw AI assistants to European servers in under 60 seconds |
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS 4 + NES.css (8-bit aesthetic)
+- **UI Components:** shadcn/ui (8-bit variants) + Radix UI
+- **Fonts:** Press Start 2P (headings) + Pixelify Sans (body)
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+git clone https://github.com/bro-xuan/afrodance.fun.git
+cd afrodance.fun
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the site.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/
+│   ├── layout.tsx          # Root layout with pixel fonts
+│   ├── page.tsx            # Homepage
+│   └── adhd_saver/         # ADHD Saver landing page
+├── components/
+│   ├── Hero.tsx            # Animated hero section
+│   ├── ProjectGrid.tsx     # Project cards grid
+│   ├── ProjectCard.tsx     # Individual project card
+│   ├── ArticleGrid.tsx     # Red Note posts grid
+│   ├── AboutMe.tsx         # About section with skills & likes
+│   ├── NowSection.tsx      # "What I'm doing now" section
+│   ├── Guestbook.tsx       # Guestbook with messages
+│   ├── KonamiEasterEgg.tsx # Konami code easter egg
+│   ├── PixelDivider.tsx    # Decorative section divider
+│   ├── Footer.tsx          # Site footer
+│   └── ui/                 # shadcn/ui + 8-bit component variants
+├── data/
+│   └── projects.ts         # All site content (projects, articles, config)
+├── hooks/
+│   └── useKonamiCode.ts    # Konami code detection hook
+├── lib/
+│   └── utils.ts            # Utility functions
+└── types/
+    └── index.ts            # TypeScript type definitions
+public/
+├── adhd_saver/             # ADHD Saver source code & sounds
+└── date-scoring/           # Date Scoring app assets
+```
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Production build |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Easter Egg
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Try the Konami code on the homepage: `up up down down left right left right B A`
