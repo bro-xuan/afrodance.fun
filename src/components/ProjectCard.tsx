@@ -9,12 +9,12 @@ const buttonClass: Record<string, string> = {
 
 export default function ProjectCard({ project }: { project: Project }) {
   const btnCls = buttonClass[project.color ?? "primary"];
+  const isExternal = project.url.startsWith("http");
 
   return (
     <a
       href={project.url}
-      target="_blank"
-      rel="noopener noreferrer"
+      {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       className="card-hover block transition-transform h-full"
     >
       <div className="nes-container with-title is-centered h-full flex flex-col">

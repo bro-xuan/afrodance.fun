@@ -271,7 +271,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "hope this email finds you well",
-    variations: ["hope this finds you well", "i hope you are doing well"],
+    variations: ["hope this finds you well", "i hope you are doing well", "I hope this email finds you well"],
     translations: [
       "I don't actually care how you are, here's what I need",
       "mandatory pleasantry before I dump work on you",
@@ -2203,7 +2203,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   // ── Polite corporate email language ───────────────────────
   {
     phrase: "just wanted to check in",
-    variations: ["checking in", "just checking in on this", "checking in on this"],
+    variations: ["checking in", "just checking in on this", "checking in on this", "just wanted to check", "wanted to check"],
     translations: [
       "why haven't you responded to me yet",
       "polite stalking via email",
@@ -2213,7 +2213,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "I hope all is well",
-    variations: ["hope you're doing well", "hope you're well", "trust you are well"],
+    variations: ["hope you're doing well", "hope you're well", "trust you are well", "I hope you are well", "hope you are well"],
     translations: [
       "I don't actually care, here's what I need",
       "mandatory opening line before the real request",
@@ -3526,5 +3526,763 @@ export const corporateDictionary: CorporatePhrase[] = [
       "brain extraction before someone walks out the door",
     ],
     category: "general",
+  },
+
+  // ── Email phrases (expansion) ─────────────────────────────
+  {
+    phrase: "many thanks",
+    variations: ["thanks so much", "thanks ever so much"],
+    translations: [
+      "bye (but make it sound grateful)",
+      "corporate sign-off #12 that means absolutely nothing",
+      "I'm wrapping up this email and being fake warm about it",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "please let me know",
+    variations: ["do let me know", "let me know if you need anything", "let me know if you have any questions"],
+    translations: [
+      "please don't actually let me know, I'm busy",
+      "this is my email exit strategy",
+      "I'm offering help I hope you won't need",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "looking forward to hearing from you",
+    variations: ["looking forward to your response", "look forward to hearing", "looking forward to your reply"],
+    translations: [
+      "respond to me or I'll follow up aggressively",
+      "the ball is in your court and I'm watching",
+      "polite way of saying 'answer me'",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "for your review",
+    variations: ["for your review and approval", "for your consideration", "for your perusal"],
+    translations: [
+      "please look at this thing I made and tell me it's good",
+      "here's something you'll skim for 30 seconds",
+      "approve this so I can move on with my life",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "on your end",
+    variations: ["at your end", "from your side", "on your side"],
+    translations: [
+      "your problem, not mine",
+      "whatever's happening over there (I don't wanna know)",
+      "politely implying the issue is with YOU",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "all the best",
+    variations: ["best wishes", "with best wishes", "wishing you all the best"],
+    translations: [
+      "bye forever (or until next email)",
+      "generic sign-off because I ran out of ways to say bye",
+      "corporate warmth that requires zero actual warmth",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "speak soon",
+    variations: ["talk soon", "chat soon", "catch up soon"],
+    translations: [
+      "we will probably not speak soon",
+      "a promise neither of us intends to keep",
+      "see you never (or in the next meeting invite)",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "would it be possible",
+    variations: ["is it possible to", "would you be able to", "might it be possible"],
+    translations: [
+      "do this thing I'm pretending is optional",
+      "I'm asking nicely but it's not really a question",
+      "please say yes, I've already told my boss you would",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "please be advised",
+    variations: ["please be aware", "please be informed", "you are hereby advised"],
+    translations: [
+      "brace yourself, here comes the bad news",
+      "legal made me say this",
+      "formal warning disguised as polite language",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "I'll keep you posted",
+    variations: ["will keep you updated", "I'll keep you in the loop", "will keep you informed"],
+    translations: [
+      "you'll hear from me when I remember (so probably never)",
+      "I'm saying this so you stop asking",
+      "filing this under 'things I'll forget to do'",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "I just wanted to",
+    variations: ["just wanted to", "I just wanted to quickly"],
+    translations: [
+      "here comes a request disguised as something casual",
+      "downplaying what's actually a big ask",
+      "softening the blow of what I'm about to dump on you",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "as always",
+    variations: ["as ever", "as usual"],
+    translations: [
+      "nothing has changed and nothing ever will",
+      "same old same old, but make it corporate",
+      "filler words to make this email feel warmer",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "just a gentle reminder",
+    variations: ["friendly reminder", "gentle nudge", "just a quick reminder", "a gentle reminder"],
+    translations: [
+      "this is NOT gentle, do the thing NOW",
+      "I've reminded you before and I'm losing patience",
+      "the reminder is gentle but my frustration is not",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "please see below",
+    variations: ["see below for details", "details below", "as outlined below"],
+    translations: [
+      "scroll down, I'm not repeating myself",
+      "the important stuff is down there, keep reading",
+      "TL;DR is below because this email is way too long",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "your cooperation",
+    variations: ["your cooperation is appreciated", "we appreciate your cooperation", "thank you for your cooperation"],
+    translations: [
+      "do what we say and don't complain",
+      "compliance dressed up as teamwork",
+      "you don't have a choice but we're pretending you do",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "time-sensitive",
+    variations: ["this is time-sensitive", "time-critical", "urgent matter"],
+    translations: [
+      "DROP EVERYTHING AND DO THIS NOW",
+      "someone procrastinated and now it's everyone's emergency",
+      "artificial urgency to make you panic",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "to whom it may concern",
+    variations: ["dear sir or madam", "dear hiring manager"],
+    translations: [
+      "I have no idea who I'm emailing",
+      "couldn't be bothered to find out your name",
+      "generic greeting from someone who's mass-emailing",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "further to",
+    variations: ["further to our conversation", "further to my email", "further to your request"],
+    translations: [
+      "remember that thing? yeah, I'm bringing it up again",
+      "building on that chat you probably forgot about",
+      "continuing a thread you hoped was dead",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "with regards to",
+    variations: ["in regards to", "in regard to", "regarding this matter"],
+    translations: [
+      "about (just say about)",
+      "three words to say what one word could",
+      "making 'about' sound important and official",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "take care",
+    variations: ["take care of yourself", "look after yourself"],
+    translations: [
+      "bye but with a sprinkle of fake concern",
+      "this email is over, please survive until the next one",
+      "warmest possible way to end a corporate interaction",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "I'll follow up",
+    variations: ["I will follow up on this", "I'll chase this up", "will follow up"],
+    translations: [
+      "I'm putting this on your calendar whether you like it or not",
+      "expect another email about this soon",
+      "this isn't over, I WILL be back",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "noted and understood",
+    variations: ["understood", "understood, thank you", "received and understood"],
+    translations: [
+      "I read it. I get it. now leave me alone",
+      "the most robotic acknowledgment possible",
+      "message received, emotions not included",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "at your disposal",
+    variations: ["I'm at your disposal", "available at your convenience", "available should you need"],
+    translations: [
+      "I'm technically available but please don't test that",
+      "offering help I hope you won't take me up on",
+      "corporate servant mode activated (reluctantly)",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "in the meantime",
+    variations: ["in the interim", "meanwhile"],
+    translations: [
+      "while we wait for something to happen (it won't)",
+      "during this awkward gap where nothing's moving",
+      "here's busywork while the real problem remains unsolved",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "please confirm",
+    variations: ["kindly confirm", "can you confirm", "could you please confirm"],
+    translations: [
+      "say yes so I can cover my butt",
+      "I need a paper trail that you agreed to this",
+      "reply so I have proof you saw this",
+    ],
+    category: "email",
+  },
+
+  // ── Meeting & Management (expansion) ──────────────────────
+  {
+    phrase: "in terms of",
+    variations: ["from the standpoint of", "from the perspective of"],
+    translations: [
+      "about (but with extra filler words)",
+      "let me add 3 unnecessary words to this sentence",
+      "corporate padding to sound more thoughtful",
+    ],
+    category: "meeting",
+  },
+  {
+    phrase: "heavy lifting",
+    variations: ["heavy lift", "do the heavy lifting", "the heavy lifting"],
+    translations: [
+      "the hard work nobody wants to do",
+      "the actual labor that everyone avoids",
+      "the grunt work that won't fit on a slide deck",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "fire drill",
+    variations: ["it's a fire drill", "another fire drill"],
+    translations: [
+      "fake emergency caused by poor planning",
+      "someone panicked and now everyone has to sprint",
+      "chaos because nobody planned ahead",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "sanity check",
+    variations: ["gut check", "quick sanity check", "sense check"],
+    translations: [
+      "am I crazy or is this actually right?",
+      "please validate my work because I don't trust myself",
+      "double-check this before I embarrass myself",
+    ],
+    category: "meeting",
+  },
+  {
+    phrase: "heads down",
+    variations: ["heads-down mode", "in heads-down mode", "going heads down"],
+    translations: [
+      "don't talk to me, I'm actually working for once",
+      "DND mode activated, leave me alone",
+      "pretending to be busy (or actually being busy, rare)",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "rubber stamp",
+    variations: ["rubber-stamp this", "rubber stamping", "rubber-stamped"],
+    translations: [
+      "approve this without actually reading it",
+      "pretend to review it and just say yes",
+      "the illusion of oversight",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "operationalize",
+    variations: ["operationalizing", "operationalized"],
+    translations: [
+      "make it actually work (revolutionary, I know)",
+      "turn the fancy plan into something real",
+      "implement it, but make it sound way more important",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "productize",
+    variations: ["productionize", "productized", "productizing"],
+    translations: [
+      "turn this janky prototype into something we can sell",
+      "make it pretty enough for customers to pay for",
+      "polish the demo into an actual product somehow",
+    ],
+    category: "tech",
+  },
+  {
+    phrase: "seamless",
+    variations: ["seamlessly", "seamless integration", "seamless experience"],
+    translations: [
+      "it definitely won't be seamless but we're promising it anyway",
+      "smooth (but calling it 'smooth' isn't fancy enough)",
+      "marketing's favorite word for 'it should work, maybe'",
+    ],
+    category: "general",
+  },
+  {
+    phrase: "world-class",
+    variations: ["world class", "truly world-class"],
+    translations: [
+      "average, but we're hyping it up",
+      "definitely not world-class but the deck needs a buzzword",
+      "the corporate equivalent of giving yourself a trophy",
+    ],
+    category: "general",
+  },
+  {
+    phrase: "best-in-class",
+    variations: ["best in class", "class-leading", "industry-leading"],
+    translations: [
+      "we googled the competition and think we're better",
+      "self-awarded superlative with zero evidence",
+      "marketing speak for 'we exist in this market'",
+    ],
+    category: "general",
+  },
+  {
+    phrase: "state of the art",
+    variations: ["state-of-the-art"],
+    translations: [
+      "new-ish, probably outdated by next quarter",
+      "fancy tech that'll be legacy code in 2 years",
+      "the most modern thing we could afford",
+    ],
+    category: "tech",
+  },
+  {
+    phrase: "holistic",
+    variations: ["holistic approach", "holistic view", "holistic solution", "holistically"],
+    translations: [
+      "looking at the whole mess instead of just one part",
+      "considering everything (which means deciding nothing)",
+      "vague enough to sound wise without committing to anything",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "pain point",
+    variations: ["pain points", "customer pain points", "key pain points"],
+    translations: [
+      "the stuff that annoys people (groundbreaking insight)",
+      "problems, but rebranded to sound empathetic",
+      "things that suck, said in a way investors understand",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "playbook",
+    variations: ["the playbook", "run the playbook", "from the playbook"],
+    translations: [
+      "the instructions nobody reads until things go wrong",
+      "a document we made once and never updated",
+      "the corporate recipe book of 'how we do things'",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "run it up the flagpole",
+    variations: ["flag it up", "run this up the chain", "escalate this up"],
+    translations: [
+      "ask someone more important than me to decide",
+      "passing the buck upward with patriotic imagery",
+      "let's see if the bosses hate this idea too",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "fail fast",
+    variations: ["fail fast learn fast", "fail forward"],
+    translations: [
+      "mess up quickly so we can mess up again",
+      "speed-running mistakes and calling it innovation",
+      "Silicon Valley's way of saying 'we have no plan'",
+    ],
+    category: "tech",
+  },
+  {
+    phrase: "growth mindset",
+    variations: ["adopt a growth mindset", "growth-oriented mindset"],
+    translations: [
+      "be positive about your problems (but we won't fix them)",
+      "HR's favorite way to say 'stop complaining'",
+      "believe you can grow (especially your workload)",
+    ],
+    category: "hr",
+  },
+  {
+    phrase: "take ownership",
+    variations: ["take ownership of", "own this", "owning this"],
+    translations: [
+      "this is your problem now, congratulations",
+      "do the work AND take the blame if it fails",
+      "responsibility without the authority or resources",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "sense of urgency",
+    variations: ["with urgency", "create urgency", "a sense of urgency"],
+    translations: [
+      "PANIC but make it sound professional",
+      "we're behind schedule and it's everyone's fault",
+      "move faster even though we gave you no resources",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "on my radar",
+    variations: ["on the radar", "it's on my radar", "not on my radar"],
+    translations: [
+      "I'm aware it exists but doing nothing about it",
+      "I see the problem and am choosing to ignore it for now",
+      "acknowledged but deprioritized to oblivion",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "devil's advocate",
+    variations: ["play devil's advocate", "to play devil's advocate", "playing devil's advocate"],
+    translations: [
+      "I disagree but I'm blaming it on a hypothetical person",
+      "let me argue against you while pretending it's not personal",
+      "about to say something annoying but it's for 'debate'",
+    ],
+    category: "meeting",
+  },
+  {
+    phrase: "due diligence",
+    variations: ["do our due diligence", "proper due diligence"],
+    translations: [
+      "actually research this before we blow money on it",
+      "the homework nobody wants to do but has to",
+      "checking the receipts before committing",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "boots on the ground",
+    variations: ["ground level", "ground-level view", "on the ground"],
+    translations: [
+      "the people actually doing the work while leadership theorizes",
+      "real humans dealing with real problems (not in the boardroom)",
+      "military metaphor for 'the interns are handling it'",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "forcing function",
+    variations: ["use it as a forcing function", "acts as a forcing function"],
+    translations: [
+      "artificial deadline to make people actually do stuff",
+      "manufactured pressure because normal motivation failed",
+      "a fancy way to say 'deadline that forces your hand'",
+    ],
+    category: "management",
+  },
+
+  // ── General & Tech (expansion) ────────────────────────────
+  {
+    phrase: "learnings",
+    variations: ["key learnings", "our learnings", "major learnings"],
+    translations: [
+      "things we learned (but 'learnings' isn't even a real word)",
+      "mistakes rebranded as wisdom",
+      "what we figured out after everything went wrong",
+    ],
+    category: "general",
+  },
+  {
+    phrase: "at capacity",
+    variations: ["at full capacity", "my plate is full", "stretched thin"],
+    translations: [
+      "I literally cannot take on one more thing",
+      "one more task and I'm quitting",
+      "drowning but making it sound like a resource allocation issue",
+    ],
+    category: "general",
+  },
+  {
+    phrase: "double down",
+    variations: ["doubling down", "doubled down on"],
+    translations: [
+      "doing MORE of the thing that may or may not be working",
+      "refusing to change course out of stubbornness",
+      "commitment, but make it sound like a casino strategy",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "full circle",
+    variations: ["come full circle", "we've come full circle"],
+    translations: [
+      "we ended up where we started after wasting everyone's time",
+      "the scenic route back to square one",
+      "congratulations, nothing has changed",
+    ],
+    category: "general",
+  },
+  {
+    phrase: "back to basics",
+    variations: ["getting back to basics", "go back to basics"],
+    translations: [
+      "the fancy stuff failed so we're starting over",
+      "turns out the simple approach was right all along",
+      "pretending simplicity was the plan the whole time",
+    ],
+    category: "general",
+  },
+  {
+    phrase: "flesh out",
+    variations: ["flesh this out", "fleshing out", "needs fleshing out"],
+    translations: [
+      "this idea is half-baked, add more substance",
+      "your proposal is a skeleton and it needs a body",
+      "you wrote a bullet point and called it a plan",
+    ],
+    category: "meeting",
+  },
+  {
+    phrase: "bake it in",
+    variations: ["baked in", "bake this into", "baked into"],
+    translations: [
+      "include it from the start instead of bolting it on later",
+      "make it part of the recipe, not a garnish",
+      "add it properly instead of duct-taping it on",
+    ],
+    category: "tech",
+  },
+  {
+    phrase: "give some color",
+    variations: ["give us some color", "can you give color on", "add some color"],
+    translations: [
+      "explain this better because your explanation was beige",
+      "make this less boring and more detailed",
+      "your update was dry, spice it up with actual information",
+    ],
+    category: "meeting",
+  },
+  {
+    phrase: "cascade",
+    variations: ["cascade this down", "cascading information", "cascade to the team"],
+    translations: [
+      "pass the message down the chain like corporate telephone",
+      "tell everyone below you what the bosses decided",
+      "information waterfall that gets more distorted at every level",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "level up",
+    variations: ["leveling up", "level-up", "level up our game"],
+    translations: [
+      "get better at stuff (like a video game but less fun)",
+      "improve, but gamified to sound exciting",
+      "do more work but call it personal growth",
+    ],
+    category: "general",
+  },
+  {
+    phrase: "mission critical",
+    variations: ["mission-critical", "business critical", "business-critical"],
+    translations: [
+      "if this breaks, we're ALL in trouble",
+      "important enough that someone will get fired if it fails",
+      "the thing keeping the lights on (literally or figuratively)",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "value proposition",
+    variations: ["value prop", "our value proposition", "unique value proposition"],
+    translations: [
+      "why anyone should care about what we're selling",
+      "the elevator pitch that took 47 meetings to write",
+      "our reason to exist, condensed into marketing jargon",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "core competency",
+    variations: ["core competencies", "key competencies", "core capabilities"],
+    translations: [
+      "the one thing we're actually good at",
+      "our specialty (everything else is held together with tape)",
+      "what we put on the slide when investors ask what we do",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "proactive",
+    variations: ["proactively", "being proactive", "take a proactive approach"],
+    translations: [
+      "do stuff before it becomes an emergency (novel concept)",
+      "the opposite of what we usually do",
+      "acting before the fire starts instead of after (for once)",
+    ],
+    category: "general",
+  },
+  {
+    phrase: "accountability",
+    variations: ["hold accountable", "accountability partner", "personal accountability"],
+    translations: [
+      "whose fault is it (but said professionally)",
+      "making sure someone specific gets blamed if this fails",
+      "responsibility, but with more corporate weight behind it",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "dropped the ball",
+    variations: ["dropping the ball", "don't drop the ball"],
+    translations: [
+      "someone messed up and everyone knows it",
+      "the task fell through the cracks (aka nobody did it)",
+      "fumbled the responsibility, now it's a whole thing",
+    ],
+    category: "general",
+  },
+  {
+    phrase: "big picture",
+    variations: ["the big picture", "big-picture thinking", "see the big picture"],
+    translations: [
+      "zoom out and ignore the details that are on fire",
+      "strategic overview that conveniently skips the problems",
+      "let's talk about vibes instead of specifics",
+    ],
+    category: "management",
+  },
+  {
+    phrase: "open door policy",
+    variations: ["my door is always open", "we have an open door policy"],
+    translations: [
+      "the door is open but nobody's actually welcome",
+      "technically you can come in, but you'll regret it",
+      "corporate illusion of approachability",
+    ],
+    category: "hr",
+  },
+  {
+    phrase: "net positive",
+    variations: ["net positive impact", "overall net positive"],
+    translations: [
+      "the good slightly outweighs the bad (we think)",
+      "it's fine if you squint and ignore the downsides",
+      "positive after subtracting all the stuff that went wrong",
+    ],
+    category: "general",
+  },
+  {
+    phrase: "tiger team",
+    variations: ["assemble a tiger team", "put a tiger team on this"],
+    translations: [
+      "an elite squad of people pulled from other work to fix this mess",
+      "the Avengers but for corporate emergencies",
+      "a cool name for 'everyone drop everything and save us'",
+    ],
+    category: "management",
+  },
+
+  // ── HR (expansion) ────────────────────────────────────────
+  {
+    phrase: "stretch role",
+    variations: ["stretch assignment", "stretch opportunity", "stretch goal"],
+    translations: [
+      "a job that's way above your pay grade but they won't promote you",
+      "extra challenge with no extra compensation",
+      "'growth opportunity' that's actually just more stress",
+    ],
+    category: "hr",
+  },
+  {
+    phrase: "bench strength",
+    variations: ["leadership bench", "building bench strength"],
+    translations: [
+      "backup people in case the main people quit",
+      "the corporate equivalent of having substitutes ready",
+      "how deep is our talent pool (spoiler: not very)",
+    ],
+    category: "hr",
+  },
+  {
+    phrase: "psychological safety",
+    variations: ["psychologically safe environment", "safe space to share"],
+    translations: [
+      "you can speak up without getting fired (allegedly)",
+      "it's safe to disagree (results may vary)",
+      "HR buzzword for 'please don't sue us for hostile work environment'",
+    ],
+    category: "hr",
+  },
+  {
+    phrase: "culture add",
+    variations: ["culture contribution", "adding to our culture"],
+    translations: [
+      "you bring something different (we realized 'culture fit' was problematic)",
+      "the rebrand of 'culture fit' after the DEI training",
+      "you're not like us and that's apparently good now",
+    ],
+    category: "hr",
+  },
+  {
+    phrase: "golden parachute",
+    variations: ["executive severance", "separation package"],
+    translations: [
+      "getting paid millions to leave after messing everything up",
+      "failing upward with a fat check on the way out",
+      "the ultimate 'it's not you, it's us' but with a pile of cash",
+    ],
+    category: "hr",
   },
 ];
