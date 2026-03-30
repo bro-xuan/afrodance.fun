@@ -9,7 +9,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   // ── Meeting jargon ──────────────────────────────────────
   {
     phrase: "let's circle back",
-    variations: ["circle back", "circling back", "circled back"],
+    variations: ["let's circle back on", "lets circle back"],
     translations: [
       "let's talk about this later (or never)",
       "I'm done thinking about this rn",
@@ -18,8 +18,18 @@ export const corporateDictionary: CorporatePhrase[] = [
     category: "meeting",
   },
   {
+    phrase: "circle back",
+    variations: ["circling back", "circled back"],
+    translations: [
+      "revisit this",
+      "come back to this",
+      "bring this up again",
+    ],
+    category: "meeting",
+  },
+  {
     phrase: "let's take this offline",
-    variations: ["take this offline", "taking this offline", "take it offline"],
+    variations: ["lets take this offline"],
     translations: [
       "this is getting awkward, let's argue privately",
       "I don't want witnesses for this conversation",
@@ -28,8 +38,18 @@ export const corporateDictionary: CorporatePhrase[] = [
     category: "meeting",
   },
   {
+    phrase: "take this offline",
+    variations: ["taking this offline", "take it offline"],
+    translations: [
+      "argue about this privately instead",
+      "have this fight with no witnesses",
+      "stop airing this in front of everyone",
+    ],
+    category: "meeting",
+  },
+  {
     phrase: "let's align",
-    variations: ["align on this", "aligned on", "get aligned", "alignment"],
+    variations: ["lets align"],
     translations: [
       "let's all pretend to agree",
       "everyone shut up and do what I say",
@@ -38,8 +58,38 @@ export const corporateDictionary: CorporatePhrase[] = [
     category: "meeting",
   },
   {
+    phrase: "align on",
+    variations: ["aligned on", "get aligned"],
+    translations: [
+      "pretend to agree on",
+      "fake-agree on",
+      "have a meeting about having a meeting about",
+    ],
+    category: "meeting",
+  },
+  {
+    phrase: "alignment",
+    variations: [],
+    translations: [
+      "fake agreement",
+      "forced consensus",
+      "a meeting about having a meeting",
+    ],
+    category: "meeting",
+  },
+  {
     phrase: "deep dive",
-    variations: ["deep-dive", "do a deep dive", "take a deep dive"],
+    variations: ["deep-dive"],
+    translations: [
+      "painfully thorough analysis",
+      "overanalysis of something simple",
+      "actual look at the details for once",
+    ],
+    category: "meeting",
+  },
+  {
+    phrase: "do a deep dive",
+    variations: ["take a deep dive"],
     translations: [
       "actually look at this for once",
       "spend way too long on something simple",
@@ -49,7 +99,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "touch base",
-    variations: ["touching base", "touched base", "let's touch base"],
+    variations: ["let's touch base"],
     translations: [
       "hit you up",
       "bother you about this again",
@@ -58,8 +108,8 @@ export const corporateDictionary: CorporatePhrase[] = [
     category: "meeting",
   },
   {
-    phrase: "hard stop",
-    variations: ["have a hard stop", "i have a hard stop"],
+    phrase: "i have a hard stop",
+    variations: ["I have a hard stop"],
     translations: [
       "I'm leaving this meeting whether you're done or not",
       "I literally cannot take any more of this",
@@ -68,12 +118,22 @@ export const corporateDictionary: CorporatePhrase[] = [
     category: "meeting",
   },
   {
-    phrase: "parking lot",
-    variations: ["let's parking lot this", "parking lot that", "put it in the parking lot"],
+    phrase: "hard stop",
+    variations: ["have a hard stop"],
     translations: [
-      "we're never talking about this again",
-      "that idea just died, rest in peace",
-      "congratulations, your idea has been sent to the shadow realm",
+      "non-negotiable exit time",
+      "the absolute latest anyone can take this",
+      "an escape hatch from this meeting",
+    ],
+    category: "meeting",
+  },
+  {
+    phrase: "parking lot",
+    variations: ["let's parking lot this", "parking lot that"],
+    translations: [
+      "the idea graveyard",
+      "the shadow realm for unwanted ideas",
+      "the place good ideas go to die",
     ],
     category: "meeting",
   },
@@ -89,31 +149,41 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "put a pin in it",
-    variations: ["let's put a pin in it", "putting a pin in"],
+    variations: ["let's put a pin in it", "put a pin in this"],
     translations: [
-      "we're burying this forever and you know it",
-      "this idea is going to the graveyard",
-      "your suggestion has been noted and will be ignored",
+      "bury this forever",
+      "send this idea to the graveyard",
+      "note this and never look at it again",
+    ],
+    category: "meeting",
+  },
+  {
+    phrase: "don't have the bandwidth",
+    variations: ["don't have bandwidth"],
+    translations: [
+      "am too busy (or just don't want to)",
+      "absolutely cannot take this on",
+      "have a full plate and am not sharing",
     ],
     category: "meeting",
   },
   {
     phrase: "bandwidth",
-    variations: ["don't have the bandwidth", "limited bandwidth", "no bandwidth"],
+    variations: ["limited bandwidth", "no bandwidth"],
     translations: [
-      "I'm too busy (or just don't want to)",
-      "absolutely not, I'm swamped",
-      "my plate is full and I'm not sharing",
+      "time or energy (nonexistent)",
+      "capacity (lol)",
+      "free time (a myth)",
     ],
     category: "meeting",
   },
   {
     phrase: "synergy",
-    variations: ["synergies", "synergize", "synergistic"],
+    variations: ["synergies"],
     translations: [
-      "literally just teamwork",
-      "working together (revolutionary concept, I know)",
-      "vibing together professionally or whatever",
+      "teamwork (just say teamwork)",
+      "collaboration (revolutionary concept, I know)",
+      "people working together, basically",
     ],
     category: "meeting",
   },
@@ -129,11 +199,11 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "boil the ocean",
-    variations: ["boiling the ocean", "don't boil the ocean"],
+    variations: ["boiling the ocean"],
     translations: [
-      "doing way too much for no reason",
-      "overcomplicating something that should be simple",
-      "calm down, it's not that deep",
+      "do way too much for no reason",
+      "overcomplicate something simple",
+      "make this harder than it needs to be",
     ],
     category: "meeting",
   },
@@ -149,11 +219,11 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "quick sync",
-    variations: ["let's do a quick sync", "quick check-in", "quick huddle"],
+    variations: ["quick check-in", "quick huddle"],
     translations: [
-      "a 45-minute meeting disguised as 5 minutes",
-      "this will NOT be quick, bring snacks",
-      "prepare to lose an hour of your life",
+      "45-minute meeting disguised as 5 minutes",
+      "definitely NOT quick meeting, bring snacks",
+      "an hour of your life you won't get back",
     ],
     category: "meeting",
   },
@@ -169,11 +239,11 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "close the loop",
-    variations: ["closing the loop", "closed the loop"],
+    variations: [],
     translations: [
-      "finish this already, I'm begging",
-      "can we PLEASE just be done with this",
-      "wrap it up, this has been going on forever",
+      "finish this already",
+      "finally end this",
+      "wrap this up for good",
     ],
     category: "meeting",
   },
@@ -182,18 +252,18 @@ export const corporateDictionary: CorporatePhrase[] = [
     variations: ["let's unpack", "unpack that"],
     translations: [
       "explain this mess",
-      "what does this even mean, please elaborate",
+      "figure out what this even means",
       "break it down because nobody understood that",
     ],
     category: "meeting",
   },
   {
     phrase: "table this",
-    variations: ["let's table this", "tabling this"],
+    variations: ["let's table this"],
     translations: [
-      "this conversation is dead, moving on",
-      "we're done here, bye",
-      "your idea has been yeeted into the void",
+      "kill this conversation",
+      "end this discussion forever",
+      "yeet this idea into the void",
     ],
     category: "meeting",
   },
@@ -209,31 +279,31 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "open the kimono",
-    variations: ["opening the kimono"],
+    variations: [],
     translations: [
       "overshare company secrets (and yes this phrase is weird)",
       "show you things you probably didn't need to see",
-      "TMI incoming, brace yourself",
+      "TMI all over this meeting",
     ],
     category: "meeting",
   },
   {
     phrase: "double-click",
-    variations: ["double click on this", "let's double-click"],
+    variations: ["double click on this", "double click on"],
     translations: [
       "zoom in because someone wasn't paying attention",
-      "let's overanalyze this one specific thing",
+      "overanalyze this one specific thing",
       "dig into the details that should've been clear already",
     ],
     category: "meeting",
   },
   {
     phrase: "drill down",
-    variations: ["drilling down", "let's drill down"],
+    variations: ["let's drill down"],
     translations: [
       "look at the boring details nobody wants to see",
-      "time to stare at spreadsheets",
-      "prepare for an uncomfortably detailed discussion",
+      "stare at spreadsheets",
+      "get into an uncomfortably detailed discussion",
     ],
     category: "meeting",
   },
@@ -249,7 +319,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "take a step back",
-    variations: ["let's take a step back", "stepping back"],
+    variations: ["let's take a step back"],
     translations: [
       "everyone's lost, let me start over",
       "this went off the rails, reset time",
@@ -281,7 +351,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "just following up",
-    variations: ["following up on", "i'm just following up", "wanted to follow up"],
+    variations: ["following up on", "i'm just following up"],
     translations: [
       "why haven't you answered me",
       "answer me. I'm waiting.",
@@ -321,11 +391,21 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "looping you in",
-    variations: ["loop you in", "looping in", "I'm looping you in"],
+    variations: ["I'm looping you in"],
     translations: [
-      "you're now part of this mess, congrats",
-      "dragging you into drama that isn't yours",
-      "surprise! you're involved now, good luck",
+      "dragging you into this mess",
+      "making you part of this drama",
+      "involving you whether you like it or not",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "loop you in",
+    variations: ["looping in"],
+    translations: [
+      "drag you into this mess",
+      "make you part of this drama",
+      "involve you whether you like it or not",
     ],
     category: "email",
   },
@@ -421,7 +501,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "going forward",
-    variations: ["moving forward", "from now on"],
+    variations: ["from now on"],
     translations: [
       "someone messed up so here's the new rule",
       "we're changing things because y'all can't be trusted",
@@ -481,7 +561,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "I wanted to flag",
-    variations: ["flagging this", "just wanted to flag"],
+    variations: ["just wanted to flag"],
     translations: [
       "something's wrong and I want it on record that I noticed",
       "heads up, this is gonna be a problem",
@@ -503,7 +583,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   // ── Management speak ────────────────────────────────────
   {
     phrase: "move the needle",
-    variations: ["moving the needle", "moves the needle"],
+    variations: ["moving the needle"],
     translations: [
       "actually accomplish something for once",
       "make a difference that anyone can see",
@@ -523,21 +603,21 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "leverage",
-    variations: ["leveraging", "leveraged"],
+    variations: [],
     translations: [
       "use (just say use)",
-      "exploit something to our advantage",
-      "squeeze every last drop out of this",
+      "exploit",
+      "milk for all it's worth",
     ],
     category: "management",
   },
   {
     phrase: "pivot",
-    variations: ["pivoting", "pivoted"],
+    variations: [],
     translations: [
-      "our original plan failed so we're doing something else",
-      "plot twist, we're changing everything",
-      "panic-switching directions and calling it strategy",
+      "panic-switch directions",
+      "abandon the plan and call it strategy",
+      "change everything and pretend it was the plan",
     ],
     category: "management",
   },
@@ -593,17 +673,17 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "empower",
-    variations: ["empowered", "empowering", "empowerment"],
+    variations: [],
     translations: [
-      "give you more work but make it sound inspiring",
-      "you're on your own now, good luck",
-      "here's responsibility without a raise",
+      "give extra work disguised as inspiration to",
+      "abandon and call it independence for",
+      "hand responsibility without a raise to",
     ],
     category: "management",
   },
   {
     phrase: "rightsizing",
-    variations: ["rightsize", "rightsized"],
+    variations: [],
     translations: [
       "mass layoffs but make it sound strategic",
       "people are getting fired, period",
@@ -613,7 +693,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "downsizing",
-    variations: ["downsize", "downsized"],
+    variations: [],
     translations: [
       "layoffs. just say layoffs.",
       "people are losing their jobs",
@@ -623,7 +703,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "restructuring",
-    variations: ["restructure", "organizational restructuring"],
+    variations: ["organizational restructuring"],
     translations: [
       "musical chairs but with people's livelihoods",
       "everything's changing and nobody's safe",
@@ -643,7 +723,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "run it up the flagpole",
-    variations: ["running it up the flagpole"],
+    variations: [],
     translations: [
       "ask the boss and pray they don't hate it",
       "let someone more important decide",
@@ -653,11 +733,11 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "move the goalposts",
-    variations: ["moving the goalposts"],
+    variations: [],
     translations: [
-      "change the rules mid-game because they're losing",
-      "the target keeps changing and it's not fair",
-      "they keep changing what 'success' means",
+      "change the rules mid-game",
+      "shift the target constantly",
+      "redefine 'success' whenever it suits them",
     ],
     category: "management",
   },
@@ -765,11 +845,11 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "wear many hats",
-    variations: ["wearing many hats"],
+    variations: [],
     translations: [
       "do five people's jobs for one person's salary",
-      "we're understaffed and calling it 'versatility'",
-      "you're everything: developer, designer, therapist, janitor",
+      "be understaffed but call it 'versatility'",
+      "be developer, designer, therapist, and janitor all at once",
     ],
     category: "hr",
   },
@@ -905,7 +985,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "let's discuss your career trajectory",
-    variations: ["career trajectory", "career path", "career growth"],
+    variations: ["lets discuss your career trajectory"],
     translations: [
       "there's no promotion coming, just so you know",
       "we'll talk about your future but change nothing",
@@ -947,7 +1027,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "think outside the box",
-    variations: ["thinking outside the box"],
+    variations: [],
     translations: [
       "be creative (but not too creative, we have a budget)",
       "come up with something different but also safe",
@@ -957,7 +1037,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "paradigm shift",
-    variations: ["paradigm-shifting"],
+    variations: [],
     translations: [
       "everything you knew is wrong now",
       "a fancy way to say 'big change'",
@@ -967,7 +1047,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "game changer",
-    variations: ["game-changer", "game changing"],
+    variations: ["game-changer"],
     translations: [
       "it's not actually that revolutionary but okay",
       "slightly better than before, honestly",
@@ -977,11 +1057,11 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "scalable",
-    variations: ["scalable solution", "scalability"],
+    variations: ["scalable solution"],
     translations: [
-      "it'll work if we somehow get bigger",
-      "future-proof (narrator: it was not future-proof)",
-      "can handle more stuff theoretically",
+      "theoretically expandable",
+      "future-proof (narrator: it was not)",
+      "supposedly able to handle more stuff",
     ],
     category: "general",
   },
@@ -989,27 +1069,27 @@ export const corporateDictionary: CorporatePhrase[] = [
     phrase: "robust",
     variations: ["robust solution", "robust framework"],
     translations: [
-      "strong? sturdy? just say strong.",
-      "we built it good (allegedly)",
-      "it works and we're weirdly proud about it",
+      "strong (just say strong)",
+      "allegedly sturdy",
+      "weirdly over-engineered",
     ],
     category: "general",
   },
   {
     phrase: "optimize",
-    variations: ["optimizing", "optimized", "optimization"],
+    variations: [],
     translations: [
-      "make it less terrible",
-      "fix the thing that should've worked in the first place",
-      "improve it (groundbreaking, I know)",
+      "make less terrible",
+      "fix what should've worked already",
+      "improve (groundbreaking, I know)",
     ],
     category: "general",
   },
   {
     phrase: "streamline",
-    variations: ["streamlining", "streamlined"],
+    variations: [],
     translations: [
-      "make it less annoying to deal with",
+      "make less annoying to deal with",
       "remove the unnecessary stuff we added in the first place",
       "simplify (who would've thought)",
     ],
@@ -1017,27 +1097,27 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "utilize",
-    variations: ["utilizing"],
+    variations: [],
     translations: [
-      "USE. the word is USE.",
-      "just say 'use' challenge: impossible",
-      "'use' but make it fancy for no reason",
+      "use (just say use)",
+      "use but fancier for no reason",
+      "use (it's the same word but longer)",
     ],
     category: "general",
   },
   {
     phrase: "incentivize",
-    variations: ["incentivized", "incentivizing"],
+    variations: [],
     translations: [
-      "bribe people to work harder",
-      "dangle a carrot and hope for the best",
-      "motivate through rewards (or threats)",
+      "bribe",
+      "dangle a carrot in front of",
+      "motivate with rewards (or threats)",
     ],
     category: "general",
   },
   {
     phrase: "reach out",
-    variations: ["reaching out", "reached out"],
+    variations: [],
     translations: [
       "slide into their DMs",
       "hit them up",
@@ -1077,7 +1157,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "give 110%",
-    variations: ["110%", "give it 110 percent", "110 percent"],
+    variations: ["give it 110 percent", "give it 110%"],
     translations: [
       "burn yourself out for the company",
       "work more than humanly possible",
@@ -1087,7 +1167,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "lean in",
-    variations: ["leaning in"],
+    variations: [],
     translations: [
       "try harder (but like, inspirationally)",
       "push yourself beyond your limits and call it empowerment",
@@ -1139,9 +1219,9 @@ export const corporateDictionary: CorporatePhrase[] = [
     phrase: "take ownership",
     variations: ["take full ownership", "own this"],
     translations: [
-      "it's your problem now, don't come crying to me",
-      "you're responsible and if it fails it's on you",
-      "here's the blame, I mean responsibility",
+      "deal with this yourself",
+      "take the blame if it fails",
+      "accept responsibility without the resources to succeed",
     ],
     category: "general",
   },
@@ -1167,17 +1247,17 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "hit the ground running",
-    variations: ["hitting the ground running"],
+    variations: [],
     translations: [
       "start working immediately, no training, no mercy",
-      "no time to learn, just figure it out",
-      "sink or swim energy",
+      "figure it out with zero onboarding",
+      "sink or swim from day one",
     ],
     category: "general",
   },
   {
     phrase: "let's not reinvent the wheel",
-    variations: ["reinvent the wheel", "reinventing the wheel"],
+    variations: ["don't reinvent the wheel"],
     translations: [
       "just copy what already works",
       "don't overcomplicate it, we literally have a template",
@@ -1207,11 +1287,11 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "move the goalpost",
-    variations: ["moving the goalpost", "moved the goalpost"],
+    variations: [],
     translations: [
-      "changed the rules because they were losing",
-      "the target keeps shifting and it's not fair",
-      "corporate gaslighting about what 'done' means",
+      "change the rules because they're losing",
+      "shift the target unfairly",
+      "gaslight everyone about what 'done' means",
     ],
     category: "general",
   },
@@ -1401,7 +1481,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "we recognise that",
-    variations: ["we recognize that", "we recognise", "we recognize", "we understand that"],
+    variations: ["we recognize that", "we understand that"],
     translations: [
       "we know you're mad",
       "we heard the complaints loud and clear",
@@ -1411,11 +1491,11 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "we appreciate",
-    variations: ["we truly appreciate", "we really appreciate", "thank you to everyone who"],
+    variations: ["we truly appreciate", "we really appreciate"],
     translations: [
-      "thanks for not rioting (yet)",
-      "we appreciate the vibes even though nothing's changing",
-      "we value your complaints, truly (not really)",
+      "we noticed but won't change anything about",
+      "we acknowledge without doing anything about",
+      "we pretend to care about",
     ],
     category: "email",
   },
@@ -1431,7 +1511,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "share their perspectives",
-    variations: ["share your perspectives", "share your feedback", "shared their perspectives", "share their feedback"],
+    variations: ["shared their perspectives", "share their feedback"],
     translations: [
       "complained (and we heard you)",
       "told us exactly how they feel about this mess",
@@ -1481,11 +1561,11 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "we value",
-    variations: ["we value your", "we truly value"],
+    variations: ["we truly value"],
     translations: [
       "we claim to care about",
-      "standard corporate appreciation that means nothing",
-      "we appreciate this in theory, not in budget",
+      "we pretend to appreciate",
+      "we value in theory but not in budget",
     ],
     category: "email",
   },
@@ -1561,7 +1641,17 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "do not hesitate to",
-    variations: ["don't hesitate to", "please do not hesitate", "please don't hesitate"],
+    variations: ["don't hesitate to"],
+    translations: [
+      "definitely think twice before you",
+      "feel free (but actually don't) to",
+      "please hesitate before you",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "please do not hesitate",
+    variations: ["please don't hesitate"],
     translations: [
       "please actually hesitate, I'm busy",
       "this is an invitation you're not supposed to accept",
@@ -1581,7 +1671,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "we remain committed",
-    variations: ["we are committed to", "remain committed to", "our commitment to", "committed to"],
+    variations: ["we are committed to", "remain committed to", "our commitment to"],
     translations: [
       "we'll keep saying this without actually changing anything",
       "corporate promise that costs nothing to make",
@@ -1604,8 +1694,8 @@ export const corporateDictionary: CorporatePhrase[] = [
     variations: ["in our effort to", "in efforts to"],
     translations: [
       "we're trying to",
-      "our attempt at",
-      "because we need to look like we're doing something",
+      "our attempt to",
+      "because we need to look like we're doing something to",
     ],
     category: "email",
   },
@@ -1793,9 +1883,9 @@ export const corporateDictionary: CorporatePhrase[] = [
     phrase: "we would also like to",
     variations: ["we would like to", "we'd like to", "we'd also like to"],
     translations: [
-      "oh and one more thing (there's always one more thing)",
-      "bonus corporate content incoming",
-      "we're not done yet, buckle up",
+      "oh and one more thing: we want to",
+      "because we're not done yet, we also want to",
+      "bonus: we'd also like to",
     ],
     category: "email",
   },
@@ -1824,28 +1914,28 @@ export const corporateDictionary: CorporatePhrase[] = [
     variations: ["in order to support", "designed to support"],
     translations: [
       "to help (5 syllables shorter)",
-      "so that this thing actually works",
-      "an attempt to make things better",
+      "to actually make work",
+      "to try to make less broken",
     ],
     category: "general",
   },
   {
     phrase: "to foster",
-    variations: ["fostering", "fostered"],
+    variations: [],
     translations: [
       "to encourage (but make it corporate)",
       "to grow something through sheer corporate willpower",
-      "cultivating vibes, professionally",
+      "to cultivate vibes, professionally",
     ],
     category: "general",
   },
   {
     phrase: "to facilitate",
-    variations: ["facilitating", "facilitated"],
+    variations: [],
     translations: [
       "to make happen (just say that)",
       "to organize something that should've organized itself",
-      "corporate speak for 'helping'",
+      "to help with (it's just 'helping')",
     ],
     category: "general",
   },
@@ -1901,7 +1991,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "we encourage",
-    variations: ["we encourage you to", "you are encouraged to"],
+    variations: ["we encourage you to"],
     translations: [
       "we're strongly suggesting but pretending it's optional",
       "do this or face silent judgment",
@@ -1921,7 +2011,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "I wanted to provide",
-    variations: ["we wanted to provide", "I'd like to provide", "wanted to share"],
+    variations: ["we wanted to provide", "I'd like to provide"],
     translations: [
       "here's info you didn't ask for but need anyway",
       "incoming wall of text you'll skim at best",
@@ -2203,7 +2293,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   // ── Polite corporate email language ───────────────────────
   {
     phrase: "just wanted to check in",
-    variations: ["checking in", "just checking in on this", "checking in on this", "just wanted to check", "wanted to check"],
+    variations: ["checking in", "just checking in on this", "checking in on this"],
     translations: [
       "why haven't you responded to me yet",
       "polite stalking via email",
@@ -2216,8 +2306,8 @@ export const corporateDictionary: CorporatePhrase[] = [
     variations: ["hope you're doing well", "hope you're well", "trust you are well", "I hope you are well", "hope you are well"],
     translations: [
       "I don't actually care, here's what I need",
-      "mandatory opening line before the real request",
-      "pleasantry #47 of the day, now let's get to business",
+      "I don't care how you are, here's my ask",
+      "skip the small talk, here's what I want",
     ],
     category: "email",
   },
@@ -2335,7 +2425,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   // ── Passive-aggressive corporate phrases ──────────────────
   {
     phrase: "I'm a little confused",
-    variations: ["I'm slightly confused by", "I'm having trouble understanding"],
+    variations: [],
     translations: [
       "this makes zero sense and I'm being polite about it",
       "what you said is wrong and I'm letting you figure that out",
@@ -2375,7 +2465,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "I'm a bit concerned",
-    variations: ["I have some concerns about", "this gives me pause", "I have concerns"],
+    variations: ["this gives me pause", "I have concerns"],
     translations: [
       "this is bad and I'm being diplomatic about it",
       "red flags everywhere but I'll say it nicely",
@@ -2467,9 +2557,9 @@ export const corporateDictionary: CorporatePhrase[] = [
     phrase: "I was surprised to see",
     variations: ["I was a bit disappointed that", "it was unfortunate that"],
     translations: [
-      "I'm mad about this but keeping it professional",
-      "someone messed up and I'm being diplomatic",
-      "this was NOT what I expected and I'm not happy",
+      "I'm not happy about",
+      "someone messed up with",
+      "I was NOT expecting",
     ],
     category: "email",
   },
@@ -3534,8 +3624,8 @@ export const corporateDictionary: CorporatePhrase[] = [
     variations: ["thanks so much", "thanks ever so much"],
     translations: [
       "bye (but make it sound grateful)",
-      "corporate sign-off #12 that means absolutely nothing",
-      "I'm wrapping up this email and being fake warm about it",
+      "thanks (means nothing)",
+      "fake-warm sign-off energy",
     ],
     category: "email",
   },
@@ -3543,7 +3633,7 @@ export const corporateDictionary: CorporatePhrase[] = [
     phrase: "please let me know",
     variations: ["do let me know", "let me know if you need anything", "let me know if you have any questions"],
     translations: [
-      "please don't actually let me know, I'm busy",
+      "don't actually let me know, I'm busy",
       "this is my email exit strategy",
       "I'm offering help I hope you won't need",
     ],
@@ -3603,9 +3693,9 @@ export const corporateDictionary: CorporatePhrase[] = [
     phrase: "would it be possible",
     variations: ["is it possible to", "would you be able to", "might it be possible"],
     translations: [
-      "do this thing I'm pretending is optional",
-      "I'm asking nicely but it's not really a question",
-      "please say yes, I've already told my boss you would",
+      "can you just do this thing, because",
+      "I'm pretending this is optional, but can you",
+      "my boss thinks you already agreed, so can you",
     ],
     category: "email",
   },
@@ -3631,11 +3721,11 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "I just wanted to",
-    variations: ["just wanted to", "I just wanted to quickly"],
+    variations: ["I just wanted to quickly"],
     translations: [
-      "here comes a request disguised as something casual",
-      "downplaying what's actually a big ask",
-      "softening the blow of what I'm about to dump on you",
+      "I'm casually about to",
+      "I'm subtly going to",
+      "I'm softly requesting to",
     ],
     category: "email",
   },
@@ -3681,7 +3771,17 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "time-sensitive",
-    variations: ["this is time-sensitive", "time-critical", "urgent matter"],
+    variations: ["time-critical"],
+    translations: [
+      "actually urgent unlike most 'urgent' things",
+      "last-minute because someone procrastinated",
+      "panic-inducingly overdue",
+    ],
+    category: "email",
+  },
+  {
+    phrase: "this is time-sensitive",
+    variations: ["urgent matter"],
     translations: [
       "DROP EVERYTHING AND DO THIS NOW",
       "someone procrastinated and now it's everyone's emergency",
@@ -3863,11 +3963,11 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "seamless",
-    variations: ["seamlessly", "seamless integration", "seamless experience"],
+    variations: ["seamless integration", "seamless experience"],
     translations: [
-      "it definitely won't be seamless but we're promising it anyway",
-      "smooth (but calling it 'smooth' isn't fancy enough)",
-      "marketing's favorite word for 'it should work, maybe'",
+      "allegedly smooth",
+      "supposedly frictionless",
+      "smooth (according to marketing)",
     ],
     category: "general",
   },
@@ -3875,9 +3975,9 @@ export const corporateDictionary: CorporatePhrase[] = [
     phrase: "world-class",
     variations: ["world class", "truly world-class"],
     translations: [
-      "average, but we're hyping it up",
-      "definitely not world-class but the deck needs a buzzword",
-      "the corporate equivalent of giving yourself a trophy",
+      "average but hyped-up",
+      "self-proclaimed excellent",
+      "supposedly the best",
     ],
     category: "general",
   },
@@ -3885,25 +3985,25 @@ export const corporateDictionary: CorporatePhrase[] = [
     phrase: "best-in-class",
     variations: ["best in class", "class-leading", "industry-leading"],
     translations: [
-      "we googled the competition and think we're better",
-      "self-awarded superlative with zero evidence",
-      "marketing speak for 'we exist in this market'",
+      "self-proclaimed best",
+      "allegedly superior",
+      "supposedly market-leading",
     ],
     category: "general",
   },
   {
     phrase: "state of the art",
-    variations: ["state-of-the-art"],
+    variations: [],
     translations: [
       "new-ish, probably outdated by next quarter",
-      "fancy tech that'll be legacy code in 2 years",
+      "fancy but temporary",
       "the most modern thing we could afford",
     ],
     category: "tech",
   },
   {
     phrase: "holistic",
-    variations: ["holistic approach", "holistic view", "holistic solution", "holistically"],
+    variations: ["holistic approach", "holistic view", "holistic solution"],
     translations: [
       "looking at the whole mess instead of just one part",
       "considering everything (which means deciding nothing)",
@@ -3963,11 +4063,11 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "take ownership",
-    variations: ["take ownership of", "own this", "owning this"],
+    variations: ["take ownership of"],
     translations: [
-      "this is your problem now, congratulations",
+      "deal with this yourself",
       "do the work AND take the blame if it fails",
-      "responsibility without the authority or resources",
+      "accept responsibility without the authority or resources",
     ],
     category: "management",
   },
@@ -4185,7 +4285,7 @@ export const corporateDictionary: CorporatePhrase[] = [
   },
   {
     phrase: "dropped the ball",
-    variations: ["dropping the ball", "don't drop the ball"],
+    variations: [],
     translations: [
       "someone messed up and everyone knows it",
       "the task fell through the cracks (aka nobody did it)",

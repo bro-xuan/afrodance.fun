@@ -93,8 +93,7 @@ export default function CorporateTranslatorPage() {
           <div className="flex flex-col flex-1 gap-2 p-2">
             <textarea
               className="nes-textarea font-body w-full flex-1"
-              style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", lineHeight: "1.5" }}
-              rows={10}
+              style={{ fontFamily: "var(--font-body)", fontSize: "0.875rem", lineHeight: "1.5", minHeight: "240px", resize: "none", overflowY: "auto" }}
               placeholder="Paste your corporate email here and watch the magic happen..."
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
@@ -183,15 +182,16 @@ export default function CorporateTranslatorPage() {
                 </span>
               )}
             </div>
-            <div className="flex justify-end mt-auto">
-              {result && result.matches.length > 0 && (
+            <div className="flex justify-between items-center mt-auto">
+              <span className="font-body text-xs text-gray-500">&nbsp;</span>
+              {result && result.matches.length > 0 ? (
                 <button
                   className="nes-btn is-primary font-pixel text-[10px]"
                   onClick={handleCopy}
                 >
                   {copied ? "Copied!" : "Copy"}
                 </button>
-              )}
+              ) : <span />}
             </div>
           </div>
         </div>
