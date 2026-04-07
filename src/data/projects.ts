@@ -169,4 +169,11 @@ export const projects: Project[] = [
     emoji: "💼",
     color: "success",
   },
+  {
+    title: "NL House Buying Tool",
+    description: "Comprehensive Dutch house-buying decision tool with mortgage, tax, and rent-vs-buy analysis.",
+    url: "/NLHousebuying",
+    emoji: "🏠",
+    color: "primary",
+  },
 ];
