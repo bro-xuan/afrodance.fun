@@ -176,4 +176,11 @@ export const projects: Project[] = [
     emoji: "🏠",
     color: "primary",
   },
+  {
+    title: "ReferReady",
+    description: "Get reference-ready in minutes. Prepare, practice, and nail your professional references.",
+    url: "https://referready.com",
+    emoji: "📋",
+    color: "primary",
+  },
 ];
