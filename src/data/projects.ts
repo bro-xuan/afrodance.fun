@@ -183,4 +183,11 @@ export const projects: Project[] = [
     emoji: "📋",
     color: "primary",
   },
+  {
+    title: "China Migration",
+    description: "Three decades of migration in and out of China, animated as particle flows on a world map. UN DESA data, 1990–2020.",
+    url: "/china-migration",
+    emoji: "🌏",
+    color: "warning",
+  },
 ];

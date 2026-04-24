@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# raw data downloads (re-fetched by scripts/extract-migration.mjs)
+/scripts/data/raw/
+
 # debug
 npm-debug.log*
 yarn-debug.log*

@@ -98,6 +98,14 @@ body::after {
   z-index: 9999;
 }
 
+/* Suppress global retro effects on the editorial migration page. */
+body:has(.china-migration-page)::after {
+  display: none;
+}
+body:has(.china-migration-page) {
+  background: #0e1726;
+}
+
 :root {
   --radius: 0px;
   --background: #faf8f2;
