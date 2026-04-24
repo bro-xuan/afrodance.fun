@@ -35,8 +35,10 @@ export default function ChinaMigrationPage() {
           <span className="tabular-nums">7.7 million</span> new outbound dots and{" "}
           <span className="tabular-nums">1.1 million</span> inbound dots have piled up — warm for
           out, cool for in. The dots settle inside the country the migrants live in; the comet
-          streaks are air traffic between five-year snapshots, not individuals. Press play to watch
-          1990 to 2024 unfold in thirty seconds.
+          streaks are air traffic between five-year snapshots, not individuals.
+        </p>
+        <p className="mt-4 text-sm md:text-base text-[#f5d2a4]/90 italic">
+          Press play below to watch 1990 to 2024 unfold in thirty seconds.
         </p>
       </header>
 

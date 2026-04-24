@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Pause, Play, Rewind } from "lucide-react";
+import { Pause, Play, RotateCcw } from "lucide-react";
 import type { Direction, MigrationData, Particle } from "../types";
 import { CHINA_LAT, CHINA_LNG } from "../types";
 import {
@@ -51,6 +51,9 @@ export function MigrationMap({ data }: Props) {
   const [direction, setDirection] = useState<Direction>("both");
   const [playing, setPlaying] = useState(false);
   const [animYear, setAnimYear] = useState(data.years[0]);
+  // Tracks whether the user has touched the player at all. While false, the
+  // Play button gets a pulsing halo that draws the eye to the primary CTA.
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   // Load TopoJSON once.
   useEffect(() => {
@@ -150,6 +153,27 @@ export function MigrationMap({ data }: Props) {
 
   useEffect(() => { directionRef.current = direction; }, [direction]);
   useEffect(() => { playingRef.current = playing; }, [playing]);
+
+  // Spacebar toggles play/pause from anywhere on the page, the way every
+  // media player on the web behaves. Skipped when the user is focused in a
+  // form control (range slider, button) so we don't double-fire.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.code !== "Space") return;
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON") return;
+      e.preventDefault();
+      setHasInteracted(true);
+      if (dataYearRef.current >= data.years[data.years.length - 1]) {
+        dataYearRef.current = data.years[0];
+        setAnimYear(data.years[0]);
+      }
+      setPlaying((p) => !p);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [data.years]);
 
   // Build pixel-space polygon geometry for every country once topo +
   // projection are ready. Dot pools are derived from these polygons and
@@ -649,21 +673,28 @@ export function MigrationMap({ data }: Props) {
         animYear={animYear}
         playing={playing}
         direction={direction}
+        hasInteracted={hasInteracted}
         onPlayPause={() => {
+          setHasInteracted(true);
           if (animYear >= data.years[data.years.length - 1]) {
             setAnimYear(data.years[0]);
           }
           setPlaying((p) => !p);
         }}
         onRewind={() => {
+          setHasInteracted(true);
           setPlaying(false);
           setAnimYear(data.years[0]);
         }}
         onYearChange={(y) => {
+          setHasInteracted(true);
           setPlaying(false);
           setAnimYear(y);
         }}
-        onDirection={setDirection}
+        onDirection={(d) => {
+          setHasInteracted(true);
+          setDirection(d);
+        }}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -714,64 +745,140 @@ interface ControlsProps {
   animYear: number;
   playing: boolean;
   direction: Direction;
+  hasInteracted: boolean;
   onPlayPause: () => void;
   onRewind: () => void;
   onYearChange: (y: number) => void;
   onDirection: (d: Direction) => void;
 }
 
-function Controls({ years, animYear, playing, direction, onPlayPause, onRewind, onYearChange, onDirection }: ControlsProps) {
+function Controls({
+  years,
+  animYear,
+  playing,
+  direction,
+  hasInteracted,
+  onPlayPause,
+  onRewind,
+  onYearChange,
+  onDirection,
+}: ControlsProps) {
   const min = years[0];
   const max = years[years.length - 1];
+  const atEnd = !playing && animYear >= max;
+  const progressPct = ((Math.min(Math.max(animYear, min), max) - min) / (max - min)) * 100;
+  const showPulse = !hasInteracted && !playing;
+  const playLabel = playing ? "Pause" : atEnd ? "Replay 1990 to 2024" : "Play 1990 to 2024";
+  const PrimaryIcon = playing ? Pause : atEnd ? RotateCcw : Play;
+
   return (
-    <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-6 text-white/85">
-      <div className="flex items-center gap-2">
-        <button
-          onClick={onRewind}
-          aria-label="Rewind"
-          className="grid place-items-center w-9 h-9 rounded-full bg-white/8 hover:bg-white/15 transition"
-        >
-          <Rewind size={16} />
-        </button>
+    <div className="flex flex-col gap-4 text-white/85">
+      {/* Primary row: big Play, scrubber, reset. */}
+      <div className="flex items-center gap-3 md:gap-4">
         <button
           onClick={onPlayPause}
-          aria-label={playing ? "Pause" : "Play"}
-          className="grid place-items-center w-10 h-10 rounded-full bg-white text-[#0e1726] hover:bg-white/90 transition"
+          aria-label={playLabel}
+          title={playLabel + " (space)"}
+          className={`relative grid place-items-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-white text-[#0e1726] hover:bg-white/90 transition shrink-0 ${
+            showPulse ? "cm-play-pulse" : ""
+          }`}
         >
-          {playing ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
+          <PrimaryIcon size={20} className={!playing && !atEnd ? "ml-0.5" : ""} />
+        </button>
+
+        <div className="flex-1 flex flex-col gap-1.5 min-w-0">
+          <input
+            type="range"
+            min={min}
+            max={max}
+            step={1}
+            value={Math.round(animYear)}
+            onChange={(e) => onYearChange(Number(e.target.value))}
+            className="cm-scrubber"
+            style={{ ["--cm-progress" as string]: `${progressPct}%` }}
+            aria-label="Year"
+            aria-valuemin={min}
+            aria-valuemax={max}
+            aria-valuenow={Math.round(animYear)}
+          />
+          <div className="flex justify-between text-[10px] uppercase tracking-[0.18em] text-white/40 tabular-nums">
+            <span>{min}</span>
+            <span aria-hidden className="hidden sm:inline">
+              {years.slice(1, -1).map((y) => y).join("  ·  ")}
+            </span>
+            <span>{max}</span>
+          </div>
+        </div>
+
+        <button
+          onClick={onRewind}
+          aria-label="Reset to 1990"
+          title="Reset to 1990"
+          className="grid place-items-center w-9 h-9 rounded-full bg-white/8 hover:bg-white/15 text-white/85 transition shrink-0"
+        >
+          <RotateCcw size={14} />
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col gap-1.5">
-        <input
-          type="range"
-          min={min}
-          max={max}
-          step={1}
-          value={Math.round(animYear)}
-          onChange={(e) => onYearChange(Number(e.target.value))}
-          className="w-full accent-white"
-          aria-label="Year"
-        />
-        <div className="flex justify-between text-[10px] uppercase tracking-widest text-white/45 tabular-nums px-0.5">
-          {years.map((y) => (
-            <span key={y}>{y}</span>
-          ))}
+      {/* Secondary row: direction toggle, color-keyed to the dots on the map. */}
+      <div className="flex items-center gap-3 text-xs">
+        <span className="text-[10px] uppercase tracking-[0.2em] text-white/40 hidden sm:inline">
+          Show
+        </span>
+        <div className="inline-flex rounded-full bg-white/8 p-1">
+          <DirectionPill
+            label="Both"
+            active={direction === "both"}
+            onClick={() => onDirection("both")}
+          />
+          <DirectionPill
+            label="Out of China"
+            active={direction === "outbound"}
+            color={COLOR_OUTBOUND}
+            onClick={() => onDirection("outbound")}
+          />
+          <DirectionPill
+            label="Into China"
+            active={direction === "inbound"}
+            color={COLOR_INBOUND}
+            onClick={() => onDirection("inbound")}
+          />
         </div>
-      </div>
-
-      <div className="inline-flex rounded-full bg-white/8 p-1 text-xs">
-        {(["both", "outbound", "inbound"] as const).map((d) => (
-          <button
-            key={d}
-            onClick={() => onDirection(d)}
-            className={`px-3 py-1.5 rounded-full transition ${direction === d ? "bg-white text-[#0e1726]" : "text-white/70 hover:text-white"}`}
-          >
-            {d === "both" ? "Both" : d === "outbound" ? "Out of China" : "Into China"}
-          </button>
-        ))}
+        <span className="ml-auto text-[10px] uppercase tracking-[0.18em] text-white/35 hidden md:inline">
+          Tip: press <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-white/70 font-mono text-[10px]">space</kbd> to play / pause
+        </span>
       </div>
     </div>
+  );
+}
+
+function DirectionPill({
+  label,
+  active,
+  color,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  color?: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full transition ${
+        active ? "bg-white text-[#0e1726]" : "text-white/70 hover:text-white"
+      }`}
+    >
+      {color && (
+        <span
+          className="inline-block w-2 h-2 rounded-full"
+          style={{ background: color }}
+          aria-hidden
+        />
+      )}
+      {label}
+    </button>
   );
 }
 
