@@ -606,29 +606,55 @@ export function MigrationMap({ data }: Props) {
     return () => cancelAnimationFrame(rafId);
   }, [projectedCentroids, size.w, size.h, size.dpr, data]);
 
-  // Top-10 panel. Ranks partners by GROWTH since 1990 (same metric the map
-  // visualises) so the numbers on map and panel tell the same story. The
-  // sparkline still shows absolute stock across all years, giving the reader
-  // the 1990 baseline visually.
-  const top10 = useMemo(() => {
+  // Partner ranking panel. Ranks by GROWTH since 1990 (same metric the map
+  // visualises) so the numbers on map and panel tell the same story. Every
+  // country with a growth of at least PANEL_MIN_GROWTH is included and the
+  // list is scrollable — the reader can see the full long tail, not just
+  // the top 10. Per-country series and biggest-5-year-jump are computed
+  // once here so the row component stays cheap.
+  const PANEL_MIN_GROWTH = 1_000;
+  const rankedPartners = useMemo(() => {
     const { prev } = bracket(data.years, animYear);
     const baseYear = String(data.years[0]);
     const buildList = (tables: Record<string, Record<string, number>>) => {
       const current = tables[String(prev)] ?? {};
       const base = tables[baseYear] ?? {};
-      return Object.entries(current)
-        .map(([code, n]) => {
-          const growth = Math.max(0, n - (base[code] ?? 0));
+      const codes = new Set([
+        ...Object.keys(current),
+        ...Object.keys(base),
+      ]);
+      return Array.from(codes)
+        .map((code) => {
+          const stockNow = current[code] ?? 0;
+          const stockBase = base[code] ?? 0;
+          const growth = Math.max(0, stockNow - stockBase);
+          const series = data.years.map((y) => tables[String(y)]?.[code] ?? 0);
+          // Find the biggest positive 5-year jump, if any. Gives each row
+          // a "when did most of this happen" anchor, not just a lifetime total.
+          let peakDelta = 0;
+          let peakIdx = 0;
+          for (let i = 1; i < series.length; i++) {
+            const d = series[i] - series[i - 1];
+            if (d > peakDelta) {
+              peakDelta = d;
+              peakIdx = i;
+            }
+          }
           return {
             code: Number(code),
             n: growth,
-            total: n,
+            total: stockNow,
             name: data.countries[code]?.name ?? code,
-            series: data.years.map((y) => tables[String(y)]?.[code] ?? 0),
+            series,
+            peakDelta,
+            peakPeriod:
+              peakIdx > 0
+                ? `${data.years[peakIdx - 1]}–${String(data.years[peakIdx]).slice(2)}`
+                : null,
           };
         })
-        .sort((a, b) => b.n - a.n)
-        .slice(0, 10);
+        .filter((r) => r.n >= PANEL_MIN_GROWTH)
+        .sort((a, b) => b.n - a.n);
     };
     return {
       out: buildList(data.emigration),
@@ -698,17 +724,17 @@ export function MigrationMap({ data }: Props) {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Top5
+        <PartnersPanel
           title={`Biggest growth out of China · since ${data.years[0]}`}
           color={COLOR_OUTBOUND}
-          rows={top10.out}
+          rows={rankedPartners.out}
           years={data.years}
           currentIdx={currentSnapshotIdx}
         />
-        <Top5
+        <PartnersPanel
           title={`Biggest growth into China · since ${data.years[0]}`}
           color={COLOR_INBOUND}
-          rows={top10.in}
+          rows={rankedPartners.in}
           years={data.years}
           currentIdx={currentSnapshotIdx}
         />
@@ -882,15 +908,17 @@ function DirectionPill({
   );
 }
 
-interface Top5Row {
+interface PartnerRow {
   code: number;
-  n: number;       // growth since baseline
-  total: number;   // absolute stock at current year (shown as secondary)
+  n: number;           // growth since baseline
+  total: number;       // absolute stock at current year
   name: string;
-  series: number[];
+  series: number[];    // stock across all snapshot years
+  peakDelta: number;   // biggest positive 5-year jump
+  peakPeriod: string | null; // "2015–20" or null when flat
 }
 
-function Top5({
+function PartnersPanel({
   title,
   color,
   rows,
@@ -899,32 +927,66 @@ function Top5({
 }: {
   title: string;
   color: string;
-  rows: Top5Row[];
+  rows: PartnerRow[];
   years: number[];
   currentIdx: number;
 }) {
   const peakAcrossPanel = Math.max(1, ...rows.flatMap((r) => r.series));
+  const totalGrowth = rows.reduce((s, r) => s + r.n, 0);
   return (
-    <div className="rounded-md bg-white/[0.04] ring-1 ring-white/5 p-4">
-      <div className="flex items-baseline justify-between mb-3">
+    <div className="rounded-md bg-white/[0.04] ring-1 ring-white/5 p-4 flex flex-col">
+      <div className="flex items-baseline justify-between mb-1">
         <h3 className="text-xs uppercase tracking-[0.18em] text-white/60">{title}</h3>
         <span className="text-[10px] uppercase tracking-widest text-white/40 tabular-nums">
           {years[currentIdx]}
         </span>
       </div>
-      <ol className="flex flex-col gap-2.5">
-        {rows.map((r) => (
-          <li key={r.code} className="grid grid-cols-[1fr_88px_72px] items-center gap-3 text-sm">
-            <div className="min-w-0 truncate text-white/90">{r.name.replace(/\*$/, "")}</div>
+      <div className="text-[10px] text-white/40 mb-3 flex items-center gap-3">
+        <span>
+          <span className="tabular-nums text-white/70">{rows.length}</span> countries
+        </span>
+        <span className="text-white/20">·</span>
+        <span>
+          total growth{" "}
+          <span className="tabular-nums text-white/70">+{formatExact(totalGrowth)}</span>
+        </span>
+      </div>
+      {/* Scrollable list: full long tail visible, not just top 10. Custom
+          overflow styling keeps it visually flush with the panel chrome. */}
+      <ol
+        className="flex flex-col gap-2 overflow-y-auto pr-1 -mr-1"
+        style={{ maxHeight: 520 }}
+      >
+        {rows.map((r, idx) => (
+          <li
+            key={r.code}
+            className="grid grid-cols-[22px_minmax(0,1fr)_130px_minmax(110px,auto)] items-start gap-2.5 text-sm"
+          >
+            <div className="text-right text-[11px] tabular-nums pt-0.5 text-white/35">
+              {idx + 1}
+            </div>
+            <div className="min-w-0 pt-0.5">
+              <div className="truncate text-white/90 leading-tight">
+                {r.name.replace(/\*$/, "")}
+              </div>
+              {r.peakPeriod && r.peakDelta >= 5_000 && (
+                <div className="text-[10px] text-white/35 truncate">
+                  peak +{formatCompact(r.peakDelta)} in {r.peakPeriod}
+                </div>
+              )}
+            </div>
             <Sparkline
               series={r.series}
               currentIdx={currentIdx}
               color={color}
               max={peakAcrossPanel}
+              years={years}
             />
-            <div className="text-right tabular-nums leading-tight">
-              <div className="text-white/90 text-xs">+{formatNum(r.n)}</div>
-              <div className="text-white/40 text-[10px]">of {formatNum(r.total)}</div>
+            <div className="text-right tabular-nums leading-tight pt-0.5">
+              <div className="text-white/95 text-xs">+{formatExact(r.n)}</div>
+              <div className="text-white/40 text-[10px]">
+                of {formatExact(r.total)}
+              </div>
             </div>
           </li>
         ))}
@@ -938,40 +1000,98 @@ function Sparkline({
   currentIdx,
   color,
   max,
+  years,
 }: {
   series: number[];
   currentIdx: number;
   color: string;
   max: number;
+  years: number[];
 }) {
-  const W = 88;
-  const H = 22;
-  const PAD = 2;
-  const innerW = W - PAD * 2;
-  const innerH = H - PAD * 2;
-  const xAt = (i: number) => PAD + (i / (series.length - 1)) * innerW;
-  const yAt = (v: number) => PAD + innerH - (v / max) * innerH;
+  const W = 130;
+  const H = 38;
+  const PAD_X = 3;
+  const PAD_Y = 4;
+  const innerW = W - PAD_X * 2;
+  const innerH = H - PAD_Y * 2;
+  const xAt = (i: number) => PAD_X + (i / (series.length - 1)) * innerW;
+  const yAt = (v: number) => PAD_Y + innerH - (v / max) * innerH;
   const linePath =
     series.map((v, i) => `${i === 0 ? "M" : "L"}${xAt(i).toFixed(1)},${yAt(v).toFixed(1)}`).join(" ");
-  const areaPath = `${linePath} L${xAt(series.length - 1).toFixed(1)},${(H - PAD).toFixed(
+  const areaPath = `${linePath} L${xAt(series.length - 1).toFixed(1)},${(H - PAD_Y).toFixed(
     1,
-  )} L${xAt(0).toFixed(1)},${(H - PAD).toFixed(1)} Z`;
+  )} L${xAt(0).toFixed(1)},${(H - PAD_Y).toFixed(1)} Z`;
   const cx = xAt(currentIdx);
   const cy = yAt(series[currentIdx] ?? 0);
+  const currentValue = series[currentIdx] ?? 0;
   return (
     <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="overflow-visible">
-      <path d={areaPath} fill={color} fillOpacity={0.18} />
-      <path d={linePath} fill="none" stroke={color} strokeOpacity={0.85} strokeWidth={1.1} />
-      <line x1={cx} x2={cx} y1={PAD} y2={H - PAD} stroke="white" strokeOpacity={0.18} strokeWidth={0.8} />
-      <circle cx={cx} cy={cy} r={2.4} fill={color} stroke="#0e1726" strokeWidth={1} />
+      {/* Snapshot ticks: one per year sample, so each 5-year period reads as
+          a visible span. Helps the reader see "big jump in 2005–2010" without
+          having to squint at the curve. */}
+      {series.map((_, i) => (
+        <line
+          key={i}
+          x1={xAt(i)}
+          x2={xAt(i)}
+          y1={H - PAD_Y}
+          y2={H - PAD_Y + 2}
+          stroke="white"
+          strokeOpacity={0.18}
+          strokeWidth={0.6}
+        />
+      ))}
+      <path d={areaPath} fill={color} fillOpacity={0.16} />
+      <path d={linePath} fill="none" stroke={color} strokeOpacity={0.9} strokeWidth={1.2} />
+      {/* Vertical guide + big dot at the current year. The value bubble
+          floats just above the dot so the reader can read the stock without
+          looking at the right-hand column. */}
+      <line
+        x1={cx}
+        x2={cx}
+        y1={PAD_Y}
+        y2={H - PAD_Y}
+        stroke="white"
+        strokeOpacity={0.22}
+        strokeWidth={0.7}
+      />
+      <circle cx={cx} cy={cy} r={2.6} fill={color} stroke="#0e1726" strokeWidth={1} />
+      {currentValue > 0 && (
+        <text
+          x={cx}
+          y={Math.max(cy - 5, 8)}
+          fontSize={9}
+          textAnchor={cx > W - 26 ? "end" : cx < 26 ? "start" : "middle"}
+          fill="white"
+          fillOpacity={0.75}
+          style={{ fontVariantNumeric: "tabular-nums" }}
+        >
+          {formatCompact(currentValue)}
+        </text>
+      )}
+      <title>
+        {years
+          .map((y, i) => `${y}: ${formatExact(series[i] ?? 0)}`)
+          .join("\n")}
+      </title>
     </svg>
   );
 }
 
-function formatNum(n: number) {
+// Exact integer with thousands separators — "1,234,567". Used in the growth
+// and total columns so the reader can see the precise stock, not a rounded M/k.
+function formatExact(n: number) {
+  return Math.round(n).toLocaleString("en-US");
+}
+
+// Compact form for the inline sparkline value bubble and the peak-period
+// annotation. Keeps two decimals on millions so the reader can tell 1.23M
+// apart from 1.45M without a click.
+function formatCompact(n: number) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}k`;
-  return String(n);
+  if (n >= 10_000) return `${(n / 1_000).toFixed(0)}k`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
+  return String(Math.round(n));
 }
 
 function formatStockShort(n: number) {
