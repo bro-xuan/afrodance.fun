@@ -970,14 +970,32 @@ function PartnersPanel({
   yearLabel: number;
 }) {
   const peakAcrossPanel = Math.max(1, ...rows.flatMap((r) => r.series));
-  // Live, interpolated current-year stock + growth-since-1990 per row.
-  // Ranking is fixed by lifetime growth; these numbers tick year-by-year.
-  const live = rows.map((r) => {
-    const stockNow = sampleSeries(r.series, fracIdx);
-    const growthNow = Math.max(0, stockNow - r.stockBase);
-    return { stockNow, growthNow };
-  });
-  const totalGrowthNow = live.reduce((s, l) => s + l.growthNow, 0);
+  // Live ranking: compute current-year stock + growth, then sort DESCENDING
+  // by growth so the league table updates as the animation plays. Stable
+  // tiebreaker on lifetime growth (matters at year 1990 when all growthNow
+  // values are 0). This is what makes a country visibly climb or fall as it
+  // overtakes its neighbours.
+  const ranked = useMemo(() => {
+    const withLive = rows.map((r) => {
+      const stockNow = sampleSeries(r.series, fracIdx);
+      const growthNow = Math.max(0, stockNow - r.stockBase);
+      return { row: r, stockNow, growthNow };
+    });
+    withLive.sort((a, b) => {
+      if (b.growthNow !== a.growthNow) return b.growthNow - a.growthNow;
+      return b.row.lifetimeGrowth - a.row.lifetimeGrowth;
+    });
+    return withLive;
+  }, [rows, fracIdx]);
+  const totalGrowthNow = ranked.reduce((s, l) => s + l.growthNow, 0);
+
+  // Absolute positioning + transition on `top` gives each row a smooth glide
+  // when the sort order changes. Fixed row height keeps the math simple and
+  // the scroll container stable.
+  const ROW_H = 52;
+  const listHeight = Math.min(ranked.length * ROW_H, 520);
+  const contentHeight = ranked.length * ROW_H;
+
   return (
     <div className="rounded-md bg-white/[0.04] ring-1 ring-white/5 p-4 flex flex-col">
       <div className="flex items-baseline justify-between mb-1">
@@ -996,48 +1014,54 @@ function PartnersPanel({
           <span className="tabular-nums text-white/70">+{formatExact(totalGrowthNow)}</span>
         </span>
       </div>
-      {/* Scrollable list: full long tail visible, not just top 10. */}
-      <ol
-        className="flex flex-col gap-2 overflow-y-auto pr-1 -mr-1"
-        style={{ maxHeight: 520 }}
+      {/* Scrollable rank board. Each row is absolutely positioned so we can
+          transition `top` smoothly as the sort order changes per year.
+          Stable key={code} lets React reuse the DOM node and CSS do the glide. */}
+      <div
+        className="overflow-y-auto overflow-x-hidden pr-1 -mr-1"
+        style={{ maxHeight: listHeight }}
       >
-        {rows.map((r, idx) => {
-          const { stockNow, growthNow } = live[idx];
-          return (
-            <li
-              key={r.code}
-              className="grid grid-cols-[22px_minmax(0,1fr)_130px_minmax(110px,auto)] items-start gap-2.5 text-sm"
-            >
-              <div className="text-right text-[11px] tabular-nums pt-0.5 text-white/35">
-                {idx + 1}
-              </div>
-              <div className="min-w-0 pt-0.5">
-                <div className="truncate text-white/90 leading-tight">
-                  {r.name.replace(/\*$/, "")}
+        <ol className="relative" style={{ height: contentHeight }}>
+          {ranked.map((live, displayIdx) => {
+            const r = live.row;
+            const { stockNow, growthNow } = live;
+            return (
+              <li
+                key={r.code}
+                className="absolute left-0 right-0 grid grid-cols-[22px_minmax(0,1fr)_130px_minmax(110px,auto)] items-start gap-2.5 text-sm transition-[top] duration-500 ease-out"
+                style={{ top: displayIdx * ROW_H, height: ROW_H - 8 }}
+              >
+                <div className="text-right text-[11px] tabular-nums pt-0.5 text-white/35">
+                  {displayIdx + 1}
                 </div>
-                {r.peakPeriod && r.peakDelta >= 5_000 && (
-                  <div className="text-[10px] text-white/35 truncate">
-                    peak +{formatCompact(r.peakDelta)} in {r.peakPeriod}
+                <div className="min-w-0 pt-0.5">
+                  <div className="truncate text-white/90 leading-tight">
+                    {r.name.replace(/\*$/, "")}
                   </div>
-                )}
-              </div>
-              <Sparkline
-                series={r.series}
-                fracIdx={fracIdx}
-                color={color}
-                max={peakAcrossPanel}
-                years={years}
-              />
-              <div className="text-right tabular-nums leading-tight pt-0.5">
-                <div className="text-white/95 text-xs">+{formatExact(growthNow)}</div>
-                <div className="text-white/40 text-[10px]">
-                  of {formatExact(stockNow)}
+                  {r.peakPeriod && r.peakDelta >= 5_000 && (
+                    <div className="text-[10px] text-white/35 truncate">
+                      peak +{formatCompact(r.peakDelta)} in {r.peakPeriod}
+                    </div>
+                  )}
                 </div>
-              </div>
-            </li>
-          );
-        })}
-      </ol>
+                <Sparkline
+                  series={r.series}
+                  fracIdx={fracIdx}
+                  color={color}
+                  max={peakAcrossPanel}
+                  years={years}
+                />
+                <div className="text-right tabular-nums leading-tight pt-0.5">
+                  <div className="text-white/95 text-xs">+{formatExact(growthNow)}</div>
+                  <div className="text-white/40 text-[10px]">
+                    of {formatExact(stockNow)}
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
     </div>
   );
 }
