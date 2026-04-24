@@ -729,7 +729,7 @@ export function MigrationMap({ data }: Props) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <PartnersPanel
-          title={`Biggest growth out of China · since ${data.years[0]}`}
+          title="Largest overseas Chinese communities"
           color={COLOR_OUTBOUND}
           rows={rankedPartners.out}
           years={data.years}
@@ -737,7 +737,7 @@ export function MigrationMap({ data }: Props) {
           yearLabel={yearLabel}
         />
         <PartnersPanel
-          title={`Biggest growth into China · since ${data.years[0]}`}
+          title="Largest foreign-born communities in China"
           color={COLOR_INBOUND}
           rows={rankedPartners.in}
           years={data.years}
@@ -970,11 +970,12 @@ function PartnersPanel({
   yearLabel: number;
 }) {
   const peakAcrossPanel = Math.max(1, ...rows.flatMap((r) => r.series));
-  // Live ranking: compute current-year stock + growth, then sort DESCENDING
-  // by growth so the league table updates as the animation plays. Stable
-  // tiebreaker on lifetime growth (matters at year 1990 when all growthNow
-  // values are 0). This is what makes a country visibly climb or fall as it
-  // overtakes its neighbours.
+  // Live ranking by CURRENT-YEAR STOCK. Matches the reader's intuition of
+  // "who has the biggest community right now?" — e.g., Hong Kong has 1.66M
+  // Chinese-born in 1990 and is visibly the top outbound hub, so it sits
+  // at #1 from the start. Ranking by growth-since-1990 would hide that
+  // (USA grew faster even though HK is still larger). Growth-to-date is
+  // still shown as a secondary stat on each row.
   const ranked = useMemo(() => {
     const withLive = rows.map((r) => {
       const stockNow = sampleSeries(r.series, fracIdx);
@@ -982,11 +983,12 @@ function PartnersPanel({
       return { row: r, stockNow, growthNow };
     });
     withLive.sort((a, b) => {
-      if (b.growthNow !== a.growthNow) return b.growthNow - a.growthNow;
+      if (b.stockNow !== a.stockNow) return b.stockNow - a.stockNow;
       return b.row.lifetimeGrowth - a.row.lifetimeGrowth;
     });
     return withLive;
   }, [rows, fracIdx]);
+  const totalStockNow = ranked.reduce((s, l) => s + l.stockNow, 0);
   const totalGrowthNow = ranked.reduce((s, l) => s + l.growthNow, 0);
 
   // Absolute positioning + transition on `top` gives each row a smooth glide
@@ -1010,8 +1012,13 @@ function PartnersPanel({
         </span>
         <span className="text-white/20">·</span>
         <span>
-          growth to date{" "}
-          <span className="tabular-nums text-white/70">+{formatExact(totalGrowthNow)}</span>
+          <span className="tabular-nums text-white/70">{formatExact(totalStockNow)}</span>{" "}
+          total
+        </span>
+        <span className="text-white/20">·</span>
+        <span>
+          <span className="tabular-nums text-white/70">+{formatExact(totalGrowthNow)}</span>{" "}
+          since 1990
         </span>
       </div>
       {/* Scrollable rank board. Each row is absolutely positioned so we can
@@ -1052,9 +1059,9 @@ function PartnersPanel({
                   years={years}
                 />
                 <div className="text-right tabular-nums leading-tight pt-0.5">
-                  <div className="text-white/95 text-xs">+{formatExact(growthNow)}</div>
+                  <div className="text-white/95 text-xs">{formatExact(stockNow)}</div>
                   <div className="text-white/40 text-[10px]">
-                    of {formatExact(stockNow)}
+                    {growthNow >= 1 ? `+${formatCompact(growthNow)} since 1990` : "—"}
                   </div>
                 </div>
               </li>
