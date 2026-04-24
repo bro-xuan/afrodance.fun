@@ -970,33 +970,52 @@ function PartnersPanel({
   yearLabel: number;
 }) {
   const peakAcrossPanel = Math.max(1, ...rows.flatMap((r) => r.series));
-  // Live ranking by CURRENT-YEAR STOCK. Matches the reader's intuition of
-  // "who has the biggest community right now?" — e.g., Hong Kong has 1.66M
-  // Chinese-born in 1990 and is visibly the top outbound hub, so it sits
-  // at #1 from the start. Ranking by growth-since-1990 would hide that
-  // (USA grew faster even though HK is still larger). Growth-to-date is
-  // still shown as a secondary stat on each row.
-  const ranked = useMemo(() => {
-    const withLive = rows.map((r) => {
+  // Live values (stock + growth) interpolate continuously with fracIdx so
+  // the numbers tick in real time. Row ORDER is recomputed only once per
+  // integer year via yearLabel — otherwise transitions get restarted many
+  // times per second and read as jittery/abrupt. One stable reorder per
+  // year lets each glide finish cleanly.
+  const live = useMemo(() => {
+    return rows.map((r) => {
       const stockNow = sampleSeries(r.series, fracIdx);
       const growthNow = Math.max(0, stockNow - r.stockBase);
       return { row: r, stockNow, growthNow };
     });
-    withLive.sort((a, b) => {
-      if (b.stockNow !== a.stockNow) return b.stockNow - a.stockNow;
-      return b.row.lifetimeGrowth - a.row.lifetimeGrowth;
-    });
-    return withLive;
   }, [rows, fracIdx]);
-  const totalStockNow = ranked.reduce((s, l) => s + l.stockNow, 0);
-  const totalGrowthNow = ranked.reduce((s, l) => s + l.growthNow, 0);
+  const rankOrder = useMemo(() => {
+    // Sample stocks at yearLabel (not fracIdx) so the rank table only
+    // reshuffles when the visible year ticks, not on every render.
+    const yearIdx = years.indexOf(yearLabel);
+    const snapshotFracIdx =
+      yearIdx >= 0
+        ? yearIdx
+        : (() => {
+            // yearLabel between snapshots → interpolate to it
+            for (let i = 0; i < years.length - 1; i++) {
+              if (yearLabel >= years[i] && yearLabel < years[i + 1]) {
+                return i + (yearLabel - years[i]) / (years[i + 1] - years[i]);
+              }
+            }
+            return years.length - 1;
+          })();
+    const withStock = rows.map((r) => ({
+      code: r.code,
+      s: sampleSeries(r.series, snapshotFracIdx),
+      lifetime: r.lifetimeGrowth,
+    }));
+    withStock.sort((a, b) => (b.s !== a.s ? b.s - a.s : b.lifetime - a.lifetime));
+    const idxByCode = new Map<number, number>();
+    withStock.forEach((w, i) => idxByCode.set(w.code, i));
+    return idxByCode;
+  }, [rows, yearLabel, years]);
+  const totalStockNow = live.reduce((s, l) => s + l.stockNow, 0);
+  const totalGrowthNow = live.reduce((s, l) => s + l.growthNow, 0);
 
-  // Absolute positioning + transition on `top` gives each row a smooth glide
-  // when the sort order changes. Fixed row height keeps the math simple and
-  // the scroll container stable.
+  // Absolute positioning + transform for GPU-accelerated glides when the
+  // sort order changes. Fixed row height keeps scroll math stable.
   const ROW_H = 52;
-  const listHeight = Math.min(ranked.length * ROW_H, 520);
-  const contentHeight = ranked.length * ROW_H;
+  const listHeight = Math.min(live.length * ROW_H, 520);
+  const contentHeight = live.length * ROW_H;
 
   return (
     <div className="rounded-md bg-white/[0.04] ring-1 ring-white/5 p-4 flex flex-col">
@@ -1021,22 +1040,29 @@ function PartnersPanel({
           since 1990
         </span>
       </div>
-      {/* Scrollable rank board. Each row is absolutely positioned so we can
-          transition `top` smoothly as the sort order changes per year.
-          Stable key={code} lets React reuse the DOM node and CSS do the glide. */}
+      {/* Scrollable rank board. Each row is absolutely positioned at top:0
+          and offset via transform: translateY so we can glide on the GPU
+          when the sort order changes. Order only reshuffles once per
+          integer year crossing, so each transition gets its full 900ms to
+          play out instead of being restarted mid-glide. */}
       <div
         className="overflow-y-auto overflow-x-hidden pr-1 -mr-1"
         style={{ maxHeight: listHeight }}
       >
         <ol className="relative" style={{ height: contentHeight }}>
-          {ranked.map((live, displayIdx) => {
-            const r = live.row;
-            const { stockNow, growthNow } = live;
+          {live.map((l) => {
+            const r = l.row;
+            const { stockNow, growthNow } = l;
+            const displayIdx = rankOrder.get(r.code) ?? 0;
             return (
               <li
                 key={r.code}
-                className="absolute left-0 right-0 grid grid-cols-[22px_minmax(0,1fr)_130px_minmax(110px,auto)] items-start gap-2.5 text-sm transition-[top] duration-500 ease-out"
-                style={{ top: displayIdx * ROW_H, height: ROW_H - 8 }}
+                className="absolute left-0 right-0 top-0 grid grid-cols-[22px_minmax(0,1fr)_130px_minmax(110px,auto)] items-start gap-2.5 text-sm will-change-transform"
+                style={{
+                  height: ROW_H - 8,
+                  transform: `translateY(${displayIdx * ROW_H}px)`,
+                  transition: "transform 900ms cubic-bezier(0.22, 1, 0.36, 1)",
+                }}
               >
                 <div className="text-right text-[11px] tabular-nums pt-0.5 text-white/35">
                   {displayIdx + 1}
