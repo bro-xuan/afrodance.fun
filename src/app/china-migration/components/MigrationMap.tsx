@@ -606,31 +606,28 @@ export function MigrationMap({ data }: Props) {
     return () => cancelAnimationFrame(rafId);
   }, [projectedCentroids, size.w, size.h, size.dpr, data]);
 
-  // Partner ranking panel. Ranks by GROWTH since 1990 (same metric the map
-  // visualises) so the numbers on map and panel tell the same story. Every
-  // country with a growth of at least PANEL_MIN_GROWTH is included and the
-  // list is scrollable — the reader can see the full long tail, not just
-  // the top 10. Per-country series and biggest-5-year-jump are computed
-  // once here so the row component stays cheap.
+  // Partner ranking panel. Rank by LIFETIME growth (1990 → final year) so the
+  // panel composition is stable across the whole animation — the long tail
+  // is visible from the first frame, not assembled as we play. Per-row
+  // values (current stock, growth-to-date, sparkline marker) interpolate
+  // linearly between snapshots so the numbers tick every second, not every
+  // five years.
   const PANEL_MIN_GROWTH = 1_000;
   const rankedPartners = useMemo(() => {
-    const { prev } = bracket(data.years, animYear);
-    const baseYear = String(data.years[0]);
+    const baseKey = String(data.years[0]);
+    const lastKey = String(data.years[data.years.length - 1]);
     const buildList = (tables: Record<string, Record<string, number>>) => {
-      const current = tables[String(prev)] ?? {};
-      const base = tables[baseYear] ?? {};
-      const codes = new Set([
-        ...Object.keys(current),
-        ...Object.keys(base),
-      ]);
+      const last = tables[lastKey] ?? {};
+      const base = tables[baseKey] ?? {};
+      const codes = new Set([...Object.keys(last), ...Object.keys(base)]);
       return Array.from(codes)
         .map((code) => {
-          const stockNow = current[code] ?? 0;
           const stockBase = base[code] ?? 0;
-          const growth = Math.max(0, stockNow - stockBase);
+          const stockEnd = last[code] ?? 0;
+          const lifetimeGrowth = Math.max(0, stockEnd - stockBase);
           const series = data.years.map((y) => tables[String(y)]?.[code] ?? 0);
-          // Find the biggest positive 5-year jump, if any. Gives each row
-          // a "when did most of this happen" anchor, not just a lifetime total.
+          // Biggest positive 5-year jump — anchors each row to "when did most
+          // of this happen" instead of just a lifetime total.
           let peakDelta = 0;
           let peakIdx = 0;
           for (let i = 1; i < series.length; i++) {
@@ -642,8 +639,8 @@ export function MigrationMap({ data }: Props) {
           }
           return {
             code: Number(code),
-            n: growth,
-            total: stockNow,
+            lifetimeGrowth,
+            stockBase,
             name: data.countries[code]?.name ?? code,
             series,
             peakDelta,
@@ -653,17 +650,24 @@ export function MigrationMap({ data }: Props) {
                 : null,
           };
         })
-        .filter((r) => r.n >= PANEL_MIN_GROWTH)
-        .sort((a, b) => b.n - a.n);
+        .filter((r) => r.lifetimeGrowth >= PANEL_MIN_GROWTH)
+        .sort((a, b) => b.lifetimeGrowth - a.lifetimeGrowth);
     };
     return {
       out: buildList(data.emigration),
       in: buildList(data.immigration),
     };
-  }, [animYear, data]);
+  }, [data]);
 
   const yearLabel = Math.round(animYear);
-  const currentSnapshotIdx = data.years.indexOf(bracket(data.years, animYear).prev);
+  // Continuous fractional index into data.years — 0 at 1990, 7 at 2024,
+  // ~5.4 at "early 2017". Lets sparkline markers and panel totals
+  // interpolate between snapshots instead of snapping every five years.
+  const fracIdx = useMemo(() => {
+    const b = bracket(data.years, animYear);
+    const prevIdx = data.years.indexOf(b.prev);
+    return prevIdx + b.frac;
+  }, [animYear, data.years]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -729,14 +733,16 @@ export function MigrationMap({ data }: Props) {
           color={COLOR_OUTBOUND}
           rows={rankedPartners.out}
           years={data.years}
-          currentIdx={currentSnapshotIdx}
+          fracIdx={fracIdx}
+          yearLabel={yearLabel}
         />
         <PartnersPanel
           title={`Biggest growth into China · since ${data.years[0]}`}
           color={COLOR_INBOUND}
           rows={rankedPartners.in}
           years={data.years}
-          currentIdx={currentSnapshotIdx}
+          fracIdx={fracIdx}
+          yearLabel={yearLabel}
         />
       </div>
     </div>
@@ -827,12 +833,31 @@ function Controls({
             aria-valuemax={max}
             aria-valuenow={Math.round(animYear)}
           />
-          <div className="flex justify-between text-[10px] uppercase tracking-[0.18em] text-white/40 tabular-nums">
-            <span>{min}</span>
-            <span aria-hidden className="hidden sm:inline">
-              {years.slice(1, -1).map((y) => y).join("  ·  ")}
-            </span>
-            <span>{max}</span>
+          {/* Tick labels positioned at their actual time fraction along the
+              slider so 1990–1995 reads as the same span as 2015–2020.
+              Intermediate ticks hidden on small screens to avoid overlap. */}
+          <div className="relative h-3 text-[10px] uppercase tracking-[0.18em] text-white/40 tabular-nums">
+            {years.map((y, i) => {
+              const isFirst = i === 0;
+              const isLast = i === years.length - 1;
+              const pct = ((y - min) / (max - min)) * 100;
+              const transform = isFirst
+                ? "translateX(0)"
+                : isLast
+                  ? "translateX(-100%)"
+                  : "translateX(-50%)";
+              const visibility =
+                isFirst || isLast ? "" : "hidden sm:inline-block";
+              return (
+                <span
+                  key={y}
+                  className={`absolute top-0 ${visibility}`}
+                  style={{ left: `${pct}%`, transform }}
+                >
+                  {y}
+                </span>
+              );
+            })}
           </div>
         </div>
 
@@ -910,12 +935,23 @@ function DirectionPill({
 
 interface PartnerRow {
   code: number;
-  n: number;           // growth since baseline
-  total: number;       // absolute stock at current year
+  lifetimeGrowth: number;   // 1990 → final-year growth (used for ranking)
+  stockBase: number;        // stock at 1990 (for current-growth math)
   name: string;
-  series: number[];    // stock across all snapshot years
-  peakDelta: number;   // biggest positive 5-year jump
+  series: number[];         // stock across all snapshot years
+  peakDelta: number;        // biggest positive 5-year jump
   peakPeriod: string | null; // "2015–20" or null when flat
+}
+
+// Linear interpolation across the snapshot series at a fractional index.
+// fracIdx of 5.4 means "40% of the way from years[5] to years[6]".
+function sampleSeries(series: number[], fracIdx: number): number {
+  if (series.length === 0) return 0;
+  const clamped = Math.max(0, Math.min(series.length - 1, fracIdx));
+  const lo = Math.floor(clamped);
+  const hi = Math.min(series.length - 1, lo + 1);
+  const t = clamped - lo;
+  return series[lo] * (1 - t) + series[hi] * t;
 }
 
 function PartnersPanel({
@@ -923,22 +959,31 @@ function PartnersPanel({
   color,
   rows,
   years,
-  currentIdx,
+  fracIdx,
+  yearLabel,
 }: {
   title: string;
   color: string;
   rows: PartnerRow[];
   years: number[];
-  currentIdx: number;
+  fracIdx: number;
+  yearLabel: number;
 }) {
   const peakAcrossPanel = Math.max(1, ...rows.flatMap((r) => r.series));
-  const totalGrowth = rows.reduce((s, r) => s + r.n, 0);
+  // Live, interpolated current-year stock + growth-since-1990 per row.
+  // Ranking is fixed by lifetime growth; these numbers tick year-by-year.
+  const live = rows.map((r) => {
+    const stockNow = sampleSeries(r.series, fracIdx);
+    const growthNow = Math.max(0, stockNow - r.stockBase);
+    return { stockNow, growthNow };
+  });
+  const totalGrowthNow = live.reduce((s, l) => s + l.growthNow, 0);
   return (
     <div className="rounded-md bg-white/[0.04] ring-1 ring-white/5 p-4 flex flex-col">
       <div className="flex items-baseline justify-between mb-1">
         <h3 className="text-xs uppercase tracking-[0.18em] text-white/60">{title}</h3>
         <span className="text-[10px] uppercase tracking-widest text-white/40 tabular-nums">
-          {years[currentIdx]}
+          {yearLabel}
         </span>
       </div>
       <div className="text-[10px] text-white/40 mb-3 flex items-center gap-3">
@@ -947,49 +992,51 @@ function PartnersPanel({
         </span>
         <span className="text-white/20">·</span>
         <span>
-          total growth{" "}
-          <span className="tabular-nums text-white/70">+{formatExact(totalGrowth)}</span>
+          growth to date{" "}
+          <span className="tabular-nums text-white/70">+{formatExact(totalGrowthNow)}</span>
         </span>
       </div>
-      {/* Scrollable list: full long tail visible, not just top 10. Custom
-          overflow styling keeps it visually flush with the panel chrome. */}
+      {/* Scrollable list: full long tail visible, not just top 10. */}
       <ol
         className="flex flex-col gap-2 overflow-y-auto pr-1 -mr-1"
         style={{ maxHeight: 520 }}
       >
-        {rows.map((r, idx) => (
-          <li
-            key={r.code}
-            className="grid grid-cols-[22px_minmax(0,1fr)_130px_minmax(110px,auto)] items-start gap-2.5 text-sm"
-          >
-            <div className="text-right text-[11px] tabular-nums pt-0.5 text-white/35">
-              {idx + 1}
-            </div>
-            <div className="min-w-0 pt-0.5">
-              <div className="truncate text-white/90 leading-tight">
-                {r.name.replace(/\*$/, "")}
+        {rows.map((r, idx) => {
+          const { stockNow, growthNow } = live[idx];
+          return (
+            <li
+              key={r.code}
+              className="grid grid-cols-[22px_minmax(0,1fr)_130px_minmax(110px,auto)] items-start gap-2.5 text-sm"
+            >
+              <div className="text-right text-[11px] tabular-nums pt-0.5 text-white/35">
+                {idx + 1}
               </div>
-              {r.peakPeriod && r.peakDelta >= 5_000 && (
-                <div className="text-[10px] text-white/35 truncate">
-                  peak +{formatCompact(r.peakDelta)} in {r.peakPeriod}
+              <div className="min-w-0 pt-0.5">
+                <div className="truncate text-white/90 leading-tight">
+                  {r.name.replace(/\*$/, "")}
                 </div>
-              )}
-            </div>
-            <Sparkline
-              series={r.series}
-              currentIdx={currentIdx}
-              color={color}
-              max={peakAcrossPanel}
-              years={years}
-            />
-            <div className="text-right tabular-nums leading-tight pt-0.5">
-              <div className="text-white/95 text-xs">+{formatExact(r.n)}</div>
-              <div className="text-white/40 text-[10px]">
-                of {formatExact(r.total)}
+                {r.peakPeriod && r.peakDelta >= 5_000 && (
+                  <div className="text-[10px] text-white/35 truncate">
+                    peak +{formatCompact(r.peakDelta)} in {r.peakPeriod}
+                  </div>
+                )}
               </div>
-            </div>
-          </li>
-        ))}
+              <Sparkline
+                series={r.series}
+                fracIdx={fracIdx}
+                color={color}
+                max={peakAcrossPanel}
+                years={years}
+              />
+              <div className="text-right tabular-nums leading-tight pt-0.5">
+                <div className="text-white/95 text-xs">+{formatExact(growthNow)}</div>
+                <div className="text-white/40 text-[10px]">
+                  of {formatExact(stockNow)}
+                </div>
+              </div>
+            </li>
+          );
+        })}
       </ol>
     </div>
   );
@@ -997,13 +1044,13 @@ function PartnersPanel({
 
 function Sparkline({
   series,
-  currentIdx,
+  fracIdx,
   color,
   max,
   years,
 }: {
   series: number[];
-  currentIdx: number;
+  fracIdx: number;
   color: string;
   max: number;
   years: number[];
@@ -1021,9 +1068,11 @@ function Sparkline({
   const areaPath = `${linePath} L${xAt(series.length - 1).toFixed(1)},${(H - PAD_Y).toFixed(
     1,
   )} L${xAt(0).toFixed(1)},${(H - PAD_Y).toFixed(1)} Z`;
-  const cx = xAt(currentIdx);
-  const cy = yAt(series[currentIdx] ?? 0);
-  const currentValue = series[currentIdx] ?? 0;
+  // Fractional sample so the marker glides smoothly across the curve, not
+  // hopping snapshot-to-snapshot.
+  const currentValue = sampleSeries(series, fracIdx);
+  const cx = xAt(fracIdx);
+  const cy = yAt(currentValue);
   return (
     <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="overflow-visible">
       {/* Snapshot ticks: one per year sample, so each 5-year period reads as
