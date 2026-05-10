@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${pressStart.variable} ${pixelify.variable}`}>
+    <html lang="en" className={`${pressStart.variable} ${pixelify.variable}`} suppressHydrationWarning>
       <body className="min-h-screen bg-[#faf8f2] text-[#2d2d2d] antialiased">
         {children}
       </body>

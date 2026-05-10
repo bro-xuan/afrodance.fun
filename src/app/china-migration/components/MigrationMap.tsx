@@ -34,9 +34,11 @@ const MAX_DOTS_PER_COUNTRY = 280;
 const DOT_RADIUS = 1.7;
 // Single visibility gate per direction: a cluster only renders (BOTH dots and
 // label) when growth-since-1990 exceeds this. Below it, the country is
-// invisible. This guarantees every dotted country has a name attached.
-const MIN_GROWTH_OUT = 80_000;
-const MIN_GROWTH_IN = 25_000;
+// invisible. Kept low so destinations surface within the first year of play
+// rather than 3–5 years in — otherwise the opening of the animation reads as
+// "nothing is happening".
+const MIN_GROWTH_OUT = 15_000;
+const MIN_GROWTH_IN = 5_000;
 
 interface Props {
   data: MigrationData;
@@ -823,8 +825,8 @@ function Controls({
             type="range"
             min={min}
             max={max}
-            step={1}
-            value={Math.round(animYear)}
+            step="any"
+            value={animYear}
             onChange={(e) => onYearChange(Number(e.target.value))}
             className="cm-scrubber"
             style={{ ["--cm-progress" as string]: `${progressPct}%` }}
