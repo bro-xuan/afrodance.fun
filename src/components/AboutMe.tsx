@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/8bit/accordion";
 
 export default function AboutMe() {
-  const { greeting, bio, avatarUrl, avatarFallback, tags, skills, likes } =
+  const { greeting, bio, avatarUrl, avatarFallback, tags, skills } =
     aboutConfig;
 
   return (
@@ -27,7 +27,9 @@ export default function AboutMe() {
         <CardHeader font="normal">
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <Avatar font="normal" className="size-20">
-              <AvatarImage font="normal" src={avatarUrl} alt="Avatar" />
+              {avatarUrl && (
+                <AvatarImage font="normal" src={avatarUrl} alt="Avatar" />
+              )}
               <AvatarFallback className="font-pixel text-sm">
                 {avatarFallback}
               </AvatarFallback>
@@ -50,10 +52,7 @@ export default function AboutMe() {
                 About
               </TabsTrigger>
               <TabsTrigger value="skills" className="font-pixel text-[10px] sm:text-xs flex-1">
-                Skills
-              </TabsTrigger>
-              <TabsTrigger value="likes" className="font-pixel text-[10px] sm:text-xs flex-1">
-                Likes
+                Stack
               </TabsTrigger>
             </TabsList>
 
@@ -96,19 +95,6 @@ export default function AboutMe() {
               </Accordion>
             </TabsContent>
 
-            <TabsContent value="likes" className="mt-4">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {likes.map((like) => (
-                  <div
-                    key={like.label}
-                    className="flex items-center gap-2 font-body text-sm text-muted-foreground"
-                  >
-                    <span className="text-lg">{like.emoji}</span>
-                    {like.label}
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
           </Tabs>
         </CardContent>
       </Card>

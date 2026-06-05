@@ -20,6 +20,15 @@ export default function Footer() {
         >
           <i className="nes-icon twitter is-medium" />
         </a>
+        <a
+          href={siteConfig.socials.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="LinkedIn"
+          className="font-pixel text-xs flex items-center text-[#0a66c2] hover:opacity-80"
+        >
+          [in]
+        </a>
       </div>
       <p className="font-pixel text-xs text-muted-foreground">
         made with pixels &amp; {"<3"}

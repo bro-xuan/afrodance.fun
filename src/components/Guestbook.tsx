@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { seedGuestbookMessages } from "@/data/projects";
 import type { GuestbookMessage } from "@/types";
 import {
@@ -11,25 +11,74 @@ import {
   CardDescription,
 } from "@/components/ui/8bit/card";
 
+type Status = "idle" | "submitting" | "success" | "error" | "rate_limited";
+
 export default function Guestbook() {
-  const [messages, setMessages] = useState<GuestbookMessage[]>(seedGuestbookMessages);
+  const [messages, setMessages] = useState<GuestbookMessage[]>([]);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot
+  const [status, setStatus] = useState<Status>("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim() || !message.trim()) return;
-
-    const newMessage: GuestbookMessage = {
-      id: Date.now(),
-      name: name.trim(),
-      message: message.trim(),
-      date: new Date().toISOString().split("T")[0],
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/guestbook")
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        const remote: GuestbookMessage[] = data.messages ?? [];
+        // Show real submissions on top, seed messages as the trailing "starter" entries.
+        setMessages([...remote, ...seedGuestbookMessages]);
+      })
+      .catch(() => {
+        if (!cancelled) setMessages(seedGuestbookMessages);
+      });
+    return () => {
+      cancelled = true;
     };
+  }, []);
 
-    setMessages((prev) => [newMessage, ...prev]);
-    setName("");
-    setMessage("");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !message.trim() || status === "submitting") return;
+
+    setStatus("submitting");
+    setErrorMsg("");
+
+    try {
+      const res = await fetch("/api/guestbook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          message: message.trim(),
+          website,
+        }),
+      });
+
+      if (res.status === 429) {
+        setStatus("rate_limited");
+        setErrorMsg("Slow down — one message per minute.");
+        return;
+      }
+      if (!res.ok) {
+        setStatus("error");
+        setErrorMsg("Something went wrong. Try again?");
+        return;
+      }
+
+      const data = await res.json();
+      if (data.entry) {
+        setMessages((prev) => [data.entry, ...prev]);
+      }
+      setName("");
+      setMessage("");
+      setStatus("success");
+    } catch {
+      setStatus("error");
+      setErrorMsg("Network error. Try again?");
+    }
   };
 
   return (
@@ -56,6 +105,7 @@ export default function Guestbook() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 maxLength={30}
+                disabled={status === "submitting"}
               />
             </div>
             <div>
@@ -66,11 +116,37 @@ export default function Guestbook() {
                 onChange={(e) => setMessage(e.target.value)}
                 maxLength={200}
                 rows={3}
+                disabled={status === "submitting"}
               />
             </div>
-            <button type="submit" className="nes-btn is-primary">
-              Send
-            </button>
+            {/* Honeypot — hidden from users, bots fill it in */}
+            <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", overflow: "hidden" }}>
+              <label>
+                Website (leave empty)
+                <input
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                />
+              </label>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                type="submit"
+                className="nes-btn is-primary"
+                disabled={status === "submitting"}
+              >
+                {status === "submitting" ? "Sending..." : "Send"}
+              </button>
+              {status === "success" && (
+                <span className="font-body text-xs text-[#3a6510]">Sent! Thanks 🎮</span>
+              )}
+              {(status === "error" || status === "rate_limited") && errorMsg && (
+                <span className="font-body text-xs text-[#a93226]">{errorMsg}</span>
+              )}
+            </div>
           </form>
 
           <div className="space-y-4">

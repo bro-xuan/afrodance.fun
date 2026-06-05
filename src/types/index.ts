@@ -4,6 +4,7 @@ export interface Project {
   url: string;
   emoji: string;
   color?: "primary" | "success" | "warning" | "error";
+  stack?: string[];
 }
 
 export interface SkillCategory {
@@ -32,6 +33,11 @@ export interface Article {
   url: string;
   date: string;
   emoji: string;
+  caption?: string;
+}
+
+export interface Stack {
+  label: string;
 }
 
 export interface NowItem {

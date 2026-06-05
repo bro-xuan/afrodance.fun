@@ -24,6 +24,18 @@ export default function ProjectCard({ project }: { project: Project }) {
           <p className="font-body text-sm text-muted-foreground flex-1">
             {project.description}
           </p>
+          {project.stack && project.stack.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-1.5">
+              {project.stack.map((tech) => (
+                <span
+                  key={tech}
+                  className="font-body text-[10px] px-2 py-0.5 bg-[#f0ece4] text-[#555] border border-[#ccc]"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          )}
           <button type="button" className={btnCls}>
             Visit
           </button>

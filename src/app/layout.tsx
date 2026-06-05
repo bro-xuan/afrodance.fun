@@ -15,8 +15,15 @@ const pixelify = Pixelify_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "afrodance.fun",
-  description: "Fun projects from the internet",
+  title: "Stefan Wang — afrodance.fun",
+  description:
+    "Stefan Wang — building fun things on the internet, mostly AI and crypto. Open to AM / Sales roles in AI or blockchain.",
+  openGraph: {
+    title: "Stefan Wang — afrodance.fun",
+    description:
+      "Building fun things on the internet, mostly AI and crypto. Open to AM / Sales roles in AI or blockchain.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

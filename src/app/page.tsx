@@ -5,6 +5,7 @@ import ProjectGrid from "@/components/ProjectGrid";
 import ArticleGrid from "@/components/ArticleGrid";
 import NowSection from "@/components/NowSection";
 import Guestbook from "@/components/Guestbook";
+import Contact from "@/components/Contact";
 import KonamiEasterEgg from "@/components/KonamiEasterEgg";
 import Footer from "@/components/Footer";
 
@@ -13,15 +14,17 @@ export default function Home() {
     <main className="mx-auto max-w-6xl">
       <Hero />
       <PixelDivider />
-      <ProjectGrid />
+      <AboutMe />
       <PixelDivider />
-      <ArticleGrid />
+      <ProjectGrid />
       <PixelDivider />
       <NowSection />
       <PixelDivider />
+      <ArticleGrid />
+      <PixelDivider />
       <Guestbook />
       <PixelDivider />
-      <AboutMe />
+      <Contact />
       <Footer />
       <KonamiEasterEgg />
     </main>
