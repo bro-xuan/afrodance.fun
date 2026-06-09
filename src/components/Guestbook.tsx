@@ -149,7 +149,7 @@ export default function Guestbook() {
             </div>
           </form>
 
-          <div className="space-y-4">
+          <div className="max-h-80 overflow-y-auto pr-2 space-y-4">
             {messages.map((msg) => (
               <div key={msg.id} className="border-t border-muted pt-4">
                 <div className="flex items-center justify-between mb-1">

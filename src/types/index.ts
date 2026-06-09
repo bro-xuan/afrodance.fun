@@ -34,6 +34,7 @@ export interface Article {
   date: string;
   emoji: string;
   caption?: string;
+  lang?: "en" | "zh";
 }
 
 export interface Stack {
