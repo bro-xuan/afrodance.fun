@@ -1,40 +1,99 @@
-import { articles } from "@/data/projects";
-import {
-  Card,
-  CardTitle,
-} from "@/components/ui/8bit/card";
+import { articles, siteConfig } from "@/data/projects";
+import { Card, CardTitle } from "@/components/ui/8bit/card";
+
+const langBadge: Record<string, { label: string; cls: string }> = {
+  en: { label: "EN", cls: "bg-[#d6eaf8] text-[#15608f]" },
+  zh: { label: "中文", cls: "bg-[#fadbd8] text-[#a93226]" },
+};
+
+function formatDate(iso: string) {
+  const d = new Date(`${iso}T00:00:00`);
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
 
 export default function ArticleGrid() {
+  const substackUrl = siteConfig.socials.substack ?? "https://substack.com/@stefanwangeth";
+
   return (
-    <section className="mx-auto w-full max-w-5xl px-4 py-8">
-      <h2 className="font-pixel text-[#4a7c10] text-lg sm:text-xl text-center mb-2">
-        Notes from the other internet
-      </h2>
-      <p className="font-body text-sm text-muted-foreground text-center mb-8">
-        I also write in Chinese on Xiaohongshu (Red Note).
-      </p>
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {articles.map((article) => (
+    <section className="mx-auto w-full max-w-3xl px-4 py-8">
+      <div className="text-center mb-10">
+        <h2 className="font-pixel text-[#4a7c10] text-lg sm:text-xl mb-3">
+          Writing
+        </h2>
+        <p className="font-body text-sm text-muted-foreground max-w-xl mx-auto">
+          Essays on AI, crypto, and the future of work. I&apos;ve written a fair bit
+          on RedNote and Twitter over the years — now I&apos;m consolidating
+          everything onto{" "}
           <a
-            key={article.title}
-            href={article.url}
+            href={substackUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="card-hover block h-full"
+            className="text-[#d44332] underline underline-offset-2 hover:opacity-80"
           >
-            <Card font="normal" className="h-full flex flex-col items-center justify-center p-6 text-center">
-              <span className="text-3xl mb-3">{article.emoji}</span>
-              <CardTitle font="normal" className="font-pixel text-sm sm:text-base text-[#4a7c10]">
-                {article.title}
-              </CardTitle>
-              {article.caption && (
-                <p className="font-body text-xs text-muted-foreground mt-3">
-                  {article.caption}
-                </p>
-              )}
-            </Card>
+            Substack
           </a>
-        ))}
+          .
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+        {articles.map((article) => {
+          const badge = article.lang ? langBadge[article.lang] : null;
+          return (
+            <a
+              key={article.title}
+              href={article.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="card-hover block h-full"
+            >
+              <Card font="normal" className="h-full flex flex-col p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <span className="text-3xl">{article.emoji}</span>
+                  {badge && (
+                    <span
+                      className={`font-pixel text-[0.6rem] leading-none px-2 py-1.5 ${badge.cls}`}
+                    >
+                      {badge.label}
+                    </span>
+                  )}
+                </div>
+
+                <CardTitle
+                  font="normal"
+                  className="font-pixel text-sm sm:text-base text-[#4a7c10] leading-relaxed"
+                >
+                  {article.title}
+                </CardTitle>
+
+                {article.description && (
+                  <p className="font-body text-xs italic text-muted-foreground mt-1.5">
+                    {article.description}
+                  </p>
+                )}
+
+                {article.caption && (
+                  <p className="font-body text-sm text-muted-foreground mt-3 flex-1">
+                    {article.caption}
+                  </p>
+                )}
+
+                <div className="flex items-center justify-between mt-5 pt-4 border-t border-dashed border-muted-foreground/30">
+                  <span className="font-body text-xs text-muted-foreground">
+                    {formatDate(article.date)}
+                  </span>
+                  <span className="font-pixel text-[0.65rem] text-[#d44332]">
+                    Read on Substack →
+                  </span>
+                </div>
+              </Card>
+            </a>
+          );
+        })}
       </div>
     </section>
   );

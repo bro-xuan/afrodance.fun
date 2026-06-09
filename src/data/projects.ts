@@ -8,6 +8,7 @@ export const siteConfig = {
     github: "https://github.com/bro-xuan",
     twitter: "https://x.com/Erc721_stefan",
     linkedin: "https://www.linkedin.com/in/stefan-wang-6516bb187/",
+    substack: "https://substack.com/@stefanwangeth",
   },
   status: {
     text: "Open to AM / Sales roles in AI or blockchain",
@@ -17,7 +18,7 @@ export const siteConfig = {
 
 export const aboutConfig: AboutConfig = {
   greeting: "Hi, I'm Stefan.",
-  bio: "I build little things at the intersection of AI, crypto, and curiosity — a Polymarket whale tracker, an AI portraiture app, a Dutch house-buying calculator I built because I was buying one, a satirical app to rate your date. Looking to move closer to product and customers in AI or blockchain — drop me a line if that sounds interesting.",
+  bio: "I build things people actually use — fast, scrappy, usually in AI or crypto, sometimes just because the idea won't leave me alone. I care more about the product and the people using it than the hype. If you're building something in AI or blockchain, I'd love to talk.",
   avatarUrl: "",
   avatarFallback: "SW",
   tags: [
@@ -45,28 +46,24 @@ export const aboutConfig: AboutConfig = {
 
 export const articles: Article[] = [
   {
-    title: "我停止了和外国人的无意义社交",
+    title: "The End of Human Labor",
     description: "",
-    url: "https://www.xiaohongshu.com/explore/672014e3000000002100b427?xsec_token=ABNmLl8W7kzldbrPaU4EQbavoIq4l9OanxEgqOfasCBIQ=",
-    date: "2024-10-29",
-    emoji: "🤝",
-    caption: "On the cost of small talk abroad.",
+    url: "https://stefanwang.substack.com/p/the-end-of-human-labor",
+    date: "2026-06-09",
+    emoji: "🤖",
+    caption:
+      "Notes from an AI fireside chat with Google — why coding gets automated first, and what enterprises are quietly planning for knowledge work.",
+    lang: "en",
   },
   {
-    title: "尽早体验有钱人的生活",
-    description: "",
-    url: "https://www.xiaohongshu.com/explore/6722bb85000000001b0130db?xsec_token=ABLJFbVkZKyJm838Ka1D-aYMooqUrvaranOa7V6cwp_5M=",
-    date: "2024-10-31",
-    emoji: "💰",
-    caption: "On taste, exposure, and ambition.",
-  },
-  {
-    title: "30岁以前，试错的人生才是开挂的人生",
-    description: "",
-    url: "https://www.xiaohongshu.com/explore/6720f32e000000001901ae2c?xsec_token=ABNmLl8W7kzldbrPaU4EQbalzbEQVsb0O3h_rQqFXFzsc=",
-    date: "2024-10-29",
-    emoji: "🚀",
-    caption: "On why optionality compounds in your twenties.",
+    title: "AI时代的MBB",
+    description: "MBB in the age of AI — an insider's confession",
+    url: "https://stefanwang.substack.com/p/aimbb",
+    date: "2026-06-09",
+    emoji: "💼",
+    caption:
+      "Three years inside an MBB consultancy in Amsterdam — what AI does to a business built on selling people.",
+    lang: "zh",
   },
 ];
 
@@ -80,6 +77,24 @@ export const nowItems: NowItem[] = [
 
 export const seedGuestbookMessages: GuestbookMessage[] = [
   {
+    id: 6,
+    name: "indiehacker_jo",
+    message: "How do you ship this many side projects?? Teach me your ways 😅",
+    date: "2026-05-12",
+  },
+  {
+    id: 5,
+    name: "amsterdammer",
+    message: "Your NL house-buying calc saved me a whole spreadsheet. Dank je! 🇳🇱",
+    date: "2026-04-18",
+  },
+  {
+    id: 4,
+    name: "whale_watcher",
+    message: "Found you through Predictooor — the whale alerts are legit. Nice work 🐋",
+    date: "2026-03-30",
+  },
+  {
     id: 1,
     name: "PixelFan42",
     message: "Love the retro vibes! This site is so cool 🎮",
@@ -92,6 +107,12 @@ export const seedGuestbookMessages: GuestbookMessage[] = [
     date: "2026-02-20",
   },
   {
+    id: 7,
+    name: "ai_curious",
+    message: "Came for the portfolio, stayed for the corporate translator 😂",
+    date: "2026-02-15",
+  },
+  {
     id: 3,
     name: "RetroGamer",
     message: "Did you find the secret? ↑↑↓↓←→←→BA 👀",
@@ -102,15 +123,37 @@ export const seedGuestbookMessages: GuestbookMessage[] = [
 export const projects: Project[] = [
   {
     title: "Predictooor",
-    description: "Got nerd-sniped by Polymarket whales. Built a real-time tracker — wallet leaderboards, alerts when 6-figure positions move, on-chain receipts.",
+    description: "Real-time Polymarket whale tracker. Wallet leaderboards, large-position alerts, on-chain receipts.",
     url: "https://www.predictooor.xyz",
     emoji: "🐋",
     color: "success",
     stack: ["Next.js", "Polymarket API", "Ethereum"],
   },
   {
+    title: "ReferReady",
+    description: "Reference-call prep for job candidates. Sample questions, scripts, and frameworks — the underrated leverage point in hiring.",
+    url: "https://referready.com",
+    emoji: "📋",
+    color: "primary",
+    stack: ["Next.js", "Stripe"],
+  },
+  {
+    title: "Analog Camera Museum",
+    description: "Pixel-art portfolio showcasing every project on this list.",
+    url: "https://analogcams.com",
+    emoji: "📷",
+    color: "primary",
+  },
+  {
+    title: "Corporate Translator",
+    description: "Decodes corporate jargon into plain English. Live BS score included.",
+    url: "/corperate_translator",
+    emoji: "💼",
+    color: "success",
+  },
+  {
     title: "Earl",
-    description: "Bespoke AI portraiture. Upload a selfie, get a museum-quality classical portrait. Built with diffusion models and obsessive prompt tuning.",
+    description: "AI-generated classical portraits from a single selfie. Diffusion models, museum-grade output.",
     url: "https://www.earl.homes",
     emoji: "🖼️",
     color: "warning",
@@ -118,60 +161,38 @@ export const projects: Project[] = [
   },
   {
     title: "InstaClaw",
-    description: "Spin up AI assistants on European servers in under 60 seconds — no DevOps. Built for teams that want OpenAI-style apps without sending data to US-east.",
+    description: "Deploy AI assistants on EU infrastructure in 60 seconds. GDPR-friendly alternative to US-hosted LLM apps.",
     url: "https://www.instaclaw.cloud",
     emoji: "🤖",
     color: "error",
     stack: ["Next.js", "EU infra", "LLM APIs"],
   },
   {
-    title: "ReferReady",
-    description: "Reference calls are the most underrated part of a job hunt. A tool to help candidates prep — sample questions, scripts, the works.",
-    url: "https://referready.com",
-    emoji: "📋",
-    color: "primary",
-    stack: ["Next.js", "Stripe"],
-  },
-  {
     title: "NL House Buying Tool",
-    description: "Built this while buying a house in the Netherlands. Mortgage math, tax breaks, rent-vs-buy, regulation checks — the calculations my broker glossed over.",
+    description: "End-to-end calculator for buying property in the Netherlands. Mortgage, tax, rent-vs-buy, regulation.",
     url: "/NLHousebuying",
     emoji: "🏠",
     color: "primary",
   },
   {
     title: "China Migration",
-    description: "Three decades of migration in and out of China, animated as particle flows over a world map. UN DESA data, 1990–2020.",
+    description: "Three decades of inbound and outbound China migration, visualized as particle flows. UN DESA data, 1990–2020.",
     url: "/china-migration",
     emoji: "🌏",
     color: "warning",
   },
   {
     title: "ADHD Saver",
-    description: "Built this for myself. Computer vision watches your face — if you zone out, it pings you back. 15 alert sounds. Surprisingly effective.",
+    description: "Computer-vision focus tracker. Detects zone-outs in real time and nudges you back. 15 alert tones.",
     url: "/adhd_saver",
     emoji: "🧠",
     color: "warning",
   },
   {
-    title: "Corporate Translator",
-    description: "Translates corporate jargon into Gen Z. Live BS Score. No more synergies.",
-    url: "/corperate_translator",
-    emoji: "💼",
-    color: "success",
-  },
-  {
     title: "Date Scoring",
-    description: "Rate your date 1–100, with red flags and green flags. Strictly satirical. Made me laugh.",
+    description: "Satirical 1–100 date rating tool with red and green flag breakdowns.",
     url: "/date-scoring",
     emoji: "💘",
-    color: "primary",
-  },
-  {
-    title: "Analog Camera Museum",
-    description: "This site! Pixel-art portfolio for the rest of the stuff above.",
-    url: "https://analogcams.com",
-    emoji: "🎮",
     color: "primary",
   },
 ];

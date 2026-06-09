@@ -3,7 +3,6 @@ import PixelDivider from "@/components/PixelDivider";
 import AboutMe from "@/components/AboutMe";
 import ProjectGrid from "@/components/ProjectGrid";
 import ArticleGrid from "@/components/ArticleGrid";
-import NowSection from "@/components/NowSection";
 import Guestbook from "@/components/Guestbook";
 import Contact from "@/components/Contact";
 import KonamiEasterEgg from "@/components/KonamiEasterEgg";
@@ -17,8 +16,6 @@ export default function Home() {
       <AboutMe />
       <PixelDivider />
       <ProjectGrid />
-      <PixelDivider />
-      <NowSection />
       <PixelDivider />
       <ArticleGrid />
       <PixelDivider />
