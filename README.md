@@ -44,8 +44,8 @@ src/
 │   ├── Hero.tsx            # Animated hero section
 │   ├── ProjectGrid.tsx     # Project cards grid
 │   ├── ProjectCard.tsx     # Individual project card
-│   ├── ArticleGrid.tsx     # Red Note posts grid
-│   ├── AboutMe.tsx         # About section with skills & likes
+│   ├── ArticleGrid.tsx     # Substack posts grid
+│   ├── AboutMe.tsx         # About section with bio & identity badges
 │   ├── NowSection.tsx      # "What I'm doing now" section
 │   ├── Guestbook.tsx       # Guestbook with messages
 │   ├── KonamiEasterEgg.tsx # Konami code easter egg
