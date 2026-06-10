@@ -18,12 +18,12 @@ export default function ProjectCard({ project }: { project: Project }) {
       className="card-hover block transition-transform h-full"
     >
       <div className="nes-container with-title is-centered h-full flex flex-col">
-        <p className="title font-pixel !flex items-center justify-center text-center min-h-[2.6rem]">
+        <p className="title font-pixel !flex items-start justify-center text-center min-h-[4.5rem] leading-snug">
           {project.title}
         </p>
         <div className="flex flex-col items-center text-center gap-4 p-2 flex-1">
           <span className="text-4xl leading-none">{project.emoji}</span>
-          <p className="font-body text-sm text-muted-foreground flex-1">
+          <p className="font-body text-sm text-muted-foreground flex-1 w-full">
             {project.description}
           </p>
           <button type="button" className={btnCls}>

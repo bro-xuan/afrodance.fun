@@ -18,13 +18,13 @@ export const siteConfig = {
 
 export const aboutConfig: AboutConfig = {
   greeting: "Hi, I'm Stefan.",
-  bio: "I build things people actually use — fast, scrappy, usually in AI or crypto, sometimes just because the idea won't leave me alone. I care more about the product and the people using it than the hype. If you're building something in AI or blockchain, I'd love to talk.",
+  bio: "I build silly things that some people surprisingly use — mostly around AI, crypto, and trading. This page is part scrapbook of stuff I've shipped, part soapbox for my rants on whatever topic won't leave me alone lately. Poke around, and if you're building something fun, let's talk.",
   avatarUrl: "",
   avatarFallback: "SW",
   tags: [
-    { label: "builder", color: "bg-[#e8f5d4] text-[#3a6510]" },
-    { label: "AI & crypto", color: "bg-[#d6eaf8] text-[#15608f]" },
-    { label: "shipping fast", color: "bg-[#fef3cd] text-[#856404]" },
+    { label: "AI", color: "bg-[#e8f5d4] text-[#3a6510]" },
+    { label: "Crypto", color: "bg-[#d6eaf8] text-[#15608f]" },
+    { label: "SaaS", color: "bg-[#fef3cd] text-[#856404]" },
     { label: "EN / 中文 / DE", color: "bg-[#fadbd8] text-[#a93226]" },
   ],
   skills: [
