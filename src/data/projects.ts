@@ -195,4 +195,12 @@ export const projects: Project[] = [
     emoji: "💘",
     color: "primary",
   },
+  {
+    title: "Greenroom",
+    description: "Voice-native mock finance interviews. AI interviewer grounded in cited company data, with every bluff flagged and sourced after the call. Built for Megathon 2026.",
+    url: "https://greenroom-inky.vercel.app/",
+    emoji: "🎙️",
+    color: "success",
+    stack: ["Next.js", "Vapi", "Cala.ai", "Anthropic API"],
+  },
 ];
