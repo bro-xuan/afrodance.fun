@@ -32,7 +32,7 @@ export default function Hero() {
           height={128}
           unoptimized
           priority
-          className="float-pixel mb-6 h-28 w-28 border-4 border-[#2d2d2d] sm:h-32 sm:w-32"
+          className="float-pixel mb-6 h-28 w-28 sm:h-32 sm:w-32"
           style={{ imageRendering: "pixelated" }}
         />
 
