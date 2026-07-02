@@ -6,12 +6,16 @@ A pixel-art portfolio site for showcasing fun side projects. Built with Next.js,
 
 | Project | Description |
 |---------|-------------|
-| **Analog Camera Museum** | Pixel-art portfolio for fun projects |
 | **Predictooor** | Real-time Polymarket whale tracker with smart alerts and wallet analytics |
+| **ReferReady** | Reference-call prep for job candidates |
+| **Analog Camera Museum** | Pixel-art portfolio for fun projects |
+| **Corporate Translator** | Decodes corporate jargon into plain English, live BS score included |
 | **Earl** | AI-powered bespoke portraiture — turn any photo into a classical artwork |
-| **ADHD Saver** | Webcam-based focus monitor that plays escalating alerts when you look away |
-| **Date Scoring** | Satirical app to rate your date on a 1-100 scale |
 | **InstaClaw** | Deploy OpenClaw AI assistants to European servers in under 60 seconds |
+| **NL House Buying Tool** | End-to-end calculator for buying property in the Netherlands |
+| **China Migration** | Three decades of China migration visualized as particle flows |
+| **ADHD Saver** | Webcam-based focus monitor that plays escalating alerts when you look away |
+| **Greenroom** | Voice-native mock finance interviews with cited company data (Megathon 2026) |
 
 ## Tech Stack
 
