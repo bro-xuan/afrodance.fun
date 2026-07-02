@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { siteConfig } from "@/data/projects";
 
 // Decorative floating pixels — same palette as PixelDivider
@@ -24,7 +25,16 @@ export default function Hero() {
       </div>
 
       <div className="relative flex flex-col items-center">
-        <div className="float-pixel mb-6 text-7xl sm:text-8xl">{siteConfig.emoji}</div>
+        <Image
+          src="/selfie-pixel.png"
+          alt="Pixel portrait of Stefan Wang"
+          width={128}
+          height={128}
+          unoptimized
+          priority
+          className="float-pixel mb-6 h-28 w-28 border-4 border-[#2d2d2d] sm:h-32 sm:w-32"
+          style={{ imageRendering: "pixelated" }}
+        />
 
         <h1 className="font-pixel mb-3 text-[clamp(1.4rem,5.5vw,3.5rem)] leading-tight text-[#4a7c10] [text-shadow:0.12em_0.12em_0_#d5e7b4]">
           {siteConfig.name}
@@ -43,11 +53,11 @@ export default function Hero() {
           <a href="#projects" className="nes-btn is-success">
             View projects
           </a>
-          <a href="#contact" className="nes-btn is-primary">
-            Say hi
+          <a href="#writing" className="nes-btn is-primary">
+            View articles
           </a>
           <a href="#guestbook" className="nes-btn is-warning">
-            Talk to Stefan
+            Leave a message
           </a>
         </div>
       </div>
