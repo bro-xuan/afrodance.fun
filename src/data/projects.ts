@@ -188,13 +188,14 @@ export const projects: Project[] = [
     emoji: "🧠",
     color: "warning",
   },
-  {
-    title: "Date Scoring",
-    description: "Satirical 1–100 date rating tool with red and green flag breakdowns.",
-    url: "/date-scoring",
-    emoji: "💘",
-    color: "primary",
-  },
+  // Hidden until the /date-scoring route exists — linking to it today 404s.
+  // {
+  //   title: "Date Scoring",
+  //   description: "Satirical 1–100 date rating tool with red and green flag breakdowns.",
+  //   url: "/date-scoring",
+  //   emoji: "💘",
+  //   color: "primary",
+  // },
   {
     title: "Greenroom",
     description: "Voice-native mock finance interviews. AI interviewer grounded in cited company data, with every bluff flagged and sourced after the call. Built for Megathon 2026.",
