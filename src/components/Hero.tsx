@@ -26,13 +26,13 @@ export default function Hero() {
 
       <div className="relative flex flex-col items-center">
         <Image
-          src="/selfie-pixel.png"
+          src="/selfie-pixel-full.png"
           alt="Pixel portrait of Stefan Wang"
-          width={128}
-          height={128}
+          width={160}
+          height={160}
           unoptimized
           priority
-          className="float-pixel mb-6 h-28 w-28 sm:h-32 sm:w-32"
+          className="float-pixel mb-6 h-32 w-32 sm:h-40 sm:w-40"
           style={{ imageRendering: "pixelated" }}
         />
 
