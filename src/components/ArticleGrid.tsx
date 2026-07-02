@@ -51,7 +51,7 @@ export default function ArticleGrid() {
               rel="noopener noreferrer"
               className="card-hover block h-full"
             >
-              <Card font="normal" className="h-full flex flex-col p-6">
+              <Card font="normal" className="pixel-shadow h-full flex flex-col p-6">
                 <div className="flex items-start justify-between mb-4">
                   <span className="text-3xl">{article.emoji}</span>
                   {badge && (
