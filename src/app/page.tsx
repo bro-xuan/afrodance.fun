@@ -12,16 +12,18 @@ export default function Home() {
   return (
     <main className="overflow-x-clip">
       <Hero />
-      <PixelDivider />
       <AboutMe />
       <PixelDivider />
-      <ProjectGrid />
+      <div className="border-y-4 border-[#dbe7c2] bg-[#f2f7e6] py-6">
+        <ProjectGrid />
+      </div>
       <PixelDivider />
       <ArticleGrid />
-      <PixelDivider />
-      <Guestbook />
-      <PixelDivider />
+      <div className="border-y-4 border-[#cfe3f2] bg-[#ecf4fb] py-6">
+        <Guestbook />
+      </div>
       <Contact />
+      <PixelDivider />
       <Footer />
       <KonamiEasterEgg />
     </main>

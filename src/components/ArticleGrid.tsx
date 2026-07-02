@@ -21,7 +21,7 @@ export default function ArticleGrid() {
   return (
     <section className="mx-auto w-full max-w-3xl px-4 py-8">
       <div className="text-center mb-10">
-        <h2 className="font-pixel text-[#4a7c10] text-lg sm:text-xl mb-3">
+        <h2 className="font-pixel text-[#4a7c10] text-xl sm:text-2xl [text-shadow:0.12em_0.12em_0_#d5e7b4] mb-3">
           Writing
         </h2>
         <p className="font-body text-sm text-muted-foreground max-w-xl mx-auto">

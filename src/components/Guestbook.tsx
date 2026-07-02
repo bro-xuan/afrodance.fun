@@ -83,7 +83,7 @@ export default function Guestbook() {
 
   return (
     <section className="mx-auto w-full max-w-3xl px-4 py-8">
-      <h2 className="font-pixel text-[#4a7c10] text-lg sm:text-xl text-center mb-8">
+      <h2 className="font-pixel text-[#4a7c10] text-xl sm:text-2xl [text-shadow:0.12em_0.12em_0_#c3ddf0] text-center mb-8">
         Guestbook
       </h2>
       <Card font="normal">
