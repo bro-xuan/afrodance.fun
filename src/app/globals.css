@@ -47,6 +47,12 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
+/* Fluid root type scale — keeps the site readable on high-DPI wide displays */
+html {
+  font-size: clamp(16px, 1.15vw, 24px);
+  scroll-behavior: smooth;
+}
+
 /* NES.css light theme overrides */
 .nes-container {
   background-color: #ffffff;
