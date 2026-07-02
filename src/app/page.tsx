@@ -10,7 +10,7 @@ import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-    <main className="mx-auto max-w-6xl">
+    <main className="overflow-x-clip">
       <Hero />
       <PixelDivider />
       <AboutMe />

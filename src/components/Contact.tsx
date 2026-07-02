@@ -2,7 +2,7 @@ import { siteConfig } from "@/data/projects";
 
 export default function Contact() {
   return (
-    <section className="mx-auto w-full max-w-3xl px-4 py-8">
+    <section id="contact" className="mx-auto w-full max-w-3xl scroll-mt-8 px-4 py-8">
       <div className="nes-container with-title">
         <p className="title font-pixel">say hi</p>
         <div className="flex flex-col items-center gap-4 p-2 text-center">
