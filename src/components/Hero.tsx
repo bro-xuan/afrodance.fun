@@ -39,19 +39,15 @@ export default function Hero() {
           <span className="cursor-blink ml-1 inline-block text-[#4a7c10]">_</span>
         </p>
 
-        <div className="mb-9 inline-flex items-center gap-3 border-4 border-[#2d2d2d] bg-white px-4 py-2.5">
-          <span className="cursor-blink inline-block h-2.5 w-2.5 shrink-0 bg-[#92cc41]" />
-          <span className="font-pixel text-[0.8rem] leading-relaxed">
-            {siteConfig.status.text}
-          </span>
-        </div>
-
         <div className="flex flex-wrap items-center justify-center gap-4">
           <a href="#projects" className="nes-btn is-success">
             View projects
           </a>
           <a href="#contact" className="nes-btn is-primary">
             Say hi
+          </a>
+          <a href="#guestbook" className="nes-btn is-warning">
+            Talk to Stefan
           </a>
         </div>
       </div>
