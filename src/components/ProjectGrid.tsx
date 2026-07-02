@@ -3,9 +3,9 @@ import ProjectCard from "./ProjectCard";
 
 export default function ProjectGrid() {
   return (
-    <section className="mx-auto w-full max-w-6xl px-4 py-8">
+    <section id="projects" className="mx-auto w-full max-w-6xl scroll-mt-8 px-4 py-8">
       <div className="text-center mb-10">
-        <h2 className="font-pixel text-[#4a7c10] text-lg sm:text-xl mb-3">
+        <h2 className="font-pixel text-[#4a7c10] text-xl sm:text-2xl [text-shadow:0.12em_0.12em_0_#d5e7b4] mb-3">
           Projects
         </h2>
         <p className="font-body text-sm text-muted-foreground mb-4">
