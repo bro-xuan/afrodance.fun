@@ -296,3 +296,27 @@ body:has(.china-migration-page) {
     @apply bg-background text-foreground;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .cursor-blink,
+  .float-pixel,
+  .konami-shake,
+  .konami-fade-in,
+  .cm-play-pulse {
+    animation: none !important;
+  }
+  .card-hover,
+  .pixel-shadow,
+  .emoji-tile {
+    transition: none !important;
+  }
+  .card-hover:hover {
+    transform: none;
+  }
+  .card-hover:hover .emoji-tile {
+    transform: none;
+  }
+}
