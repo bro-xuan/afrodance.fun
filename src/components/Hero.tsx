@@ -26,7 +26,7 @@ export default function Hero() {
       <div className="relative flex flex-col items-center">
         <div className="float-pixel mb-6 text-7xl sm:text-8xl">{siteConfig.emoji}</div>
 
-        <h1 className="font-pixel mb-3 text-[clamp(1.75rem,5.5vw,3.5rem)] leading-tight text-[#4a7c10] [text-shadow:0.12em_0.12em_0_#d5e7b4]">
+        <h1 className="font-pixel mb-3 text-[clamp(1.4rem,5.5vw,3.5rem)] leading-tight text-[#4a7c10] [text-shadow:0.12em_0.12em_0_#d5e7b4]">
           {siteConfig.name}
         </h1>
 
@@ -41,7 +41,7 @@ export default function Hero() {
 
         <div className="mb-9 inline-flex items-center gap-3 border-4 border-[#2d2d2d] bg-white px-4 py-2.5">
           <span className="cursor-blink inline-block h-2.5 w-2.5 shrink-0 bg-[#92cc41]" />
-          <span className="font-pixel text-[0.6rem] leading-relaxed sm:text-xs">
+          <span className="font-pixel text-[0.8rem] leading-relaxed">
             {siteConfig.status.text}
           </span>
         </div>

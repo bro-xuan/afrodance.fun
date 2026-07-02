@@ -54,6 +54,14 @@ html {
 }
 
 /* NES.css light theme overrides */
+
+/* WCAG AA: dark text on colored buttons (default white fails contrast on green/blue/red) */
+.nes-btn.is-primary,
+.nes-btn.is-success,
+.nes-btn.is-error {
+  color: #212529;
+}
+
 .nes-container {
   background-color: #ffffff;
   border-image-repeat: stretch;
@@ -109,7 +117,8 @@ html {
   transition: box-shadow 0.3s steps(4);
 }
 
-.card-hover:hover .pixel-shadow {
+.card-hover:hover .pixel-shadow,
+.card-hover.pixel-shadow:hover {
   box-shadow: 0.625rem 0.75rem 0 rgba(45, 45, 45, 0.18);
 }
 
