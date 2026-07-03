@@ -183,6 +183,16 @@ html {
   }
 }
 
+/* Pixel grass strip along the hero's bottom edge — hand-placed blades in the
+   title-shadow green family, tiled as a crisp-edge SVG. */
+.pixel-grass {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16' shape-rendering='crispEdges'%3E%3Crect x='0' y='12' width='32' height='4' fill='%23d5e7b4'/%3E%3Crect x='2' y='8' width='2' height='4' fill='%23d5e7b4'/%3E%3Crect x='8' y='4' width='2' height='8' fill='%23b7d187'/%3E%3Crect x='14' y='10' width='2' height='2' fill='%23d5e7b4'/%3E%3Crect x='20' y='6' width='2' height='6' fill='%23b7d187'/%3E%3Crect x='26' y='8' width='2' height='4' fill='%23d5e7b4'/%3E%3Crect x='30' y='10' width='2' height='2' fill='%23b7d187'/%3E%3Crect x='11' y='8' width='2' height='4' fill='%2392cc41'/%3E%3Crect x='23' y='10' width='2' height='2' fill='%2392cc41'/%3E%3C/svg%3E");
+  background-size: 3rem 1.5rem;
+  background-repeat: repeat-x;
+  background-position: bottom left;
+  image-rendering: pixelated;
+}
+
 /* Card hover — stepped pixel feel */
 .card-hover {
   transition: transform 0.3s steps(4);

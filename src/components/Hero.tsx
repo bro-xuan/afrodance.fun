@@ -26,6 +26,11 @@ export default function Hero() {
         ))}
       </div>
 
+      <div
+        aria-hidden="true"
+        className="pixel-grass pointer-events-none absolute inset-x-0 bottom-0 h-6"
+      />
+
       <div className="relative flex flex-col items-center">
         <Image
           src="/selfie-pixel.png"
