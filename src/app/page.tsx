@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import PixelDivider from "@/components/PixelDivider";
+import DitherBand from "@/components/DitherBand";
 import AboutMe from "@/components/AboutMe";
 import ProjectGrid from "@/components/ProjectGrid";
 import ArticleGrid from "@/components/ArticleGrid";
@@ -14,14 +15,14 @@ export default function Home() {
       <Hero />
       <AboutMe />
       <PixelDivider />
-      <div className="border-y-4 border-[#dbe7c2] bg-[#f2f7e6] py-6">
+      <DitherBand color="#f2f7e6" className="py-6">
         <ProjectGrid />
-      </div>
+      </DitherBand>
       <PixelDivider />
       <ArticleGrid />
-      <div className="border-y-4 border-[#cfe3f2] bg-[#ecf4fb] py-6">
+      <DitherBand color="#ecf4fb" className="py-6">
         <Guestbook />
-      </div>
+      </DitherBand>
       <Contact />
       <PixelDivider />
       <Footer />
