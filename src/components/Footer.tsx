@@ -6,9 +6,6 @@ export default function Footer() {
       <div className="flex justify-center">
         <SocialLinks size="medium" />
       </div>
-      <p className="font-pixel mt-4 text-xs text-muted-foreground">
-        made with pixels &amp; {"<3"}
-      </p>
     </footer>
   );
 }
