@@ -131,6 +131,58 @@ html {
   }
 }
 
+/* Pixel "XP bar" — reading progress fills in chunky steps along the top. */
+@supports (animation-timeline: scroll()) {
+  .scroll-xp {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10000; /* above the CRT scanline overlay */
+    height: 0.375rem;
+    width: 100%;
+    transform-origin: left center;
+    transform: scaleX(0);
+    background: repeating-linear-gradient(
+      90deg,
+      #6aad30 0 0.75rem,
+      #92cc41 0.75rem 1.5rem
+    );
+    animation: xp-fill steps(48, jump-none) both;
+    animation-timeline: scroll(root);
+  }
+}
+
+@keyframes xp-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Content rises in with a stepped, sprite-like motion as it enters view.
+   backwards fill (not both): once past the range the animation stops
+   applying, so hover transforms on the same element keep working. */
+@supports (animation-timeline: view()) {
+  .pixel-reveal {
+    animation: pixel-reveal steps(5, jump-none) backwards;
+    animation-timeline: view();
+    animation-range: entry 10% entry 45%;
+  }
+}
+
+@keyframes pixel-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Card hover — stepped pixel feel */
 .card-hover {
   transition: transform 0.3s steps(4);
@@ -344,7 +396,9 @@ body:has(.china-migration-page) {
   .konami-shake,
   .konami-fade-in,
   .cm-play-pulse,
-  .drift-pixel {
+  .drift-pixel,
+  .scroll-xp,
+  .pixel-reveal {
     animation: none !important;
   }
   .card-hover,

@@ -46,6 +46,7 @@ import Footer from "@/components/Footer";
 export default function Home() {
   return (
     <main className="overflow-x-clip">
+      <div aria-hidden="true" className="scroll-xp" />
       <Hero />
       <div className="relative">
         <DriftPixels pixels={aboutDrift} className="hidden lg:block" />
