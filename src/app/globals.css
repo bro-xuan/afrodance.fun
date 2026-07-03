@@ -183,6 +183,17 @@ html {
   }
 }
 
+/* Print renders without scrolling, so scroll-driven reveals would stay blank. */
+@media print {
+  .pixel-reveal,
+  .drift-pixel {
+    animation: none !important;
+  }
+  .scroll-xp {
+    display: none;
+  }
+}
+
 /* Pixel grass strip along the hero's bottom edge — hand-placed blades in the
    title-shadow green family, tiled as a crisp-edge SVG. */
 .pixel-grass {
