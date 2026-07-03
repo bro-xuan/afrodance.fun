@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { siteConfig } from "@/data/projects";
+import SocialLinks from "@/components/SocialLinks";
 
 // Decorative floating pixels — same palette as PixelDivider.
 // Each bobs in place and drifts upward on scroll at its own speed.
@@ -47,9 +48,15 @@ export default function Hero() {
           {siteConfig.name}
         </h1>
 
-        <p className="font-body mb-5 text-base text-muted-foreground sm:text-lg">
-          by Stefan Wang
-        </p>
+        <div className="mb-5 flex items-center gap-3">
+          <p className="font-body text-base text-muted-foreground sm:text-lg">
+            by Stefan Wang
+          </p>
+          <span aria-hidden="true" className="text-muted-foreground/50">
+            ·
+          </span>
+          <SocialLinks size="small" />
+        </div>
 
         <p className="font-body mb-8 max-w-xl text-lg text-[#2d2d2d] sm:text-xl">
           {siteConfig.tagline}
