@@ -48,14 +48,13 @@ export default function Hero() {
           {siteConfig.name}
         </h1>
 
-        <div className="mb-5 flex items-center gap-3">
-          <p className="font-body text-base text-muted-foreground sm:text-lg">
+        <div className="mb-5 flex flex-wrap items-center justify-center gap-3">
+          {/* span, not p: NES.css's unlayered `p {margin-bottom}` outranks
+              Tailwind margin utilities and skews items-center alignment */}
+          <span className="font-body text-base text-muted-foreground sm:text-lg">
             by Stefan Wang
-          </p>
-          <span aria-hidden="true" className="text-muted-foreground/50">
-            ·
           </span>
-          <SocialLinks size="small" />
+          <SocialLinks size="regular" />
         </div>
 
         <p className="font-body mb-8 max-w-xl text-lg text-[#2d2d2d] sm:text-xl">

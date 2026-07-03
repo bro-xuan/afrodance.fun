@@ -30,15 +30,18 @@ function LinkedInPixel({ px }: { px: number }) {
   );
 }
 
-const nesSize = { small: "is-small", medium: "is-medium" } as const;
-const linkedinPx = { small: 16, medium: 48 } as const;
-const gap = { small: "gap-4", medium: "gap-6" } as const;
+// NES.css icon scales: default (no class) = 2x = 32px, is-medium = 3x = 48px.
+// 1x (is-small, 16px) is deliberately not offered — pixel art at 1px per art
+// pixel reads as an illegible smudge.
+const nesSize = { regular: "", medium: "is-medium" } as const;
+const linkedinPx = { regular: 32, medium: 48 } as const;
+const gap = { regular: "gap-3", medium: "gap-6" } as const;
 
 export default function SocialLinks({
   size = "medium",
   className = "",
 }: {
-  size?: "small" | "medium";
+  size?: "regular" | "medium";
   className?: string;
 }) {
   return (
