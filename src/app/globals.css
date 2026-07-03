@@ -102,6 +102,35 @@ html {
   }
 }
 
+/* Scroll-parallax pixel drift — decorative pixels rise at different speeds
+   as their section traverses the viewport. Pure CSS scroll-driven animation;
+   browsers without support render them as static decoration. */
+@supports (animation-timeline: view()) {
+  .drift-pixel {
+    animation: drift-rise linear both;
+    animation-timeline: view();
+    animation-range: cover -30% cover 130%;
+  }
+  .drift-slow {
+    --drift-travel: 3.5rem;
+  }
+  .drift-mid {
+    --drift-travel: 6.5rem;
+  }
+  .drift-fast {
+    --drift-travel: 10rem;
+  }
+}
+
+@keyframes drift-rise {
+  from {
+    transform: translateY(calc(var(--drift-travel, 5rem) / 2));
+  }
+  to {
+    transform: translateY(calc(var(--drift-travel, 5rem) / -2));
+  }
+}
+
 /* Card hover — stepped pixel feel */
 .card-hover {
   transition: transform 0.3s steps(4);
@@ -314,7 +343,8 @@ body:has(.china-migration-page) {
   .float-pixel,
   .konami-shake,
   .konami-fade-in,
-  .cm-play-pulse {
+  .cm-play-pulse,
+  .drift-pixel {
     animation: none !important;
   }
   .card-hover,
