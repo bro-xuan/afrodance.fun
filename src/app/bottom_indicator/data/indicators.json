@@ -1,0 +1,105 @@
+{
+  "generatedAt": "2026-07-04T20:28:29.563Z",
+  "btcPrice": 63174,
+  "rows": [
+    {
+      "slug": "mvrv-zscore",
+      "name": "MVRV Z-Score",
+      "blurb": "Market cap vs realized cap in standard deviations. Deep lows mark historic bottoms.",
+      "phase": "Bottom",
+      "score": 18,
+      "change30d": -15,
+      "rawValue": 0.2976,
+      "asOfDate": "2026-07-03",
+      "available": true
+    },
+    {
+      "slug": "mvrv",
+      "name": "MVRV Ratio",
+      "blurb": "Market value / realized value. Below ~1 means the average holder is underwater.",
+      "phase": "Bottom",
+      "score": 18,
+      "change30d": -1,
+      "rawValue": 1.189,
+      "asOfDate": "2026-07-03",
+      "available": true
+    },
+    {
+      "slug": "nupl",
+      "name": "Net Unrealized P/L (NUPL)",
+      "blurb": "Share of supply sitting in profit. Negative = net-unrealized-loss capitulation.",
+      "phase": "Bottom",
+      "score": 18,
+      "change30d": -1,
+      "rawValue": 0.1589,
+      "asOfDate": "2026-07-03",
+      "available": true
+    },
+    {
+      "slug": "sopr",
+      "name": "SOPR",
+      "blurb": "Spent-output profit ratio. Sustained sub-1 means coins move at a loss.",
+      "phase": "Bearish",
+      "score": 33,
+      "change30d": 32,
+      "rawValue": 0.9998,
+      "asOfDate": "2026-07-03",
+      "available": true
+    },
+    {
+      "slug": "reserve-risk",
+      "name": "Reserve Risk",
+      "blurb": "Confidence of long-term holders vs price. Lows flag attractive risk/reward.",
+      "phase": "Bottom",
+      "score": 6,
+      "change30d": -3,
+      "rawValue": 0.0005,
+      "asOfDate": "2026-07-03",
+      "available": true
+    },
+    {
+      "slug": "sth-mvrv",
+      "name": "Short-Term Holder MVRV",
+      "blurb": "Cost-basis ratio of recent buyers. Deep lows = fresh money deeply underwater.",
+      "phase": "Bearish",
+      "score": 21,
+      "change30d": 10,
+      "rawValue": 0.9,
+      "asOfDate": "2026-07-03",
+      "available": true
+    },
+    {
+      "slug": "lth-mvrv",
+      "name": "Long-Term Holder MVRV",
+      "blurb": "Cost-basis ratio of seasoned holders. Lows accompany late-stage bear bottoms.",
+      "phase": "Bottom",
+      "score": 18,
+      "change30d": -2,
+      "rawValue": 1.27,
+      "asOfDate": "2026-07-03",
+      "available": true
+    },
+    {
+      "slug": "realized-price",
+      "name": "Realized Price",
+      "blurb": "Aggregate on-chain cost basis. Spot below it means the market is underwater.",
+      "phase": "Bottom",
+      "score": 18,
+      "change30d": -1,
+      "rawValue": 1.1886,
+      "asOfDate": "2026-07-03",
+      "available": true
+    },
+    {
+      "slug": "balanced-price",
+      "name": "Balanced Price",
+      "blurb": "Realized minus transferred price. Spot near it has marked cycle bottoms.",
+      "phase": "Bottom",
+      "score": 18,
+      "change30d": -1,
+      "rawValue": 2.1883,
+      "asOfDate": "2026-07-03",
+      "available": true
+    }
+  ]
+}

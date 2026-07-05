@@ -182,6 +182,14 @@ export const projects: Project[] = [
     color: "warning",
   },
   {
+    title: "BTC Bottom Indicator",
+    description: "On-chain signal dashboard — MVRV, NUPL, SOPR & realized-price models scored 0–100 to gauge how close Bitcoin is to a cycle bottom.",
+    url: "/bottom_indicator",
+    emoji: "📉",
+    color: "error",
+    stack: ["Next.js", "bitcoin-data.com", "On-chain"],
+  },
+  {
     title: "ADHD Saver",
     description: "Computer-vision focus tracker. Detects zone-outs in real time and nudges you back. 15 alert tones.",
     url: "/adhd_saver",

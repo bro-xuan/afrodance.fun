@@ -15,6 +15,7 @@ A pixel-art portfolio site for showcasing fun side projects. Built with Next.js,
 | **NL House Buying Tool** | End-to-end calculator for buying property in the Netherlands |
 | **China Migration** | Three decades of China migration visualized as particle flows |
 | **ADHD Saver** | Webcam-based focus monitor that plays escalating alerts when you look away |
+| **BTC Bottom Indicator** | On-chain signal dashboard scoring how close Bitcoin is to a cycle bottom |
 | **Greenroom** | Voice-native mock finance interviews with cited company data (Megathon 2026) |
 
 ## Tech Stack
@@ -77,6 +78,7 @@ public/
 | `npm run build` | Production build |
 | `npm run start` | Start production server |
 | `npm run lint` | Run ESLint |
+| `npm run fetch:indicators` | Refresh the BTC Bottom Indicator data snapshot |
 
 ## Easter Egg
 
