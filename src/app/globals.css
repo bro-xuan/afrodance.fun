@@ -258,6 +258,45 @@ body:has(.china-migration-page) {
   background: #0e1726;
 }
 
+/* Suppress global retro effects on the clean-modern bottom-indicator page. */
+body:has(.bottom-indicator-page)::after {
+  display: none;
+}
+body:has(.bottom-indicator-page) {
+  background: #f5f6f8;
+}
+
+/* Bottom-indicator: static orange→blue gradient meter with a knob at the score.
+   Non-interactive; reuses the .cm-scrubber knob language. */
+.bi-bar-track {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, #f59e6b 0%, #f6c453 38%, #8fb8e6 70%, #3b82f6 100%);
+}
+.bi-bar-track--empty {
+  background: #e9ebee;
+}
+.bi-bar-tick {
+  position: absolute;
+  top: 0;
+  height: 6px;
+  width: 2px;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.65);
+}
+.bi-bar-knob {
+  position: absolute;
+  top: 3px;
+  height: 14px;
+  width: 14px;
+  border-radius: 9999px;
+  background: #ffffff;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 1px rgba(16, 24, 40, 0.14), 0 1px 4px rgba(16, 24, 40, 0.35);
+}
+
 /* Migration map: scrubber + play-button affordances. */
 .cm-scrubber {
   -webkit-appearance: none;
