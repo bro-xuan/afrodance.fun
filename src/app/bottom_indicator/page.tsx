@@ -3,7 +3,10 @@ import { ArrowLeft } from "lucide-react";
 import snapshot from "./data/indicators.json";
 import type { IndicatorsSnapshot } from "./types";
 import { metaForPhase, phaseForScore } from "./lib/phase-meta";
-import { IndicatorTable } from "./components/IndicatorTable";
+import { buildGroups, phaseCounts, verdict } from "./lib/insights";
+import { Gauge } from "./components/Gauge";
+import { ConvictionBar } from "./components/ConvictionBar";
+import { IndicatorGroups } from "./components/IndicatorGroups";
 
 const data = snapshot as unknown as IndicatorsSnapshot;
 
@@ -19,86 +22,115 @@ export default function BottomIndicatorPage() {
   const aggregate = scored.length
     ? Math.round(scored.reduce((s, r) => s + (r.score as number), 0) / scored.length)
     : null;
-  const aggPhase = aggregate !== null ? phaseForScore(aggregate) : null;
-  const aggMeta = aggPhase ? metaForPhase(aggPhase) : null;
 
+  const counts = phaseCounts(rows);
+  const groups = buildGroups(rows);
   const asOf = rows.map((r) => r.asOfDate).filter(Boolean).sort().at(-1) ?? null;
+
+  const meta = aggregate !== null ? metaForPhase(phaseForScore(aggregate)) : null;
+  const headlineCount = aggregate !== null
+    ? counts.find((c) => c.phase === phaseForScore(aggregate))?.count ?? 0
+    : 0;
 
   return (
     <main className="mx-auto max-w-4xl px-5 py-10 md:py-14">
       <Link
         href="/"
-        className="mb-8 inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.16em] text-[#8b9096] transition hover:text-[#1f2328]"
+        className="mb-8 inline-flex items-center gap-1.5 text-xs uppercase tracking-[0.16em] text-[#7f8ca3] transition hover:text-[#e6edf5]"
       >
         <ArrowLeft size={13} /> afrodance.fun
       </Link>
 
-      <header className="mb-8 max-w-2xl">
-        <div className="mb-2 text-xs font-medium uppercase tracking-[0.18em] text-[#a4a9ae]">
-          Bitcoin · on-chain
+      <header className="mb-7 max-w-2xl">
+        <div className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-[#6b7893]">
+          Bitcoin · valuation
         </div>
-        <h1 className="text-3xl font-semibold leading-tight tracking-tight text-[#111417] md:text-4xl">
+        <h1 className="text-3xl font-semibold leading-tight tracking-tight text-[#f2f6fb] md:text-[2.6rem]">
           BTC Bottom Indicator
         </h1>
-        <p className="mt-3 text-[15px] leading-relaxed text-[#5f656b]">
-          A basket of on-chain, miner, and price-based signals — MVRV, NUPL, SOPR, Puell Multiple,
-          Hash Ribbons, Mayer Multiple, realized-price models — each scored against its own history
-          from <strong className="font-semibold text-[#1f2328]">0 (deepest bottom)</strong> to{" "}
-          <strong className="font-semibold text-[#1f2328]">100 (frothiest top)</strong>. When most
-          signals cluster low, BTC is statistically in accumulation territory.
+        <p className="mt-3 text-[15px] leading-relaxed text-[#9aa9bd]">
+          One score for how cheap or expensive Bitcoin is right now — the average of 15 on-chain,
+          miner, and price signals, each ranked against its own entire history. Lower = closer to
+          historic bottoms.
         </p>
       </header>
 
-      {/* Aggregate summary */}
-      <section className="mb-6 rounded-2xl border border-[#eceef0] bg-white p-6 shadow-[0_1px_3px_rgba(16,24,40,0.06),0_1px_2px_rgba(16,24,40,0.04)]">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <div className="text-xs font-medium uppercase tracking-wide text-[#a4a9ae]">
-              Aggregate signal
-            </div>
-            {aggregate !== null && aggMeta ? (
-              <div className="mt-1 flex items-baseline gap-3">
-                <span className="text-4xl font-bold tabular-nums" style={{ color: aggMeta.accent }}>
-                  {aggregate}
-                </span>
-                <span className="text-sm text-[#8b9096]">/ 100</span>
-                <span
-                  className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${aggMeta.badge}`}
-                >
-                  {aggPhase}
-                </span>
+      {/* ── Hero: the gauge + verdict ─────────────────────────────── */}
+      <section className="mb-5 rounded-2xl border border-[rgba(255,255,255,0.07)] bg-[#121a2b] p-5 shadow-[0_1px_0_rgba(255,255,255,0.04)_inset,0_20px_40px_-24px_rgba(0,0,0,0.7)] sm:p-7">
+        {aggregate !== null && meta ? (
+          <>
+            <div className="grid items-center gap-6 md:grid-cols-[minmax(0,420px)_1fr] md:gap-9">
+              {/* gauge + explicit end tags */}
+              <div>
+                <Gauge score={aggregate} />
+                <div className="mt-1 flex justify-between px-1 text-[10.5px] font-semibold uppercase tracking-[0.1em]">
+                  <span style={{ color: "#34d399" }}>Cheap · Accumulate</span>
+                  <span style={{ color: "#f87171" }}>Expensive · Distribute</span>
+                </div>
               </div>
-            ) : (
-              <div className="mt-1 text-2xl font-semibold text-[#b4b8bd]">No data yet</div>
-            )}
-            <div className="mt-2 text-xs text-[#a4a9ae]">
-              Mean of {scored.length} scored indicator{scored.length === 1 ? "" : "s"}
-            </div>
-          </div>
 
-          {data.btcPrice ? (
-            <div className="text-right">
-              <div className="text-xs font-medium uppercase tracking-wide text-[#a4a9ae]">
-                BTC spot
-              </div>
-              <div className="mt-1 text-2xl font-semibold tabular-nums text-[#1f2328]">
-                ${data.btcPrice.toLocaleString("en-US")}
+              {/* verdict + consensus */}
+              <div>
+                <p className="text-[17px] leading-relaxed text-[#dfe7f1] md:text-[19px]">
+                  {verdict(aggregate, counts, scored.length)}
+                </p>
+
+                <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
+                  <span
+                    className="inline-flex items-baseline gap-1.5 rounded-lg px-3 py-1.5"
+                    style={{ backgroundColor: `${meta.hex}1c` }}
+                  >
+                    <span className="text-lg font-bold tabular-nums" style={{ color: meta.text }}>
+                      {headlineCount}
+                    </span>
+                    <span className="text-sm text-[#aab6c9]">/ {scored.length} signals reading {meta.label}</span>
+                  </span>
+                  {data.btcPrice ? (
+                    <span className="text-sm text-[#8695ac]">
+                      BTC <span className="tabular-nums font-semibold text-[#e6edf5]">${data.btcPrice.toLocaleString("en-US")}</span>
+                    </span>
+                  ) : null}
+                </div>
+
+                <div className="mt-5">
+                  <ConvictionBar counts={counts} total={scored.length} />
+                </div>
               </div>
             </div>
-          ) : null}
-        </div>
+
+            {/* how to read */}
+            <div className="mt-6 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[#0f1724] px-4 py-3 text-[13px] leading-relaxed text-[#8695ac]">
+              <span className="font-semibold text-[#aab6c9]">How to read this:</span>{" "}
+              the needle sits on a 0–100 value scale — left (green) = historically <strong className="font-semibold text-[#c7d0de]">cheap</strong>, accumulation;
+              right (red) = historically <strong className="font-semibold text-[#c7d0de]">expensive</strong>, distribution. Each of the {scored.length} signals
+              is ranked against its own full history and averaged, so today&apos;s{" "}
+              <span className="tabular-nums text-[#c7d0de]">{aggregate}</span> means BTC is{" "}
+              {aggregate < 50
+                ? <>cheaper than roughly <span className="tabular-nums text-[#c7d0de]">{100 - aggregate}%</span></>
+                : <>richer than roughly <span className="tabular-nums text-[#c7d0de]">{aggregate}%</span></>}{" "}
+              of its entire trading history. Not financial advice.
+            </div>
+          </>
+        ) : (
+          <div className="py-10 text-center text-xl font-semibold text-[#6b7893]">No data yet</div>
+        )}
       </section>
 
-      <IndicatorTable rows={rows} />
+      {/* ── The 15 signals, grouped ───────────────────────────────── */}
+      <div className="mb-2 flex items-baseline justify-between px-1">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-[#aab6c9]">The signals</h2>
+        <span className="text-xs text-[#7f8ca3]">ranked 0 = cheapest · 100 = dearest</span>
+      </div>
+      <IndicatorGroups groups={groups} />
 
       {/* Footer / provenance */}
-      <footer className="mt-6 flex flex-col gap-1.5 text-xs text-[#a4a9ae]">
+      <footer className="mt-6 flex flex-col gap-1.5 text-xs text-[#8695ac]">
         <div>
-          Data as of <span className="text-[#6b7075]">{fmtDate(asOf)}</span> · snapshot refreshed daily via scheduled job
+          Data as of <span className="text-[#8695ac]">{fmtDate(asOf)}</span> · snapshot refreshed daily via scheduled job
         </div>
         <div>
           On-chain &amp; miner metrics from{" "}
-          <a href="https://bitcoin-data.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#6b7075]">
+          <a href="https://bitcoin-data.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#aab6c9]">
             bitcoin-data.com
           </a>{" "}
           (BGeometrics); price-based signals and BTC spot from Binance. Scores are percentile ranks
