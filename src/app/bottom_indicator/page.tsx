@@ -41,10 +41,11 @@ export default function BottomIndicatorPage() {
           BTC Bottom Indicator
         </h1>
         <p className="mt-3 text-[15px] leading-relaxed text-[#5f656b]">
-          A basket of on-chain valuation signals — MVRV, NUPL, SOPR, realized-price models — each
-          scored against its own history from <strong className="font-semibold text-[#1f2328]">0
-          (deepest bottom)</strong> to <strong className="font-semibold text-[#1f2328]">100 (frothiest
-          top)</strong>. When most signals cluster low, BTC is statistically in accumulation territory.
+          A basket of on-chain, miner, and price-based signals — MVRV, NUPL, SOPR, Puell Multiple,
+          Hash Ribbons, Mayer Multiple, realized-price models — each scored against its own history
+          from <strong className="font-semibold text-[#1f2328]">0 (deepest bottom)</strong> to{" "}
+          <strong className="font-semibold text-[#1f2328]">100 (frothiest top)</strong>. When most
+          signals cluster low, BTC is statistically in accumulation territory.
         </p>
       </header>
 
@@ -96,12 +97,13 @@ export default function BottomIndicatorPage() {
           Data as of <span className="text-[#6b7075]">{fmtDate(asOf)}</span> · snapshot refreshed daily via scheduled job
         </div>
         <div>
-          On-chain metrics from{" "}
+          On-chain &amp; miner metrics from{" "}
           <a href="https://bitcoin-data.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#6b7075]">
             bitcoin-data.com
           </a>{" "}
-          (BGeometrics); BTC price from Binance. Scores are percentile ranks computed here — not
-          investment advice, and different from any single provider&apos;s proprietary index.
+          (BGeometrics); price-based signals and BTC spot from Binance. Scores are percentile ranks
+          computed here — not investment advice, and different from any single provider&apos;s
+          proprietary index.
         </div>
       </footer>
     </main>

@@ -1,13 +1,18 @@
 # Daily refresh of the BTC bottom-indicator snapshot.
 #
-# bitcoin-data.com's free tier allows ~10 requests/hour, and the registry in
-# scripts/fetch-indicators.mjs can exceed that. The script handles this: on
-# 429 it merges what it fetched into the existing snapshot and exits 0, and it
-# fetches stalest metrics first. Two runs spaced >1h apart therefore cover the
-# whole registry every day even when a single run can't.
+# bitcoin-data.com's free tier allows ~8 requests/hour and ~15/day, and the
+# registry in scripts/fetch-indicators.mjs needs more than 8 requests to fully
+# refresh. The script handles this: on 429 it merges what it fetched into the
+# existing snapshot and exits 0, it fetches stalest metrics first, and it skips
+# metrics already fetched in the last ~20h. Two runs spaced >1h apart therefore
+# cover the whole registry every day while staying inside the daily cap.
+# (price-derived metrics — Mayer, 200W MA, Pi Cycle — are computed from the
+# Binance feed and cost no bitcoin-data budget.)
 #
 # The push to main triggers the normal Vercel production deploy, so the page
-# refreshes without any manual step. (Note: `schedule` only fires from the
+# refreshes without any manual step. The `push` trigger below also runs it once
+# whenever the fetch logic itself changes, so new indicators populate on merge
+# rather than waiting for the next cron. (Note: `schedule` only fires from the
 # workflow file on the default branch; if main is branch-protected, allow
 # github-actions[bot] to push or swap GITHUB_TOKEN for a PAT.)
 
@@ -17,6 +22,13 @@ on:
   schedule:
     - cron: "23 5 * * *" # first pass
     - cron: "53 6 * * *" # finisher for anything rate-limited in the first pass
+  push:
+    branches: [main]
+    # Only the fetch logic — NOT the snapshot the job itself commits, so the
+    # bot's own push can't retrigger the workflow.
+    paths:
+      - "scripts/fetch-indicators.mjs"
+      - ".github/workflows/refresh-indicators.yml"
   workflow_dispatch:
 
 permissions:

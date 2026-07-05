@@ -12,13 +12,15 @@ export type Direction = "lowIsBottom" | "highIsBottom";
 
 /**
  * How a metric is turned into a 0–100 score.
- * - `oscillator`: mean-reverting ratio (MVRV, NUPL, SOPR…). Score = percentile of
- *   the raw value across its own history.
+ * - `oscillator`: mean-reverting ratio (MVRV, NUPL, SOPR, Puell, Hash Ribbons…).
+ *   Score = percentile of the raw value across its own history.
  * - `priceModel`: a USD price level (Realized/Balanced Price…) that only trends up
  *   over time, so its raw percentile is meaningless. Score = percentile of
  *   (spot price ÷ model price) — how far spot sits below/above the model band.
+ * - `priceDerived`: a ratio computed entirely from the BTC price series
+ *   (Mayer Multiple, 200-week MA, Pi Cycle Bottom). Scored like an oscillator.
  */
-export type MetricKind = "oscillator" | "priceModel";
+export type MetricKind = "oscillator" | "priceModel" | "priceDerived";
 
 export interface MetricDef {
   /** API path segment on bitcoin-data.com, e.g. "mvrv-zscore". */
