@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-04T20:28:29.563Z",
-  "btcPrice": 63174,
+  "generatedAt": "2026-07-05T21:34:52.525Z",
+  "btcPrice": 62935,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -8,9 +8,10 @@
       "blurb": "Market cap vs realized cap in standard deviations. Deep lows mark historic bottoms.",
       "phase": "Bottom",
       "score": 18,
-      "change30d": -15,
-      "rawValue": 0.2976,
-      "asOfDate": "2026-07-03",
+      "change30d": -1,
+      "rawValue": 0.3315,
+      "asOfDate": "2026-07-04",
+      "fetchedAt": "2026-07-05T21:34:48.600Z",
       "available": true
     },
     {
@@ -19,9 +20,10 @@
       "blurb": "Market value / realized value. Below ~1 means the average holder is underwater.",
       "phase": "Bottom",
       "score": 18,
-      "change30d": -1,
-      "rawValue": 1.189,
-      "asOfDate": "2026-07-03",
+      "change30d": 0,
+      "rawValue": 1.1996,
+      "asOfDate": "2026-07-04",
+      "fetchedAt": "2026-07-05T21:34:49.143Z",
       "available": true
     },
     {
@@ -30,9 +32,10 @@
       "blurb": "Share of supply sitting in profit. Negative = net-unrealized-loss capitulation.",
       "phase": "Bottom",
       "score": 18,
-      "change30d": -1,
-      "rawValue": 0.1589,
-      "asOfDate": "2026-07-03",
+      "change30d": 0,
+      "rawValue": 0.1664,
+      "asOfDate": "2026-07-04",
+      "fetchedAt": "2026-07-05T21:34:49.690Z",
       "available": true
     },
     {
@@ -40,10 +43,11 @@
       "name": "SOPR",
       "blurb": "Spent-output profit ratio. Sustained sub-1 means coins move at a loss.",
       "phase": "Bearish",
-      "score": 33,
-      "change30d": 32,
-      "rawValue": 0.9998,
-      "asOfDate": "2026-07-03",
+      "score": 39,
+      "change30d": 37,
+      "rawValue": 1.0011,
+      "asOfDate": "2026-07-04",
+      "fetchedAt": "2026-07-05T21:34:50.235Z",
       "available": true
     },
     {
@@ -51,10 +55,11 @@
       "name": "Reserve Risk",
       "blurb": "Confidence of long-term holders vs price. Lows flag attractive risk/reward.",
       "phase": "Bottom",
-      "score": 6,
-      "change30d": -3,
+      "score": 7,
+      "change30d": -1,
       "rawValue": 0.0005,
-      "asOfDate": "2026-07-03",
+      "asOfDate": "2026-07-04",
+      "fetchedAt": "2026-07-05T21:34:50.904Z",
       "available": true
     },
     {
@@ -62,10 +67,11 @@
       "name": "Short-Term Holder MVRV",
       "blurb": "Cost-basis ratio of recent buyers. Deep lows = fresh money deeply underwater.",
       "phase": "Bearish",
-      "score": 21,
-      "change30d": 10,
-      "rawValue": 0.9,
-      "asOfDate": "2026-07-03",
+      "score": 24,
+      "change30d": 14,
+      "rawValue": 0.91,
+      "asOfDate": "2026-07-04",
+      "fetchedAt": "2026-07-05T21:34:51.448Z",
       "available": true
     },
     {
@@ -73,10 +79,47 @@
       "name": "Long-Term Holder MVRV",
       "blurb": "Cost-basis ratio of seasoned holders. Lows accompany late-stage bear bottoms.",
       "phase": "Bottom",
-      "score": 18,
-      "change30d": -2,
-      "rawValue": 1.27,
-      "asOfDate": "2026-07-03",
+      "score": 19,
+      "change30d": 0,
+      "rawValue": 1.28,
+      "asOfDate": "2026-07-04",
+      "fetchedAt": "2026-07-05T21:34:51.994Z",
+      "available": true
+    },
+    {
+      "slug": "puell-multiple",
+      "name": "Puell Multiple",
+      "blurb": "Daily miner issuance in USD vs its yearly average. Green sub-0.5 zone marked every cycle low.",
+      "phase": "Bearish",
+      "score": 24,
+      "change30d": 7,
+      "rawValue": 0.7406,
+      "asOfDate": "2026-07-04",
+      "fetchedAt": "2026-07-05T21:34:46.707Z",
+      "available": true
+    },
+    {
+      "slug": "rhodl-ratio",
+      "name": "RHODL Ratio",
+      "blurb": "Realized-cap HODL waves (1-week vs 1–2-year bands). Lows flag speculative capital flushed out.",
+      "phase": "Bearish",
+      "score": 34,
+      "change30d": -10,
+      "rawValue": 969.8148,
+      "asOfDate": "2026-07-04",
+      "fetchedAt": "2026-07-05T21:34:47.381Z",
+      "available": true
+    },
+    {
+      "slug": "hashrate",
+      "name": "Hash Ribbons",
+      "blurb": "30-day vs 60-day hashrate momentum. Dips below 1 mark miner-capitulation bottoms.",
+      "phase": "Bottom",
+      "score": 11,
+      "change30d": -11,
+      "rawValue": 0.9852,
+      "asOfDate": "2026-07-04",
+      "fetchedAt": "2026-07-05T21:34:48.048Z",
       "available": true
     },
     {
@@ -99,6 +142,42 @@
       "change30d": -1,
       "rawValue": 2.1883,
       "asOfDate": "2026-07-03",
+      "available": true
+    },
+    {
+      "slug": "mayer-multiple",
+      "name": "Mayer Multiple",
+      "blurb": "Price relative to its 200-day average. Readings near 0.5 have marked deep bottoms.",
+      "phase": "Bearish",
+      "score": 21,
+      "change30d": 8,
+      "rawValue": 0.8419,
+      "asOfDate": "2026-07-05",
+      "fetchedAt": "2026-07-05T21:34:48.450Z",
+      "available": true
+    },
+    {
+      "slug": "mayer-200w",
+      "name": "200-Week MA Ratio",
+      "blurb": "Price vs its 200-week average — the line macro bottoms have historically touched.",
+      "phase": "Bottom",
+      "score": 7,
+      "change30d": 1,
+      "rawValue": 1.005,
+      "asOfDate": "2026-07-05",
+      "fetchedAt": "2026-07-05T21:34:48.451Z",
+      "available": true
+    },
+    {
+      "slug": "pi-cycle-bottom",
+      "name": "Pi Cycle Bottom",
+      "blurb": "150-day EMA vs 0.745× the 471-day average. Ratios near/below 1 have pinned cycle lows.",
+      "phase": "Bottom",
+      "score": 14,
+      "change30d": -4,
+      "rawValue": 1.0631,
+      "asOfDate": "2026-07-05",
+      "fetchedAt": "2026-07-05T21:34:48.454Z",
       "available": true
     }
   ]
