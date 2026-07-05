@@ -93,7 +93,7 @@ export default function BottomIndicatorPage() {
       {/* Footer / provenance */}
       <footer className="mt-6 flex flex-col gap-1.5 text-xs text-[#a4a9ae]">
         <div>
-          Data as of <span className="text-[#6b7075]">{fmtDate(asOf)}</span> · snapshot refreshed on deploy
+          Data as of <span className="text-[#6b7075]">{fmtDate(asOf)}</span> · snapshot refreshed daily via scheduled job
         </div>
         <div>
           On-chain metrics from{" "}

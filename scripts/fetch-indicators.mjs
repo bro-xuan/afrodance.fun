@@ -175,13 +175,15 @@ function scoreSeries(def, points) {
     change30d: score - score30,
     rawValue: Math.round(latest.v * 1e4) / 1e4,
     asOfDate: latest.d,
+    fetchedAt: new Date().toISOString(),
     available: true,
   };
 }
 
 function unavailableRow(def) {
   return { slug: def.slug, name: def.name, blurb: def.blurb, phase: null, score: null,
-    change30d: null, rawValue: null, asOfDate: null, available: false };
+    change30d: null, rawValue: null, asOfDate: null, fetchedAt: new Date().toISOString(),
+    available: false };
 }
 
 // ── Main ───────────────────────────────────────────────────────────────────
@@ -215,7 +217,20 @@ if (priceByDate?.size) {
 const remaining = [];
 let hitLimit = false;
 
-for (const def of METRICS) {
+// Fetch stalest metrics first: a rate-limited run always starts with whatever
+// the previous run couldn't reach, so consecutive runs cover the whole
+// registry even when no single run can. ("" sorts before any timestamp,
+// putting never-fetched rows at the front; output order stays registry order.
+// Falls back to asOfDate for snapshots that predate the fetchedAt field.)
+const lastFetched = (def) => {
+  const row = rowBySlug.get(def.slug);
+  return row?.fetchedAt ?? row?.asOfDate ?? "";
+};
+const fetchOrder = [...METRICS].sort((a, b) =>
+  lastFetched(a) < lastFetched(b) ? -1 : lastFetched(a) > lastFetched(b) ? 1 : 0
+);
+
+for (const def of fetchOrder) {
   if (only && !only.has(def.slug)) continue;
   if (hitLimit) { remaining.push(def.slug); continue; }
   try {

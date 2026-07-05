@@ -45,6 +45,12 @@ export interface IndicatorRow {
   rawValue: number | null;
   /** ISO date the latest datapoint is from (API `d` field). */
   asOfDate: string | null;
+  /**
+   * ISO timestamp this row was last fetched. Drives stalest-first fetch order
+   * in scripts/fetch-indicators.mjs so rate-limited runs rotate coverage;
+   * optional because snapshots written before this field existed lack it.
+   */
+  fetchedAt?: string | null;
   available: boolean;
 }
 
