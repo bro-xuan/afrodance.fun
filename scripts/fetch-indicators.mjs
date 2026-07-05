@@ -1,21 +1,34 @@
 /**
  * Generate the BTC bottom-indicator snapshot.
  *
- * Source: bitcoin-data.com keyless REST API (BGeometrics). History array per
- * metric at GET https://bitcoin-data.com/v1/{slug} → [{ d, unixTs, <field> }, …].
- * Spot BTC price history (for price-model ratios) comes from Binance daily
- * klines (keyless; BTCUSDT from 2017, which spans multiple cycles).
+ * Two keyless data sources:
+ *   - bitcoin-data.com REST API (BGeometrics). History array per metric at
+ *     GET https://bitcoin-data.com/v1/{slug} → [{ d, unixTs, <field> }, …].
+ *     This is the RATE-LIMITED source (see below).
+ *   - Binance daily klines (BTCUSDT from Aug 2017). Used both for spot price
+ *     and to compute the "priceDerived" metrics entirely locally — those cost
+ *     ZERO bitcoin-data.com budget.
  *
  * Output: src/app/bottom_indicator/data/indicators.json
  *
- * The free tier allows ~10 requests/hour (HTTP 429 RATE_LIMIT_HOUR_EXCEEDED
- * beyond that). This script fetches one history array per metric, so keep the
- * registry small. On 429 it stops, MERGES what it got over any existing
- * snapshot, and tells you which metrics remain — re-run next hour to finish.
+ * bitcoin-data.com free tier: ~8 requests/hour AND ~15/day (HTTP 429
+ * RATE_LIMIT_HOUR_EXCEEDED beyond the hourly cap). One request per bitcoin-data
+ * metric, so the registry currently needs >1 run/hour to fully refresh. The
+ * script copes:
+ *   - On 429 it stops the bitcoin-data fetches, MERGES what it got over the
+ *     existing snapshot, and lists which metrics remain.
+ *   - It fetches STALEST metrics first, so the next run continues where this
+ *     one stopped.
+ *   - It SKIPS metrics fetched within MIN_REFRESH_HOURS (default 20h), so a
+ *     second same-day run only spends budget on what's actually stale, keeping
+ *     the whole registry inside the daily cap.
+ * priceDerived metrics are always recomputed (free), never rate-limited.
  *
  * Usage:
- *   node scripts/fetch-indicators.mjs                # refresh all metrics
+ *   node scripts/fetch-indicators.mjs                # refresh stale metrics
+ *   node scripts/fetch-indicators.mjs --force        # ignore freshness, refetch all
  *   node scripts/fetch-indicators.mjs --only=mvrv,nupl
+ *   MIN_REFRESH_HOURS=0 node scripts/fetch-indicators.mjs   # (testing) never skip
  *
  * Re-run whenever you want fresher numbers, then commit the JSON.
  */
@@ -28,9 +41,15 @@ const BINANCE_HOSTS = ["https://api.binance.com", "https://api.binance.us"];
 const BTCUSDT_GENESIS = Date.UTC(2017, 7, 17); // first BTCUSDT daily candle
 
 // ── Metric registry ────────────────────────────────────────────────────────
-// kind "oscillator": mean-reverting ratio → score = percentile of raw value.
-// kind "priceModel": USD price level → score = percentile of (spot / model).
+// kind "oscillator":   mean-reverting ratio → score = percentile of raw value.
+//                      Optionally `transform` reshapes the fetched series first
+//                      (e.g. Hash Ribbons = SMA ratio of the hashrate series).
+// kind "priceModel":   bitcoin-data USD price level → percentile of (spot/model).
+// kind "priceDerived": computed ENTIRELY from the Binance price series via
+//                      `compute(priceSeries)`; costs no bitcoin-data budget.
 // direction "lowIsBottom": cheap/low = capitulation = low score = "Bottom".
+//
+// The first block hits the rate-limited bitcoin-data API (one request each).
 const METRICS = [
   { slug: "mvrv-zscore", name: "MVRV Z-Score", direction: "lowIsBottom", kind: "oscillator",
     blurb: "Market cap vs realized cap in standard deviations. Deep lows mark historic bottoms." },
@@ -46,10 +65,27 @@ const METRICS = [
     blurb: "Cost-basis ratio of recent buyers. Deep lows = fresh money deeply underwater." },
   { slug: "lth-mvrv", name: "Long-Term Holder MVRV", direction: "lowIsBottom", kind: "oscillator",
     blurb: "Cost-basis ratio of seasoned holders. Lows accompany late-stage bear bottoms." },
+  { slug: "puell-multiple", name: "Puell Multiple", direction: "lowIsBottom", kind: "oscillator",
+    blurb: "Daily miner issuance in USD vs its yearly average. Green sub-0.5 zone marked every cycle low." },
+  { slug: "rhodl-ratio", name: "RHODL Ratio", direction: "lowIsBottom", kind: "oscillator",
+    blurb: "Realized-cap HODL waves (1-week vs 1–2-year bands). Lows flag speculative capital flushed out." },
+  { slug: "hashrate", name: "Hash Ribbons", direction: "lowIsBottom", kind: "oscillator",
+    transform: hashRibbons,
+    blurb: "30-day vs 60-day hashrate momentum. Dips below 1 mark miner-capitulation bottoms." },
   { slug: "realized-price", name: "Realized Price", direction: "lowIsBottom", kind: "priceModel",
     blurb: "Aggregate on-chain cost basis. Spot below it means the market is underwater." },
   { slug: "balanced-price", name: "Balanced Price", direction: "lowIsBottom", kind: "priceModel",
     blurb: "Realized minus transferred price. Spot near it has marked cycle bottoms." },
+  // priceDerived — computed from Binance klines, zero bitcoin-data budget.
+  { slug: "mayer-multiple", name: "Mayer Multiple", direction: "lowIsBottom", kind: "priceDerived",
+    compute: (series) => ratioToSMA(series, 200),
+    blurb: "Price relative to its 200-day average. Readings near 0.5 have marked deep bottoms." },
+  { slug: "mayer-200w", name: "200-Week MA Ratio", direction: "lowIsBottom", kind: "priceDerived",
+    compute: (series) => ratioToSMA(series, 1400),
+    blurb: "Price vs its 200-week average — the line macro bottoms have historically touched." },
+  { slug: "pi-cycle-bottom", name: "Pi Cycle Bottom", direction: "lowIsBottom", kind: "priceDerived",
+    compute: piCycleBottom,
+    blurb: "150-day EMA vs 0.745× the 471-day average. Ratios near/below 1 have pinned cycle lows." },
 ];
 
 // ── Scoring (pure) ─────────────────────────────────────────────────────────
@@ -77,6 +113,68 @@ function phaseForScore(score) {
   if (score < 60) return "Neutral";
   if (score < 80) return "Bullish";
   return "Top";
+}
+
+// ── Derived-series helpers (pure) ────────────────────────────────────────────
+// Rolling means over a [{ d, ts, v }] series. Return an array aligned to the
+// input; entries before the window is full are null.
+function smaSeries(values, window) {
+  const out = new Array(values.length).fill(null);
+  let sum = 0;
+  for (let i = 0; i < values.length; i++) {
+    sum += values[i];
+    if (i >= window) sum -= values[i - window];
+    if (i >= window - 1) out[i] = sum / window;
+  }
+  return out;
+}
+
+function emaSeries(values, window) {
+  const out = new Array(values.length).fill(null);
+  const k = 2 / (window + 1);
+  let ema = null;
+  for (let i = 0; i < values.length; i++) {
+    ema = ema === null ? values[i] : values[i] * k + ema * (1 - k);
+    if (i >= window - 1) out[i] = ema; // emit once the window has warmed up
+  }
+  return out;
+}
+
+// price ÷ SMA(price, window): Mayer Multiple (200d), 200-week MA ratio (1400d).
+function ratioToSMA(points, window) {
+  const ma = smaSeries(points.map((p) => p.v), window);
+  return points
+    .map((p, i) => (ma[i] ? { d: p.d, ts: p.ts, v: p.v / ma[i] } : null))
+    .filter(Boolean);
+}
+
+// Pi Cycle Bottom: 150-day EMA ÷ (0.745 × 471-day SMA); ≤1 marks the low zone.
+function piCycleBottom(points) {
+  const values = points.map((p) => p.v);
+  const ema = emaSeries(values, 150);
+  const sma = smaSeries(values, 471);
+  return points
+    .map((p, i) => (ema[i] && sma[i] ? { d: p.d, ts: p.ts, v: ema[i] / (0.745 * sma[i]) } : null))
+    .filter(Boolean);
+}
+
+// Hash Ribbons: 30-day ÷ 60-day SMA of the hashrate series (<1 = capitulation).
+function hashRibbons(points) {
+  const values = points.map((p) => p.v);
+  const s30 = smaSeries(values, 30);
+  const s60 = smaSeries(values, 60);
+  return points
+    .map((p, i) => (s30[i] && s60[i] ? { d: p.d, ts: p.ts, v: s30[i] / s60[i] } : null))
+    .filter(Boolean);
+}
+
+// Binance date→close Map → sorted [{ d, ts, v }] series (ts in Unix seconds, to
+// match bitcoin-data's unixTs, so scoreSeries' 30-day lookback lines up).
+function priceSeriesFromMap(priceByDate) {
+  return [...priceByDate.entries()]
+    .map(([d, v]) => ({ d, ts: Math.round(Date.parse(`${d}T00:00:00Z`) / 1000), v }))
+    .filter((p) => Number.isFinite(p.ts) && Number.isFinite(p.v) && p.v > 0)
+    .sort((a, b) => a.ts - b.ts);
 }
 
 // ── Fetch helpers ──────────────────────────────────────────────────────────
@@ -175,18 +273,26 @@ function scoreSeries(def, points) {
     change30d: score - score30,
     rawValue: Math.round(latest.v * 1e4) / 1e4,
     asOfDate: latest.d,
+    fetchedAt: new Date().toISOString(),
     available: true,
   };
 }
 
 function unavailableRow(def) {
   return { slug: def.slug, name: def.name, blurb: def.blurb, phase: null, score: null,
-    change30d: null, rawValue: null, asOfDate: null, available: false };
+    change30d: null, rawValue: null, asOfDate: null, fetchedAt: new Date().toISOString(),
+    available: false };
 }
 
 // ── Main ───────────────────────────────────────────────────────────────────
 const onlyArg = process.argv.find((a) => a.startsWith("--only="));
 const only = onlyArg ? new Set(onlyArg.slice("--only=".length).split(",")) : null;
+
+// Freshness skip keeps a same-day second run inside the daily request cap.
+// An explicit --force or --only means "refetch now regardless".
+const MIN_REFRESH_HOURS = Number(process.env.MIN_REFRESH_HOURS ?? 20);
+const force = process.argv.includes("--force") || only !== null;
+const nowMs = Date.now();
 
 // Load existing snapshot so a partial (rate-limited) run merges, never clobbers.
 const existing = existsSync(OUT_PATH)
@@ -194,7 +300,18 @@ const existing = existsSync(OUT_PATH)
   : { generatedAt: null, btcPrice: null, rows: [] };
 const rowBySlug = new Map(existing.rows.map((r) => [r.slug, r]));
 
-const needsPrice = METRICS.some((m) => m.kind === "priceModel" && (!only || only.has(m.slug)));
+// A bitcoin-data metric already fetched successfully within the window doesn't
+// need re-fetching this run. (Unavailable rows are always retried.)
+function isFresh(def) {
+  const row = rowBySlug.get(def.slug);
+  if (!row?.available || !row.fetchedAt) return false;
+  const ageH = (nowMs - Date.parse(row.fetchedAt)) / 3_600_000;
+  return Number.isFinite(ageH) && ageH < MIN_REFRESH_HOURS;
+}
+
+const needsPrice = METRICS.some(
+  (m) => (m.kind === "priceModel" || m.kind === "priceDerived") && (!only || only.has(m.slug))
+);
 let priceByDate = null;
 if (needsPrice) {
   try {
@@ -212,11 +329,47 @@ if (priceByDate?.size) {
   btcSpot = Math.round(priceByDate.get(lastDate));
 }
 
+// Sorted price series for priceDerived metrics (built once, reused per metric).
+const priceSeries = priceByDate?.size ? priceSeriesFromMap(priceByDate) : null;
+
 const remaining = [];
 let hitLimit = false;
 
-for (const def of METRICS) {
+// Fetch stalest metrics first: a rate-limited run always starts with whatever
+// the previous run couldn't reach, so consecutive runs cover the whole
+// registry even when no single run can. ("" sorts before any timestamp,
+// putting never-fetched rows at the front; output order stays registry order.
+// Falls back to asOfDate for snapshots that predate the fetchedAt field.)
+const lastFetched = (def) => {
+  const row = rowBySlug.get(def.slug);
+  return row?.fetchedAt ?? row?.asOfDate ?? "";
+};
+const fetchOrder = [...METRICS].sort((a, b) =>
+  lastFetched(a) < lastFetched(b) ? -1 : lastFetched(a) > lastFetched(b) ? 1 : 0
+);
+
+for (const def of fetchOrder) {
   if (only && !only.has(def.slug)) continue;
+
+  // priceDerived: computed from the Binance series — no API budget, never limited.
+  if (def.kind === "priceDerived") {
+    const series = priceSeries ? def.compute(priceSeries) : [];
+    if (!series.length) {
+      console.log(`${def.slug}… ${priceSeries ? "not enough history" : "no price series"} → unavailable`);
+      rowBySlug.set(def.slug, unavailableRow(def));
+      continue;
+    }
+    const row = scoreSeries(def, series);
+    rowBySlug.set(def.slug, row);
+    console.log(`${def.slug}… score ${row.score} (${row.phase}), 30d ${row.change30d >= 0 ? "+" : ""}${row.change30d} [price-derived]`);
+    continue;
+  }
+
+  // bitcoin-data path (rate-limited). Skip anything still fresh; stop on 429.
+  if (!force && isFresh(def)) {
+    console.log(`Skipping ${def.slug} — fetched <${MIN_REFRESH_HOURS}h ago`);
+    continue;
+  }
   if (hitLimit) { remaining.push(def.slug); continue; }
   try {
     process.stdout.write(`Fetching ${def.slug}… `);
@@ -227,7 +380,13 @@ for (const def of METRICS) {
       continue;
     }
 
-    let series = points;
+    // Reshape the raw series if the metric asks for it (e.g. Hash Ribbons).
+    let series = def.transform ? def.transform(points) : points;
+    if (!series.length) {
+      console.log("transform produced no points → unavailable");
+      rowBySlug.set(def.slug, unavailableRow(def));
+      continue;
+    }
     if (def.kind === "priceModel") {
       if (!priceByDate?.size) {
         console.log("no price series → unavailable");
@@ -235,7 +394,7 @@ for (const def of METRICS) {
         continue;
       }
       // Convert model price series into a spot/model ratio series.
-      series = points
+      series = series
         .filter((p) => priceByDate.has(p.d) && p.v > 0)
         .map((p) => ({ d: p.d, ts: p.ts, v: priceByDate.get(p.d) / p.v }));
       if (!series.length) {
