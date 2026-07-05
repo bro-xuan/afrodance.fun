@@ -55,6 +55,9 @@ src/
 │   ├── Guestbook.tsx       # Guestbook with messages
 │   ├── KonamiEasterEgg.tsx # Konami code easter egg
 │   ├── PixelDivider.tsx    # Decorative section divider
+│   ├── DitherBand.tsx      # Full-bleed section tint with dithered edges
+│   ├── DriftPixels.tsx     # Scroll-parallax decorative gutter pixels
+│   ├── SocialLinks.tsx     # GitHub/X/LinkedIn pixel icon row
 │   ├── Footer.tsx          # Site footer
 │   └── ui/                 # shadcn/ui + 8-bit component variants
 ├── data/

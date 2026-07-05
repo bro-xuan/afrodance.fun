@@ -24,7 +24,7 @@ export default function ProjectCard({ project }: { project: Project }) {
     <a
       href={project.url}
       {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      className="card-hover block transition-transform h-full"
+      className="pixel-reveal card-hover block transition-transform h-full"
     >
       <div className="nes-container with-title is-centered pixel-shadow h-full flex flex-col !bg-white">
         <p className="title font-pixel !flex items-start justify-center text-center min-h-[4.5rem] leading-snug">

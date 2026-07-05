@@ -18,6 +18,20 @@
   **Priority:** P4
   Type the tagline character-by-character on load (respecting prefers-reduced-motion) to push the retro feel further.
 
+## Code health
+
+- **Fix pre-existing ESLint errors in subpages**
+  **Priority:** P1
+  `npm run lint` reports 9 problems, all outside the home page: 5 errors (react-hooks/set-state-in-effect in `NLHousebuying/components/panels/MortgagePanel.tsx`, `RentVsBuyPanel.tsx`, and `corperate_translator/page.tsx`; prefer-const in `NLHousebuying/calculations/recommendation.ts`) and 4 warnings (unused vars, missing useEffect deps in `china-migration/components/MigrationMap.tsx`). Found by /ship on design/gradient-scroll-polish, 2026-07-03.
+
+- **Layer the NES.css import so Tailwind utilities win the cascade**
+  **Priority:** P2
+  `layout.tsx` imports `nes.css/css/nes.min.css` unlayered, so its bare element rules (e.g. `p { margin-bottom: 1rem }`) outrank every Tailwind v4 layered utility — margin utilities on `p`/headings silently don't apply. Fix: move the import into `globals.css` as `@import "nes.css/css/nes.min.css" layer(base);`, then do a full visual pass — several spacings were tuned around the broken cascade and will shift.
+
+- **Polish scroll-motion edge cases**
+  **Priority:** P3
+  From /ship adversarial review (2026-07-03): (1) elements whose reveal range straddles the initial scroll position render mid-step (partial opacity) until the first scroll — consider `entry 0%` range start or accepting; (2) the Konami body shake makes `body` a containing block for 0.6s, so the fixed XP bar jumps during the shake — move the shake to a wrapper if it bothers; (3) rem-sized dither/grass tiles land on fractional device pixels at some fluid-root sizes on 1x displays, causing hairline seams.
+
 ## Writing
 
 - **Add more Substack posts**

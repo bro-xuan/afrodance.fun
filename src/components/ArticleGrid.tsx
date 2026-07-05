@@ -20,7 +20,7 @@ export default function ArticleGrid() {
 
   return (
     <section id="writing" className="mx-auto w-full max-w-3xl scroll-mt-8 px-4 py-8">
-      <div className="text-center mb-10">
+      <div className="pixel-reveal text-center mb-10">
         <h2 className="font-pixel text-[#4a7c10] text-xl sm:text-2xl [text-shadow:0.12em_0.12em_0_#d5e7b4] mb-3">
           Writing
         </h2>
@@ -49,7 +49,7 @@ export default function ArticleGrid() {
               href={article.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="card-hover pixel-shadow block h-full"
+              className="pixel-reveal card-hover pixel-shadow block h-full"
             >
               <Card font="normal" className="h-full flex flex-col p-6">
                 <div className="flex items-start justify-between mb-4">

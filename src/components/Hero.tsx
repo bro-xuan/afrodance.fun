@@ -1,14 +1,16 @@
 import Image from "next/image";
 import { siteConfig } from "@/data/projects";
+import SocialLinks from "@/components/SocialLinks";
 
-// Decorative floating pixels — same palette as PixelDivider
+// Decorative floating pixels — same palette as PixelDivider.
+// Each bobs in place and drifts upward on scroll at its own speed.
 const floatingPixels = [
-  { pos: "left-[8%] top-[22%]", size: "h-3 w-3", color: "bg-[#92cc41]", delay: "0s" },
-  { pos: "left-[16%] top-[64%]", size: "h-2 w-2", color: "bg-[#209cee]", delay: "0.7s" },
-  { pos: "left-[26%] top-[38%]", size: "h-2.5 w-2.5", color: "bg-[#f7d51d]", delay: "1.4s" },
-  { pos: "right-[24%] top-[30%]", size: "h-2 w-2", color: "bg-[#e76e55]", delay: "0.4s" },
-  { pos: "right-[14%] top-[58%]", size: "h-3 w-3", color: "bg-[#209cee]", delay: "1.1s" },
-  { pos: "right-[7%] top-[24%]", size: "h-2.5 w-2.5", color: "bg-[#92cc41]", delay: "1.8s" },
+  { pos: "left-[8%] top-[22%]", size: "h-3 w-3", color: "bg-[#92cc41]", delay: "0s", speed: "drift-mid" },
+  { pos: "left-[16%] top-[64%]", size: "h-2 w-2", color: "bg-[#209cee]", delay: "0.7s", speed: "drift-fast" },
+  { pos: "left-[26%] top-[38%]", size: "h-2.5 w-2.5", color: "bg-[#f7d51d]", delay: "1.4s", speed: "drift-slow" },
+  { pos: "right-[24%] top-[30%]", size: "h-2 w-2", color: "bg-[#e76e55]", delay: "0.4s", speed: "drift-fast" },
+  { pos: "right-[14%] top-[58%]", size: "h-3 w-3", color: "bg-[#209cee]", delay: "1.1s", speed: "drift-slow" },
+  { pos: "right-[7%] top-[24%]", size: "h-2.5 w-2.5", color: "bg-[#92cc41]", delay: "1.8s", speed: "drift-mid" },
 ];
 
 export default function Hero() {
@@ -16,13 +18,19 @@ export default function Hero() {
     <section className="relative overflow-hidden bg-gradient-to-b from-[#eef5df] via-[#f6f6ee] to-[#faf8f2] px-4 pt-20 pb-16 text-center">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         {floatingPixels.map((p, i) => (
-          <span
-            key={i}
-            className={`float-pixel absolute ${p.pos} ${p.size} ${p.color}`}
-            style={{ animationDelay: p.delay }}
-          />
+          <span key={i} className={`drift-pixel absolute ${p.pos} ${p.speed}`}>
+            <span
+              className={`float-pixel block ${p.size} ${p.color}`}
+              style={{ animationDelay: p.delay }}
+            />
+          </span>
         ))}
       </div>
+
+      <div
+        aria-hidden="true"
+        className="pixel-grass pointer-events-none absolute inset-x-0 bottom-0 h-6"
+      />
 
       <div className="relative flex flex-col items-center">
         <Image
@@ -40,9 +48,14 @@ export default function Hero() {
           {siteConfig.name}
         </h1>
 
-        <p className="font-body mb-5 text-base text-muted-foreground sm:text-lg">
-          by Stefan Wang
-        </p>
+        <div className="mb-5 flex flex-wrap items-center justify-center gap-3">
+          {/* span, not p: NES.css's unlayered `p {margin-bottom}` outranks
+              Tailwind margin utilities and skews items-center alignment */}
+          <span className="font-body text-base text-muted-foreground sm:text-lg">
+            by Stefan Wang
+          </span>
+          <SocialLinks size="regular" />
+        </div>
 
         <p className="font-body mb-8 max-w-xl text-lg text-[#2d2d2d] sm:text-xl">
           {siteConfig.tagline}

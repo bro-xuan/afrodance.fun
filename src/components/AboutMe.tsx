@@ -14,7 +14,7 @@ export default function AboutMe() {
   const { greeting, bio, avatarUrl, avatarFallback, tags } = aboutConfig;
 
   return (
-    <section className="mx-auto w-full max-w-3xl px-4 py-8">
+    <section className="pixel-reveal mx-auto w-full max-w-3xl px-4 py-8">
       <Card font="normal">
         <CardHeader font="normal">
           <div className="flex flex-col sm:flex-row items-center gap-4">

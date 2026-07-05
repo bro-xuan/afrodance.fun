@@ -102,6 +102,109 @@ html {
   }
 }
 
+/* Scroll-parallax pixel drift — decorative pixels rise at different speeds
+   as their section traverses the viewport. Pure CSS scroll-driven animation;
+   browsers without support render them as static decoration. */
+@supports (animation-timeline: view()) {
+  .drift-pixel {
+    animation: drift-rise linear both;
+    animation-timeline: view();
+    animation-range: cover -30% cover 130%;
+  }
+  .drift-slow {
+    --drift-travel: 3.5rem;
+  }
+  .drift-mid {
+    --drift-travel: 6.5rem;
+  }
+  .drift-fast {
+    --drift-travel: 10rem;
+  }
+}
+
+@keyframes drift-rise {
+  from {
+    transform: translateY(calc(var(--drift-travel, 5rem) / 2));
+  }
+  to {
+    transform: translateY(calc(var(--drift-travel, 5rem) / -2));
+  }
+}
+
+/* Pixel "XP bar" — reading progress fills in chunky steps along the top. */
+@supports (animation-timeline: scroll()) {
+  .scroll-xp {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 10000; /* above the CRT scanline overlay */
+    height: 0.375rem;
+    width: 100%;
+    transform-origin: left center;
+    transform: scaleX(0);
+    background: repeating-linear-gradient(
+      90deg,
+      #6aad30 0 0.75rem,
+      #92cc41 0.75rem 1.5rem
+    );
+    animation: xp-fill steps(48, jump-none) both;
+    animation-timeline: scroll(root);
+  }
+}
+
+@keyframes xp-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Content rises in with a stepped, sprite-like motion as it enters view.
+   backwards fill (not both): once past the range the animation stops
+   applying, so hover transforms on the same element keep working. */
+@supports (animation-timeline: view()) {
+  .pixel-reveal {
+    animation: pixel-reveal steps(5, jump-none) backwards;
+    animation-timeline: view();
+    animation-range: entry 10% entry 45%;
+  }
+}
+
+@keyframes pixel-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Print renders without scrolling, so scroll-driven reveals would stay blank. */
+@media print {
+  .pixel-reveal,
+  .drift-pixel {
+    animation: none !important;
+  }
+  .scroll-xp {
+    display: none;
+  }
+}
+
+/* Pixel grass strip along the hero's bottom edge — hand-placed blades in the
+   title-shadow green family, tiled as a crisp-edge SVG. */
+.pixel-grass {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='16' shape-rendering='crispEdges'%3E%3Crect x='0' y='12' width='32' height='4' fill='%23d5e7b4'/%3E%3Crect x='2' y='8' width='2' height='4' fill='%23d5e7b4'/%3E%3Crect x='8' y='4' width='2' height='8' fill='%23b7d187'/%3E%3Crect x='14' y='10' width='2' height='2' fill='%23d5e7b4'/%3E%3Crect x='20' y='6' width='2' height='6' fill='%23b7d187'/%3E%3Crect x='26' y='8' width='2' height='4' fill='%23d5e7b4'/%3E%3Crect x='30' y='10' width='2' height='2' fill='%23b7d187'/%3E%3Crect x='11' y='8' width='2' height='4' fill='%2392cc41'/%3E%3Crect x='23' y='10' width='2' height='2' fill='%2392cc41'/%3E%3C/svg%3E");
+  background-size: 3rem 1.5rem;
+  background-repeat: repeat-x;
+  background-position: bottom left;
+  image-rendering: pixelated;
+}
+
 /* Card hover — stepped pixel feel */
 .card-hover {
   transition: transform 0.3s steps(4);
@@ -353,7 +456,10 @@ body:has(.bottom-indicator-page) {
   .float-pixel,
   .konami-shake,
   .konami-fade-in,
-  .cm-play-pulse {
+  .cm-play-pulse,
+  .drift-pixel,
+  .scroll-xp,
+  .pixel-reveal {
     animation: none !important;
   }
   .card-hover,
