@@ -3,6 +3,27 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.2.2.0] - 2026-07-05
+
+### Changed
+- **BTC Bottom Indicator — redesigned for clarity and polish.** The bare
+  "19 / 100" is replaced by a **semicircular valuation gauge** (the Fear-&-Greed
+  silhouette) with a needle, so a first-time reader instantly sees *where* the
+  score sits on the cheap→expensive scale. Added a plain-language **verdict**
+  ("Historically cheap. At 19/100, Bitcoin sits deep in its Deep Value zone…"),
+  a **consensus tally** + **conviction bar** showing how the 15 signals
+  distribute across zones, and a **"how to read this"** strip — all generated
+  from the live data, so they stay correct as the snapshot refreshes.
+- **Valuation colour semantics.** Green = historically cheap / accumulate,
+  red = expensive / distribute (was an ambiguous orange→blue temperature ramp).
+  Every zone now carries a word + action so meaning never rests on colour alone.
+  Zones relabelled to a valuation ladder: Deep Value / Value / Fair Value /
+  Premium / Overheated (internal phase keys and thresholds unchanged).
+- **Dark "control-room" theme** for the page, consistent with the site's dark
+  editorial pages, and the 15 signals are now **grouped by category**
+  (Valuation · On-chain / Miner stress / Price & trend models) with a
+  shared-axis dot meter per row so clustering is visible at a glance.
+
 ## [0.2.1.0] - 2026-07-05
 
 ### Added

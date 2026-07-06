@@ -6,13 +6,13 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-bi", display: "swap"
 export const metadata = {
   title: "BTC Bottom Indicator · afrodance.fun",
   description:
-    "A dashboard of Bitcoin on-chain valuation signals — MVRV, NUPL, SOPR, realized-price models — scored 0–100 to gauge how close BTC is to a cycle bottom.",
+    "One score for how cheap or expensive Bitcoin is right now — 15 on-chain, miner, and price signals ranked against their own history and averaged into a 0–100 bottom score, refreshed daily.",
 };
 
 export default function BottomIndicatorLayout({ children }: { children: ReactNode }) {
   return (
     <div
-      className={`${inter.variable} bottom-indicator-page min-h-screen bg-[#f5f6f8] text-[#1f2328]`}
+      className={`${inter.variable} bottom-indicator-page min-h-screen bg-[#0a0e17] text-[#e6edf5]`}
       style={{ fontFamily: "var(--font-bi), ui-sans-serif, system-ui, -apple-system, sans-serif" }}
     >
       {children}
