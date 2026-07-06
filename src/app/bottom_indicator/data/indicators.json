@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-06T09:13:54.752Z",
-  "btcPrice": 62841,
+  "generatedAt": "2026-07-06T11:19:22.285Z",
+  "btcPrice": 62802,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -153,9 +153,9 @@
       "phase": "Bearish",
       "score": 21,
       "change30d": 8,
-      "rawValue": 0.8419,
+      "rawValue": 0.8413,
       "asOfDate": "2026-07-06",
-      "fetchedAt": "2026-07-06T09:13:54.748Z",
+      "fetchedAt": "2026-07-06T11:19:22.281Z",
       "available": true
     },
     {
@@ -165,9 +165,9 @@
       "phase": "Bottom",
       "score": 7,
       "change30d": 1,
-      "rawValue": 1.003,
+      "rawValue": 1.0023,
       "asOfDate": "2026-07-06",
-      "fetchedAt": "2026-07-06T09:13:54.749Z",
+      "fetchedAt": "2026-07-06T11:19:22.283Z",
       "available": true
     },
     {
@@ -179,7 +179,7 @@
       "change30d": -3,
       "rawValue": 1.0618,
       "asOfDate": "2026-07-06",
-      "fetchedAt": "2026-07-06T09:13:54.752Z",
+      "fetchedAt": "2026-07-06T11:19:22.285Z",
       "available": true
     }
   ]
