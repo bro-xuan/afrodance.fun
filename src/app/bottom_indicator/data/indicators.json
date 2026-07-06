@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-05T21:34:52.525Z",
-  "btcPrice": 62935,
+  "generatedAt": "2026-07-06T09:13:54.752Z",
+  "btcPrice": 62841,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -127,10 +127,11 @@
       "name": "Realized Price",
       "blurb": "Aggregate on-chain cost basis. Spot below it means the market is underwater.",
       "phase": "Bottom",
-      "score": 18,
-      "change30d": -1,
-      "rawValue": 1.1886,
-      "asOfDate": "2026-07-03",
+      "score": 19,
+      "change30d": 3,
+      "rawValue": 1.2086,
+      "asOfDate": "2026-07-05",
+      "fetchedAt": "2026-07-06T09:13:53.694Z",
       "available": true
     },
     {
@@ -138,10 +139,11 @@
       "name": "Balanced Price",
       "blurb": "Realized minus transferred price. Spot near it has marked cycle bottoms.",
       "phase": "Bottom",
-      "score": 18,
-      "change30d": -1,
-      "rawValue": 2.1883,
-      "asOfDate": "2026-07-03",
+      "score": 19,
+      "change30d": 2,
+      "rawValue": 2.2251,
+      "asOfDate": "2026-07-05",
+      "fetchedAt": "2026-07-06T09:13:54.346Z",
       "available": true
     },
     {
@@ -152,8 +154,8 @@
       "score": 21,
       "change30d": 8,
       "rawValue": 0.8419,
-      "asOfDate": "2026-07-05",
-      "fetchedAt": "2026-07-05T21:34:48.450Z",
+      "asOfDate": "2026-07-06",
+      "fetchedAt": "2026-07-06T09:13:54.748Z",
       "available": true
     },
     {
@@ -163,9 +165,9 @@
       "phase": "Bottom",
       "score": 7,
       "change30d": 1,
-      "rawValue": 1.005,
-      "asOfDate": "2026-07-05",
-      "fetchedAt": "2026-07-05T21:34:48.451Z",
+      "rawValue": 1.003,
+      "asOfDate": "2026-07-06",
+      "fetchedAt": "2026-07-06T09:13:54.749Z",
       "available": true
     },
     {
@@ -174,10 +176,10 @@
       "blurb": "150-day EMA vs 0.745× the 471-day average. Ratios near/below 1 have pinned cycle lows.",
       "phase": "Bottom",
       "score": 14,
-      "change30d": -4,
-      "rawValue": 1.0631,
-      "asOfDate": "2026-07-05",
-      "fetchedAt": "2026-07-05T21:34:48.454Z",
+      "change30d": -3,
+      "rawValue": 1.0618,
+      "asOfDate": "2026-07-06",
+      "fetchedAt": "2026-07-06T09:13:54.752Z",
       "available": true
     }
   ]
