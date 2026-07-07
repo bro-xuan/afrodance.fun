@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-07T20:41:53.019Z",
-  "btcPrice": 63377,
+  "generatedAt": "2026-07-07T21:02:47.885Z",
+  "btcPrice": 63779,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -163,11 +163,11 @@
       "name": "Mayer Multiple",
       "blurb": "Price vs its 200-day average. Readings near 0.5 marked deep bottoms; above ~2.4 marked overheated tops.",
       "phase": "Bearish",
-      "score": 22,
-      "change30d": 6,
-      "rawValue": 0.8504,
+      "score": 23,
+      "change30d": 7,
+      "rawValue": 0.8558,
       "asOfDate": "2026-07-07",
-      "fetchedAt": "2026-07-07T10:15:55.731Z",
+      "fetchedAt": "2026-07-07T21:02:47.879Z",
       "available": true,
       "side": "both"
     },
@@ -176,11 +176,11 @@
       "name": "200-Week MA Ratio",
       "blurb": "Price vs its 200-week average — the line macro bottoms touch; multiples of ~3+ accompanied past tops.",
       "phase": "Bottom",
-      "score": 7,
-      "change30d": -1,
-      "rawValue": 1.011,
+      "score": 8,
+      "change30d": 0,
+      "rawValue": 1.0174,
       "asOfDate": "2026-07-07",
-      "fetchedAt": "2026-07-07T10:15:55.733Z",
+      "fetchedAt": "2026-07-07T21:02:47.881Z",
       "available": true,
       "side": "both"
     },
@@ -193,7 +193,7 @@
       "change30d": -2,
       "rawValue": 1.0608,
       "asOfDate": "2026-07-07",
-      "fetchedAt": "2026-07-07T10:15:55.735Z",
+      "fetchedAt": "2026-07-07T21:02:47.883Z",
       "available": true,
       "side": "bottom"
     },
@@ -201,13 +201,13 @@
       "slug": "pi-cycle-top",
       "name": "Pi Cycle Top",
       "blurb": "111-day MA vs 2× the 350-day MA. The upward cross of 1 called the 2013, 2017 and 2021 tops within days.",
-      "phase": null,
-      "score": null,
-      "change30d": null,
-      "rawValue": null,
-      "asOfDate": null,
-      "fetchedAt": "2026-07-07T20:41:53.018Z",
-      "available": false,
+      "phase": "Bottom",
+      "score": 16,
+      "change30d": 3,
+      "rawValue": 0.3988,
+      "asOfDate": "2026-07-07",
+      "fetchedAt": "2026-07-07T21:02:47.885Z",
+      "available": true,
       "side": "top"
     }
   ]
