@@ -5,6 +5,7 @@ import type { IndicatorsSnapshot } from "./types";
 import { metaForPhase, phaseForScore } from "./lib/phase-meta";
 import { buildGroups, buildTriggers, buildWatch, isTwoSided, phaseCounts, verdict } from "./lib/insights";
 import { Gauge } from "./components/Gauge";
+import { LivePrice } from "./components/LivePrice";
 import { ConvictionBar } from "./components/ConvictionBar";
 import { ExtremeWatch } from "./components/ExtremeWatch";
 import { IndicatorGroups } from "./components/IndicatorGroups";
@@ -98,11 +99,7 @@ export default function BottomIndicatorPage() {
                     </span>
                     <span className="text-sm text-[#aab6c9]">/ {scored.length} signals reading {meta.label}</span>
                   </span>
-                  {data.btcPrice ? (
-                    <span className="text-sm text-[#8695ac]">
-                      BTC <span className="tabular-nums font-semibold text-[#e6edf5]">${data.btcPrice.toLocaleString("en-US")}</span>
-                    </span>
-                  ) : null}
+                  <LivePrice fallback={data.btcPrice} asOf={asOf} />
                 </div>
 
                 <div className="mt-5">

@@ -3,6 +3,19 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.2.3.1] - 2026-07-07
+
+### Changed
+- **Live BTC price in the bottom/top indicator header.** The header quote was
+  a daily *close* baked into the static snapshot, so it read as a live price
+  while lagging spot by hours. It's now a small client-side ticker that fetches
+  a real-time spot on load and polls every 30s (Binance, falling back to
+  CoinGecko — both keyless and CORS-enabled), with a pulsing **Live** dot and a
+  brief green/amber tint on each up/down tick. The scoring is untouched — it
+  still runs on the daily-close snapshot. If both price sources are
+  unreachable the header gracefully shows the snapshot close, labelled
+  "close · <date>", so it is never blank or misleading.
+
 ## [0.2.3.0] - 2026-07-07
 
 ### Changed
