@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-07T08:47:31.567Z",
-  "btcPrice": 63086,
+  "generatedAt": "2026-07-07T10:15:55.735Z",
+  "btcPrice": 63377,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -128,22 +128,22 @@
       "blurb": "Aggregate on-chain cost basis. Spot below it means the market is underwater.",
       "phase": "Bottom",
       "score": 19,
-      "change30d": 3,
-      "rawValue": 1.2086,
-      "asOfDate": "2026-07-05",
-      "fetchedAt": "2026-07-06T09:13:53.694Z",
+      "change30d": 4,
+      "rawValue": 1.2165,
+      "asOfDate": "2026-07-06",
+      "fetchedAt": "2026-07-07T10:15:54.603Z",
       "available": true
     },
     {
       "slug": "balanced-price",
       "name": "Balanced Price",
       "blurb": "Realized minus transferred price. Spot near it has marked cycle bottoms.",
-      "phase": "Bottom",
-      "score": 19,
-      "change30d": 2,
-      "rawValue": 2.2251,
-      "asOfDate": "2026-07-05",
-      "fetchedAt": "2026-07-06T09:13:54.346Z",
+      "phase": "Bearish",
+      "score": 20,
+      "change30d": 3,
+      "rawValue": 2.2395,
+      "asOfDate": "2026-07-06",
+      "fetchedAt": "2026-07-07T10:15:55.327Z",
       "available": true
     },
     {
@@ -153,9 +153,9 @@
       "phase": "Bearish",
       "score": 22,
       "change30d": 6,
-      "rawValue": 0.8465,
+      "rawValue": 0.8504,
       "asOfDate": "2026-07-07",
-      "fetchedAt": "2026-07-07T08:47:31.564Z",
+      "fetchedAt": "2026-07-07T10:15:55.731Z",
       "available": true
     },
     {
@@ -165,9 +165,9 @@
       "phase": "Bottom",
       "score": 7,
       "change30d": -1,
-      "rawValue": 1.0063,
+      "rawValue": 1.011,
       "asOfDate": "2026-07-07",
-      "fetchedAt": "2026-07-07T08:47:31.565Z",
+      "fetchedAt": "2026-07-07T10:15:55.733Z",
       "available": true
     },
     {
@@ -177,9 +177,9 @@
       "phase": "Bottom",
       "score": 14,
       "change30d": -2,
-      "rawValue": 1.0607,
+      "rawValue": 1.0608,
       "asOfDate": "2026-07-07",
-      "fetchedAt": "2026-07-07T08:47:31.567Z",
+      "fetchedAt": "2026-07-07T10:15:55.735Z",
       "available": true
     }
   ]
