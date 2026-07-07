@@ -1,5 +1,5 @@
 /**
- * Generate the BTC bottom-indicator snapshot.
+ * Generate the BTC bottom & top indicator snapshot.
  *
  * Two keyless data sources:
  *   - bitcoin-data.com REST API (BGeometrics). History array per metric at
@@ -48,44 +48,51 @@ const BTCUSDT_GENESIS = Date.UTC(2017, 7, 17); // first BTCUSDT daily candle
 // kind "priceDerived": computed ENTIRELY from the Binance price series via
 //                      `compute(priceSeries)`; costs no bitcoin-data budget.
 // direction "lowIsBottom": cheap/low = capitulation = low score = "Bottom".
+// side "bottom" | "top": one-sided specialist trigger — only meaningful at its
+//                      own extreme, so it is EXCLUDED from the headline average
+//                      and only counts toward its own watch panel. Omitted =
+//                      "both" (two-sided; lows marked bottoms AND highs tops).
 //
 // The first block hits the rate-limited bitcoin-data API (one request each).
 const METRICS = [
   { slug: "mvrv-zscore", name: "MVRV Z-Score", direction: "lowIsBottom", kind: "oscillator",
-    blurb: "Market cap vs realized cap in standard deviations. Deep lows mark historic bottoms." },
+    blurb: "Market cap vs realized cap in standard deviations. Deep lows marked historic bottoms; extremes above ~7 marked every major top." },
   { slug: "mvrv", name: "MVRV Ratio", direction: "lowIsBottom", kind: "oscillator",
-    blurb: "Market value / realized value. Below ~1 means the average holder is underwater." },
+    blurb: "Market value / realized value. Below ~1 the average holder is underwater; above ~3.5 is historically overheated." },
   { slug: "nupl", name: "Net Unrealized P/L (NUPL)", direction: "lowIsBottom", kind: "oscillator",
-    blurb: "Share of supply sitting in profit. Negative = net-unrealized-loss capitulation." },
+    blurb: "Share of supply sitting in profit. Negative = capitulation; above ~0.75 = the euphoria zone of past tops." },
   { slug: "sopr", name: "SOPR", direction: "lowIsBottom", kind: "oscillator",
-    blurb: "Spent-output profit ratio. Sustained sub-1 means coins move at a loss." },
+    blurb: "Spent-output profit ratio. Sustained sub-1 = coins selling at a loss; persistently rich = heavy profit-taking near tops." },
   { slug: "reserve-risk", name: "Reserve Risk", direction: "lowIsBottom", kind: "oscillator",
-    blurb: "Confidence of long-term holders vs price. Lows flag attractive risk/reward." },
+    blurb: "Long-term-holder conviction vs price. Lows flag attractive risk/reward; highs flag late-cycle complacency." },
   { slug: "sth-mvrv", name: "Short-Term Holder MVRV", direction: "lowIsBottom", kind: "oscillator",
-    blurb: "Cost-basis ratio of recent buyers. Deep lows = fresh money deeply underwater." },
+    blurb: "Cost-basis ratio of recent buyers. Deep lows = fresh money underwater; extremes = new buyers sitting on top-heavy gains." },
   { slug: "lth-mvrv", name: "Long-Term Holder MVRV", direction: "lowIsBottom", kind: "oscillator",
-    blurb: "Cost-basis ratio of seasoned holders. Lows accompany late-stage bear bottoms." },
+    blurb: "Cost-basis ratio of seasoned holders. Lows accompany bear-market bottoms; extremes accompany distribution tops." },
   { slug: "puell-multiple", name: "Puell Multiple", direction: "lowIsBottom", kind: "oscillator",
-    blurb: "Daily miner issuance in USD vs its yearly average. Green sub-0.5 zone marked every cycle low." },
+    blurb: "Daily miner issuance in USD vs its yearly average. Sub-0.5 marked every cycle low; above ~4 marked blow-off tops." },
   { slug: "rhodl-ratio", name: "RHODL Ratio", direction: "lowIsBottom", kind: "oscillator",
-    blurb: "Realized-cap HODL waves (1-week vs 1–2-year bands). Lows flag speculative capital flushed out." },
+    blurb: "Realized-cap HODL waves (1-week vs 1–2-year bands). Lows = speculation flushed out; highs = froth at cycle peaks." },
   { slug: "hashrate", name: "Hash Ribbons", direction: "lowIsBottom", kind: "oscillator",
-    transform: hashRibbons,
-    blurb: "30-day vs 60-day hashrate momentum. Dips below 1 mark miner-capitulation bottoms." },
+    transform: hashRibbons, side: "bottom",
+    blurb: "30-day vs 60-day hashrate momentum. Dips below 1 mark miner-capitulation bottoms; says nothing about tops." },
   { slug: "realized-price", name: "Realized Price", direction: "lowIsBottom", kind: "priceModel",
-    blurb: "Aggregate on-chain cost basis. Spot below it means the market is underwater." },
+    blurb: "Aggregate on-chain cost basis. Spot below it = the market underwater; spot far above it = historically stretched." },
   { slug: "balanced-price", name: "Balanced Price", direction: "lowIsBottom", kind: "priceModel",
-    blurb: "Realized minus transferred price. Spot near it has marked cycle bottoms." },
+    blurb: "Realized minus transferred price. Spot near it marked cycle bottoms; a large premium marked late-cycle heat." },
   // priceDerived — computed from Binance klines, zero bitcoin-data budget.
   { slug: "mayer-multiple", name: "Mayer Multiple", direction: "lowIsBottom", kind: "priceDerived",
     compute: (series) => ratioToSMA(series, 200),
-    blurb: "Price relative to its 200-day average. Readings near 0.5 have marked deep bottoms." },
+    blurb: "Price vs its 200-day average. Readings near 0.5 marked deep bottoms; above ~2.4 marked overheated tops." },
   { slug: "mayer-200w", name: "200-Week MA Ratio", direction: "lowIsBottom", kind: "priceDerived",
     compute: (series) => ratioToSMA(series, 1400),
-    blurb: "Price vs its 200-week average — the line macro bottoms have historically touched." },
+    blurb: "Price vs its 200-week average — the line macro bottoms touch; multiples of ~3+ accompanied past tops." },
   { slug: "pi-cycle-bottom", name: "Pi Cycle Bottom", direction: "lowIsBottom", kind: "priceDerived",
-    compute: piCycleBottom,
-    blurb: "150-day EMA vs 0.745× the 471-day average. Ratios near/below 1 have pinned cycle lows." },
+    compute: piCycleBottom, side: "bottom",
+    blurb: "150-day EMA vs 0.745× the 471-day average. Ratios near/below 1 have pinned cycle lows; says nothing about tops." },
+  { slug: "pi-cycle-top", name: "Pi Cycle Top", direction: "lowIsBottom", kind: "priceDerived",
+    compute: piCycleTop, side: "top",
+    blurb: "111-day MA vs 2× the 350-day MA. The upward cross of 1 called the 2013, 2017 and 2021 tops within days." },
 ];
 
 // ── Scoring (pure) ─────────────────────────────────────────────────────────
@@ -155,6 +162,17 @@ function piCycleBottom(points) {
   const sma = smaSeries(values, 471);
   return points
     .map((p, i) => (ema[i] && sma[i] ? { d: p.d, ts: p.ts, v: ema[i] / (0.745 * sma[i]) } : null))
+    .filter(Boolean);
+}
+
+// Pi Cycle Top: 111-day SMA ÷ (2 × 350-day SMA); the cross above 1 has marked
+// every blow-off top since 2013 within days.
+function piCycleTop(points) {
+  const values = points.map((p) => p.v);
+  const s111 = smaSeries(values, 111);
+  const s350 = smaSeries(values, 350);
+  return points
+    .map((p, i) => (s111[i] && s350[i] ? { d: p.d, ts: p.ts, v: s111[i] / (2 * s350[i]) } : null))
     .filter(Boolean);
 }
 
@@ -353,6 +371,12 @@ for (const def of fetchOrder) {
 
   // priceDerived: computed from the Binance series — no API budget, never limited.
   if (def.kind === "priceDerived") {
+    // A price-source outage is transient: keep yesterday's good row rather
+    // than clobbering it with "unavailable" (stale beats blank).
+    if (!priceSeries && rowBySlug.get(def.slug)?.available) {
+      console.log(`${def.slug}… price source down — keeping previous snapshot row`);
+      continue;
+    }
     const series = priceSeries ? def.compute(priceSeries) : [];
     if (!series.length) {
       console.log(`${def.slug}… ${priceSeries ? "not enough history" : "no price series"} → unavailable`);
@@ -389,8 +413,12 @@ for (const def of fetchOrder) {
     }
     if (def.kind === "priceModel") {
       if (!priceByDate?.size) {
-        console.log("no price series → unavailable");
-        rowBySlug.set(def.slug, unavailableRow(def));
+        if (rowBySlug.get(def.slug)?.available) {
+          console.log("price source down — keeping previous snapshot row");
+        } else {
+          console.log("no price series → unavailable");
+          rowBySlug.set(def.slug, unavailableRow(def));
+        }
         continue;
       }
       // Convert model price series into a spot/model ratio series.
@@ -420,8 +448,13 @@ for (const def of fetchOrder) {
   }
 }
 
-// Emit rows in registry order so the table is deterministic.
-const rows = METRICS.map((m) => rowBySlug.get(m.slug)).filter(Boolean);
+// Emit rows in registry order so the table is deterministic. Presentation
+// fields (name/blurb/side) always come from the registry, so copy or side
+// changes reach the snapshot even for rows skipped as fresh this run.
+const rows = METRICS.map((m) => {
+  const row = rowBySlug.get(m.slug);
+  return row ? { ...row, name: m.name, blurb: m.blurb, side: m.side ?? "both" } : null;
+}).filter(Boolean);
 const snapshot = {
   generatedAt: new Date().toISOString(),
   btcPrice: btcSpot,

@@ -1,7 +1,18 @@
-// Shared types for the BTC bottom-indicator dashboard.
+// Shared types for the BTC bottom & top indicator dashboard.
 
 /** Market cycle phase, coldest → hottest. Low score = capitulation/bottom. */
 export type Phase = "Bottom" | "Bearish" | "Neutral" | "Bullish" | "Top";
+
+/**
+ * Which extreme(s) a signal can genuinely call.
+ * - `both`: mean-reverting metric whose lows marked bottoms AND whose highs
+ *   marked tops (MVRV, NUPL, Mayer…). Counts toward the headline average.
+ * - `bottom` / `top`: one-sided specialist trigger (Pi Cycle Bottom, Hash
+ *   Ribbons, Pi Cycle Top). Only meaningful at its own extreme — its reading
+ *   on the blind side is noise, so it is excluded from the headline average
+ *   and only counts toward its own watch panel.
+ */
+export type Side = "both" | "bottom" | "top";
 
 /**
  * Which raw direction means "bottom" for a metric.
@@ -31,6 +42,7 @@ export interface MetricDef {
   blurb: string;
   direction: Direction;
   kind: MetricKind;
+  side: Side;
 }
 
 export interface IndicatorRow {
@@ -53,6 +65,12 @@ export interface IndicatorRow {
    * optional because snapshots written before this field existed lack it.
    */
   fetchedAt?: string | null;
+  /**
+   * Which extreme(s) the signal can call; see {@link Side}. Optional because
+   * snapshots written before this field existed lack it (treated as "both",
+   * with a fallback map in lib/insights.ts for the known one-sided slugs).
+   */
+  side?: Side;
   available: boolean;
 }
 

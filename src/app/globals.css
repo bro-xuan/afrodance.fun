@@ -265,6 +265,12 @@ body:has(.bottom-indicator-page)::after {
 body:has(.bottom-indicator-page) {
   background: #0a0e17;
 }
+/* nes.css ships an unlayered normalize (header, section, footer… →
+   display: block) that outranks Tailwind's layered `flex` utility on
+   semantic elements. Restore the utility inside the dashboard. */
+.bottom-indicator-page :is(header, footer, section, main, nav).flex {
+  display: flex;
+}
 
 /* Migration map: scrubber + play-button affordances. */
 .cm-scrubber {
