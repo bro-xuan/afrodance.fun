@@ -4,9 +4,9 @@ import type { ReactNode } from "react";
 const inter = Inter({ subsets: ["latin"], variable: "--font-bi", display: "swap" });
 
 export const metadata = {
-  title: "BTC Bottom Indicator · afrodance.fun",
+  title: "BTC Bottom & Top Indicator · afrodance.fun",
   description:
-    "One score for how cheap or expensive Bitcoin is right now — 15 on-chain, miner, and price signals ranked against their own history and averaged into a 0–100 bottom score, refreshed daily.",
+    "Where is Bitcoin in its cycle? 16 on-chain, miner, and price signals ranked against their own history — a 0–100 cycle score plus dedicated bottom-watch and top-watch trigger panels, refreshed daily.",
 };
 
 export default function BottomIndicatorLayout({ children }: { children: ReactNode }) {

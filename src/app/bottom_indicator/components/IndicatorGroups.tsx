@@ -1,6 +1,6 @@
 import type { IndicatorRow } from "../types";
 import { metaForPhase, phaseForScore } from "../lib/phase-meta";
-import type { Group } from "../lib/insights";
+import { sideOf, type Group } from "../lib/insights";
 import { PhaseBadge } from "./PhaseBadge";
 import { DotMeter } from "./DotMeter";
 
@@ -18,14 +18,35 @@ function Change({ change }: { change: number | null }) {
   );
 }
 
+/** Marks one-sided specialist triggers so a reader knows why their score
+ *  looks "wrong" on the blind side and why they skip the averages. */
+function SideTag({ row }: { row: IndicatorRow }) {
+  const side = sideOf(row);
+  if (side === "both") return null;
+  return (
+    <span
+      className="rounded-full border px-1.5 py-px text-[9.5px] font-semibold uppercase tracking-[0.08em]"
+      style={
+        side === "bottom"
+          ? { borderColor: "#10b98155", color: "#34d399" }
+          : { borderColor: "#ef444455", color: "#f87171" }
+      }
+      title={`One-sided trigger — only meaningful at cycle ${side}s; excluded from averages.`}
+    >
+      {side}-only
+    </span>
+  );
+}
+
 function Row({ row }: { row: IndicatorRow }) {
   const meta = row.phase ? metaForPhase(row.phase) : null;
   return (
     <div className={`border-t border-[#1a2438] py-3.5 ${ROW} ${row.available ? "" : "opacity-50"}`}>
       {/* name + blurb */}
       <div className="min-w-0">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="font-medium text-[#e6edf5]">{row.name}</span>
+          <SideTag row={row} />
           {row.phase && <span className="md:hidden"><PhaseBadge phase={row.phase} size="xs" /></span>}
         </div>
         <div className="mt-0.5 text-xs leading-snug text-[#7f8ca3]">{row.blurb}</div>
@@ -67,7 +88,10 @@ function GroupPanel({ group }: { group: Group }) {
         </div>
         <div className="flex items-center gap-2">
           {group.avgScore !== null && (
-            <span className="text-sm tabular-nums text-[#8695ac]">
+            <span
+              className="text-sm tabular-nums text-[#8695ac]"
+              title="Average of the group's two-sided signals — one-sided triggers are excluded."
+            >
               avg <span className="font-semibold" style={{ color: metaForPhase(phaseForScore(group.avgScore)).text }}>{group.avgScore}</span>
             </span>
           )}

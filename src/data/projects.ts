@@ -182,8 +182,8 @@ export const projects: Project[] = [
     color: "warning",
   },
   {
-    title: "BTC Bottom Indicator",
-    description: "On-chain signal dashboard — MVRV, NUPL, SOPR & realized-price models scored 0–100 to gauge how close Bitcoin is to a cycle bottom.",
+    title: "BTC Bottom & Top Indicator",
+    description: "On-chain cycle dashboard — MVRV, NUPL, Pi Cycle & friends scored 0–100 to gauge how close Bitcoin is to a cycle bottom or top.",
     url: "/bottom_indicator",
     emoji: "📉",
     color: "error",

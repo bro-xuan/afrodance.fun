@@ -3,6 +3,40 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.2.3.0] - 2026-07-07
+
+### Changed
+- **BTC Bottom Indicator → BTC Bottom & Top Indicator.** The page now reads
+  the whole cycle, not just the floor:
+  - **New signal: Pi Cycle Top** (111-day MA vs 2× the 350-day MA), computed
+    locally from the Binance feed — the crossover that called the 2013, 2017
+    and 2021 blow-off tops within days. Zero extra API budget.
+  - **Signal sidedness.** Every signal now declares which extreme it can call
+    (`both` / `bottom` / `top`). The headline gauge averages only the 13
+    two-sided signals; one-sided specialists (Pi Cycle Bottom, Hash Ribbons,
+    Pi Cycle Top) are excluded from all averages — their blind-side reading
+    is noise — and carry a `bottom-only` / `top-only` badge in the table.
+  - **Bottom watch / Top watch panels.** A pair of cards counting how
+    many signals sit in each extreme zone (score < 20 / ≥ 80), chips naming
+    the ones firing, and a distance-to-fire meter for each specialist trigger
+    (all three pivot on their ratio crossing 1.00, so an approaching Pi Cycle
+    cross is visible before it happens).
+  - Signal blurbs rewritten to describe both extremes; page copy, metadata,
+    and the projects card reframed around 0 = past bottoms, 100 = past tops.
+
+### Fixed
+- `fetch:indicators` no longer clobbers previously-good price-derived rows
+  with "unavailable" when the Binance price source is temporarily unreachable
+  — it keeps the prior snapshot rows (stale beats blank). The snapshot also
+  refreshes name/blurb/side from the registry on every run, so copy changes
+  no longer wait for a refetch.
+- Tailwind's `flex` utility was silently dead on the dashboard's `<header>`,
+  `<section>`, and `<footer>` elements: nes.css ships an unlayered normalize
+  (`header { display: block }`) that outranks Tailwind's layered utilities.
+  A scoped override restores them — this also fixes the signal-group headers,
+  whose average badge had been wrapping below the title instead of sitting
+  right-aligned.
+
 ## [0.2.2.0] - 2026-07-05
 
 ### Changed

@@ -30,7 +30,7 @@ export function Gauge({ score }: { score: number }) {
 
   return (
     <svg viewBox="0 0 400 238" className="block w-full" role="img"
-      aria-label={`Bitcoin bottom score ${s} of 100 — ${meta.label}`}>
+      aria-label={`Bitcoin cycle score ${s} of 100 — ${meta.label}`}>
       <defs>
         <filter id="zoneGlow" x="-40%" y="-40%" width="180%" height="180%">
           <feGaussianBlur stdDeviation="6" />
