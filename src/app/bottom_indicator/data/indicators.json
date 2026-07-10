@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-10T08:46:02.988Z",
-  "btcPrice": 64191,
+  "generatedAt": "2026-07-10T10:12:42.776Z",
+  "btcPrice": 64308,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -137,11 +137,11 @@
       "name": "Realized Price",
       "blurb": "Aggregate on-chain cost basis. Spot below it = the market underwater; spot far above it = historically stretched.",
       "phase": "Bottom",
-      "score": 17,
-      "change30d": 0,
-      "rawValue": 1.1838,
-      "asOfDate": "2026-07-08",
-      "fetchedAt": "2026-07-09T10:15:50.317Z",
+      "score": 18,
+      "change30d": 2,
+      "rawValue": 1.2026,
+      "asOfDate": "2026-07-09",
+      "fetchedAt": "2026-07-10T10:12:41.663Z",
       "available": true,
       "side": "both"
     },
@@ -150,11 +150,11 @@
       "name": "Balanced Price",
       "blurb": "Realized minus transferred price. Spot near it marked cycle bottoms; a large premium marked late-cycle heat.",
       "phase": "Bottom",
-      "score": 18,
-      "change30d": 0,
-      "rawValue": 2.1791,
-      "asOfDate": "2026-07-08",
-      "fetchedAt": "2026-07-09T10:15:50.991Z",
+      "score": 19,
+      "change30d": 2,
+      "rawValue": 2.2138,
+      "asOfDate": "2026-07-09",
+      "fetchedAt": "2026-07-10T10:12:42.368Z",
       "available": true,
       "side": "both"
     },
@@ -165,9 +165,9 @@
       "phase": "Bearish",
       "score": 25,
       "change30d": 11,
-      "rawValue": 0.8657,
+      "rawValue": 0.8673,
       "asOfDate": "2026-07-10",
-      "fetchedAt": "2026-07-10T08:46:02.984Z",
+      "fetchedAt": "2026-07-10T10:12:42.771Z",
       "available": true,
       "side": "both"
     },
@@ -178,9 +178,9 @@
       "phase": "Bottom",
       "score": 8,
       "change30d": 2,
-      "rawValue": 1.0224,
+      "rawValue": 1.0243,
       "asOfDate": "2026-07-10",
-      "fetchedAt": "2026-07-10T08:46:02.985Z",
+      "fetchedAt": "2026-07-10T10:12:42.772Z",
       "available": true,
       "side": "both"
     },
@@ -193,7 +193,7 @@
       "change30d": -2,
       "rawValue": 1.0572,
       "asOfDate": "2026-07-10",
-      "fetchedAt": "2026-07-10T08:46:02.986Z",
+      "fetchedAt": "2026-07-10T10:12:42.774Z",
       "available": true,
       "side": "bottom"
     },
@@ -206,7 +206,7 @@
       "change30d": 3,
       "rawValue": 0.3999,
       "asOfDate": "2026-07-10",
-      "fetchedAt": "2026-07-10T08:46:02.988Z",
+      "fetchedAt": "2026-07-10T10:12:42.776Z",
       "available": true,
       "side": "top"
     }
