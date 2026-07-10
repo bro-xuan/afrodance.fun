@@ -50,7 +50,7 @@ function FtvPixelWord({
 export default function FocusTrackerVisual() {
   return (
     <div className="relative w-full shrink-0">
-      <div className="border-4 border-[#2d2d2d] bg-[#1a1508]">
+      <div className="border-4 border-[#2d2d2d] bg-[#f7f1e3]">
         <svg
           viewBox="0 0 96 40"
           className="block h-auto w-full"
@@ -64,17 +64,17 @@ export default function FocusTrackerVisual() {
               height="8"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="3" y="3" width="1" height="1" fill="#2a2410" />
+              <rect x="3" y="3" width="1" height="1" fill="#e4dac2" />
             </pattern>
           </defs>
 
-          <rect x="0" y="0" width="96" height="40" fill="#1a1508" />
+          <rect x="0" y="0" width="96" height="40" fill="#f7f1e3" />
 
           {/* scanning field */}
           <rect x="26" y="6" width="45" height="19" fill="url(#ftv-grid)" />
 
           {/* reticle corner brackets */}
-          <g fill="#c9a800">
+          <g fill="#c9820f">
             <rect x="26" y="6" width="6" height="1" />
             <rect x="26" y="6" width="1" height="6" />
             <rect x="65" y="6" width="6" height="1" />
@@ -86,7 +86,7 @@ export default function FocusTrackerVisual() {
           </g>
 
           {/* center target box */}
-          <g fill="#8a7420">
+          <g fill="#a8791f">
             <rect x="45" y="12" width="7" height="1" />
             <rect x="45" y="18" width="7" height="1" />
             <rect x="45" y="12" width="1" height="7" />
@@ -95,18 +95,18 @@ export default function FocusTrackerVisual() {
 
           {/* sweeping scan line */}
           <g className="ftv-scan">
-            <rect x="27" y="6" width="43" height="1" fill="#6b5c1e" />
+            <rect x="27" y="6" width="43" height="1" fill="#cba94e" />
           </g>
 
           {/* alert ring — small blip frame */}
-          <g className="ftv-alert-a" fill="#f7d51d" opacity="0">
+          <g className="ftv-alert-a" fill="#d9781a" opacity="0">
             <rect x="43" y="10" width="11" height="1" />
             <rect x="43" y="20" width="11" height="1" />
             <rect x="43" y="10" width="1" height="11" />
             <rect x="53" y="10" width="1" height="11" />
           </g>
           {/* alert ring — large blip frame */}
-          <g className="ftv-alert-b" fill="#f7d51d" opacity="0">
+          <g className="ftv-alert-b" fill="#d9781a" opacity="0">
             <rect x="39" y="6" width="19" height="1" />
             <rect x="39" y="24" width="19" height="1" />
             <rect x="39" y="6" width="1" height="19" />
@@ -115,15 +115,15 @@ export default function FocusTrackerVisual() {
 
           {/* wandering gaze dot */}
           <g className="ftv-dot">
-            <rect x="47" y="14" width="3" height="3" fill="#92cc41" />
+            <rect x="47" y="14" width="3" height="3" fill="#2d2d2d" />
           </g>
 
           {/* FOCUS meter */}
-          <FtvPixelWord word="FOCUS" x={4} y={33} fill="#f7d51d" />
-          <rect x="26" y="32" width="66" height="6" fill="#3a2f0a" />
+          <FtvPixelWord word="FOCUS" x={4} y={33} fill="#2d2d2d" />
+          <rect x="26" y="32" width="66" height="6" fill="#e4dac2" />
           <g className="ftv-meter">
-            <rect x="27" y="33" width="64" height="4" fill="#f7d51d" />
-            <rect x="27" y="33" width="64" height="1" fill="#fbe66a" />
+            <rect x="27" y="33" width="64" height="4" fill="#c9820f" />
+            <rect x="27" y="33" width="64" height="1" fill="#e0a52c" />
           </g>
         </svg>
       </div>

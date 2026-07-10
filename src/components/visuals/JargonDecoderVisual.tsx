@@ -52,7 +52,7 @@ function PixelWord({
 export default function JargonDecoderVisual() {
   return (
     <div className="relative w-full shrink-0">
-      <div className="border-4 border-[#2d2d2d] bg-[#0d1f14]">
+      <div className="border-4 border-[#2d2d2d] bg-[#f1efe0]">
         <svg
           viewBox="0 0 96 40"
           className="block h-auto w-full"
@@ -66,7 +66,7 @@ export default function JargonDecoderVisual() {
               height="8"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="3" y="3" width="1" height="1" fill="#12281a" />
+              <rect x="3" y="3" width="1" height="1" fill="#e4dac2" />
             </pattern>
             <pattern
               id="ctv-dg"
@@ -74,8 +74,8 @@ export default function JargonDecoderVisual() {
               height="2"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="0" y="0" width="1" height="1" fill="#4a7c10" />
-              <rect x="1" y="1" width="1" height="1" fill="#25400a" />
+              <rect x="0" y="0" width="1" height="1" fill="#9fc75f" />
+              <rect x="1" y="1" width="1" height="1" fill="#6f9c33" />
             </pattern>
             <pattern
               id="ctv-da"
@@ -83,8 +83,8 @@ export default function JargonDecoderVisual() {
               height="2"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="0" y="0" width="1" height="1" fill="#d9a441" />
-              <rect x="1" y="1" width="1" height="1" fill="#6b4d12" />
+              <rect x="0" y="0" width="1" height="1" fill="#e3ab3d" />
+              <rect x="1" y="1" width="1" height="1" fill="#b3831f" />
             </pattern>
             <pattern
               id="ctv-dr"
@@ -92,12 +92,12 @@ export default function JargonDecoderVisual() {
               height="2"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="0" y="0" width="1" height="1" fill="#e0483a" />
-              <rect x="1" y="1" width="1" height="1" fill="#5c1a12" />
+              <rect x="0" y="0" width="1" height="1" fill="#e59486" />
+              <rect x="1" y="1" width="1" height="1" fill="#cf6a58" />
             </pattern>
           </defs>
 
-          <rect x="0" y="0" width="96" height="40" fill="#0d1f14" />
+          <rect x="0" y="0" width="96" height="40" fill="#f1efe0" />
           <rect x="0" y="0" width="96" height="40" fill="url(#ctv-grid)" />
 
           {/* IN prompt chevron */}
@@ -111,10 +111,10 @@ export default function JargonDecoderVisual() {
 
           {/* jargon input — flips between two buzzwords, then settles */}
           <g className="ctv-jargon-a">
-            <PixelWord word="SYNERGY" x={13} y={4} fill="#7d8f74" />
+            <PixelWord word="SYNERGY" x={13} y={4} fill="#6f7a45" />
           </g>
           <g className="ctv-jargon-b">
-            <PixelWord word="LEVERAGE" x={13} y={4} fill="#7d8f74" />
+            <PixelWord word="LEVERAGE" x={13} y={4} fill="#6f7a45" />
           </g>
 
           {/* dashed divider between input and decoded output */}
@@ -128,12 +128,12 @@ export default function JargonDecoderVisual() {
               y={13}
               width={2}
               height={1}
-              fill="#24401a"
+              fill="#9cb45e"
             />
           ))}
 
           {/* OUT prompt chevron */}
-          <g fill="#92cc41">
+          <g fill="#2f5311">
             <rect x="8" y="17" width="1" height="1" />
             <rect x="9" y="18" width="1" height="1" />
             <rect x="10" y="19" width="1" height="1" />
@@ -142,14 +142,14 @@ export default function JargonDecoderVisual() {
           </g>
 
           {/* plain-English output (always drawn; decode beam reveals it) */}
-          <PixelWord word="TEAMWORK" x={13} y={17} fill="#92cc41" />
+          <PixelWord word="TEAMWORK" x={13} y={17} fill="#2f5311" />
           <rect
             className="ctv-cursor"
             x={45}
             y={17}
             width={2}
             height={5}
-            fill="#92cc41"
+            fill="#2f5311"
           />
 
           {/* decode beam / cover: hides the output, wipes away left-to-right */}
@@ -159,11 +159,11 @@ export default function JargonDecoderVisual() {
             y={16}
             width={36}
             height={8}
-            fill="#0d1f14"
+            fill="#f1efe0"
           />
 
           {/* BS meter */}
-          <PixelWord word="BS" x={4} y={30} fill="#7d8f74" />
+          <PixelWord word="BS" x={4} y={30} fill="#6f7a45" />
           <rect x="16" y="30" width="24" height="5" fill="url(#ctv-dg)" />
           <rect x="40" y="30" width="20" height="5" fill="url(#ctv-da)" />
           <rect
@@ -175,7 +175,7 @@ export default function JargonDecoderVisual() {
             fill="url(#ctv-dr)"
           />
           {/* meter frame (crisp 1px rects) */}
-          <g fill="#3a5c22">
+          <g fill="#2f5311">
             <rect x="15" y="29" width="74" height="1" />
             <rect x="15" y="35" width="74" height="1" />
             <rect x="15" y="29" width="1" height="7" />
@@ -188,7 +188,7 @@ export default function JargonDecoderVisual() {
             y="29"
             width="2"
             height="7"
-            fill="#f2ffe6"
+            fill="#2d2d2d"
           />
         </svg>
       </div>

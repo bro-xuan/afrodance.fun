@@ -35,7 +35,7 @@ const ACV_HOLE: number[][] = [
 export default function AnalogCameraVisual() {
   return (
     <div className="relative w-full shrink-0">
-      <div className="border-4 border-[#2d2d2d] bg-[#101826]">
+      <div className="border-4 border-[#2d2d2d] bg-[#f7f1e3]">
         <svg
           viewBox="0 0 96 40"
           className="block h-auto w-full"
@@ -49,12 +49,12 @@ export default function AnalogCameraVisual() {
               height="8"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="3" y="3" width="1" height="1" fill="#1a2740" />
+              <rect x="3" y="3" width="1" height="1" fill="#e4dac2" />
             </pattern>
           </defs>
 
           {/* screen */}
-          <rect x="0" y="0" width="96" height="40" fill="#101826" />
+          <rect x="0" y="0" width="96" height="40" fill="#f7f1e3" />
           <rect x="0" y="0" width="96" height="40" fill="url(#acv-grid)" />
 
           {/* instant photo — drawn UNDER the camera so it feeds from the slot */}
@@ -68,7 +68,7 @@ export default function AnalogCameraVisual() {
             {/* the developing image */}
             <g className="acv-develop">
               <rect x="40" y="29" width="16" height="6" fill="#bfe3ff" />
-              <rect x="41" y="30" width="2" height="2" fill="#ffdd57" />
+              <rect x="41" y="30" width="2" height="2" fill="#eba417" />
               {/* far ridge */}
               <rect x="51" y="32" width="4" height="1" fill="#5ab0e6" />
               <rect x="50" y="33" width="6" height="2" fill="#5ab0e6" />
@@ -86,21 +86,21 @@ export default function AnalogCameraVisual() {
           <rect x="14" y="2" width="68" height="1" fill="#46607a" />
           <rect x="14" y="25" width="68" height="2" fill="#1c2938" />
           {/* blue accent trim */}
-          <rect x="14" y="7" width="68" height="1" fill="#209cee" />
+          <rect x="14" y="7" width="68" height="1" fill="#1e88d6" />
           <rect x="14" y="22" width="68" height="1" fill="#1a7abb" />
           {/* shutter button on the top edge */}
-          <rect x="46" y="0" width="5" height="2" fill="#e05f4e" />
-          <rect x="46" y="0" width="5" height="1" fill="#f6a196" />
+          <rect x="46" y="0" width="5" height="2" fill="#cf4a38" />
+          <rect x="46" y="0" width="5" height="1" fill="#e0836f" />
           {/* viewfinder */}
           <rect x="21" y="3" width="11" height="6" fill="#1a7abb" />
           <rect x="22" y="4" width="9" height="4" fill="#0a1420" />
           <rect x="23" y="5" width="2" height="1" fill="#3aa0e0" />
           {/* flash unit */}
           <rect x="60" y="4" width="15" height="6" fill="#1c2836" />
-          <rect x="60" y="4" width="15" height="1" fill="#209cee" />
+          <rect x="60" y="4" width="15" height="1" fill="#1e88d6" />
           <rect x="62" y="6" width="9" height="3" fill="#93b4cc" />
           {/* status LED */}
-          <rect className="acv-led" x="17" y="23" width="2" height="2" fill="#209cee" />
+          <rect className="acv-led" x="17" y="23" width="2" height="2" fill="#1e88d6" />
           {/* photo slot */}
           <rect x="36" y="24" width="24" height="2" fill="#0a0e17" />
 
@@ -113,7 +113,7 @@ export default function AnalogCameraVisual() {
               <rect key={"acv-b" + i} x={r[1]} y={r[0]} width={r[2]} height={1} fill="#4a5f78" />
             ))}
             {ACV_IRIS.map((r, i) => (
-              <rect key={"acv-i" + i} x={r[1]} y={r[0]} width={r[2]} height={1} fill="#209cee" />
+              <rect key={"acv-i" + i} x={r[1]} y={r[0]} width={r[2]} height={1} fill="#1e88d6" />
             ))}
             {ACV_HOLE.map((r, i) => (
               <rect key={"acv-h" + i} x={r[1]} y={r[0]} width={r[2]} height={1} fill="#0a1420" />

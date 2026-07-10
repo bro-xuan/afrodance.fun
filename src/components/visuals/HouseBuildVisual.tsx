@@ -11,7 +11,7 @@
 export default function HouseBuildVisual() {
   return (
     <div className="relative w-full shrink-0">
-      <div className="border-4 border-[#2d2d2d] bg-[#123049]">
+      <div className="border-4 border-[#2d2d2d] bg-[#cfe6f5]">
         <svg
           viewBox="0 0 96 40"
           className="block h-auto w-full"
@@ -19,26 +19,26 @@ export default function HouseBuildVisual() {
           aria-hidden="true"
         >
           {/* sky */}
-          <rect x={0} y={0} width={96} height={13} fill="#2575a6" />
-          <rect x={0} y={13} width={96} height={18} fill="#1d6091" />
+          <rect x={0} y={0} width={96} height={13} fill="#cfe6f5" />
+          <rect x={0} y={13} width={96} height={18} fill="#b8d8ee" />
 
           {/* clouds, drifting behind the house */}
-          <g className="nhv-cloud1" fill="#cfe6f5">
+          <g className="nhv-cloud1" fill="#ffffff">
             <rect x={22} y={7} width={3} height={1} />
             <rect x={24} y={6} width={8} height={2} />
             <rect x={26} y={4} width={5} height={2} />
           </g>
-          <g className="nhv-cloud2" fill="#bcdcf0">
+          <g className="nhv-cloud2" fill="#eef7fd">
             <rect x={82} y={6} width={3} height={1} />
             <rect x={72} y={5} width={10} height={2} />
             <rect x={75} y={3} width={6} height={2} />
           </g>
 
           {/* grass bank + canal water (card accent) */}
-          <rect x={0} y={31} width={96} height={4} fill="#3f7a2f" />
-          <rect x={0} y={31} width={96} height={1} fill="#57a03a" />
-          <rect x={0} y={35} width={96} height={5} fill="#1a7abb" />
-          <g className="nhv-ripple" fill="#209cee">
+          <rect x={0} y={31} width={96} height={4} fill="#8fbf4c" />
+          <rect x={0} y={31} width={96} height={1} fill="#a8d95f" />
+          <rect x={0} y={35} width={96} height={5} fill="#a9cfe6" />
+          <g className="nhv-ripple" fill="#6aa9d6">
             <rect x={6} y={37} width={7} height={1} />
             <rect x={30} y={38} width={9} height={1} />
             <rect x={58} y={36} width={11} height={1} />
@@ -78,14 +78,14 @@ export default function HouseBuildVisual() {
             <rect x={38} y={28} width={3} height={1} fill="#4d9138" />
             <rect x={35} y={22} width={5} height={3} fill="#e0574a" />
             <rect x={36} y={21} width={3} height={1} fill="#e0574a" />
-            <rect x={37} y={21} width={1} height={1} fill="#2575a6" />
+            <rect x={37} y={21} width={1} height={1} fill="#b8d8ee" />
             <rect x={36} y={22} width={1} height={2} fill="#f07a6e" />
           </g>
 
           {/* canal-house facade — revealed bottom-up by the build mask */}
           <g>
-            <rect x={44} y={13} width={20} height={18} fill="#b5533a" />
-            <rect x={44} y={13} width={1} height={18} fill="#c8694f" />
+            <rect x={44} y={13} width={20} height={18} fill="#b0553f" />
+            <rect x={44} y={13} width={1} height={18} fill="#c47456" />
             <rect x={63} y={13} width={1} height={18} fill="#8f3e2b" />
             {[15, 17, 19, 21, 23, 25, 27, 29].map((y) => (
               <rect
@@ -122,16 +122,16 @@ export default function HouseBuildVisual() {
             y={13}
             width={20}
             height={18}
-            fill="#1d6091"
+            fill="#b8d8ee"
           />
 
           {/* roof + stepped gable + hoist beam — snaps in last */}
           <g className="nhv-roof">
-            <rect x={44} y={11} width={20} height={2} fill="#b5533a" />
-            <rect x={46} y={9} width={16} height={2} fill="#b5533a" />
-            <rect x={48} y={7} width={12} height={2} fill="#b5533a" />
-            <rect x={50} y={5} width={8} height={2} fill="#b5533a" />
-            <rect x={52} y={3} width={4} height={2} fill="#b5533a" />
+            <rect x={44} y={11} width={20} height={2} fill="#b0553f" />
+            <rect x={46} y={9} width={16} height={2} fill="#b0553f" />
+            <rect x={48} y={7} width={12} height={2} fill="#b0553f" />
+            <rect x={50} y={5} width={8} height={2} fill="#b0553f" />
+            <rect x={52} y={3} width={4} height={2} fill="#b0553f" />
             <rect x={44} y={12} width={20} height={1} fill="#8f3e2b" />
             <rect x={46} y={10} width={16} height={1} fill="#8f3e2b" />
             <rect x={48} y={8} width={12} height={1} fill="#8f3e2b" />

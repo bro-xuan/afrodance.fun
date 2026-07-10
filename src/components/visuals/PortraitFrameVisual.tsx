@@ -132,10 +132,10 @@ export default function PortraitFrameVisual() {
               height="4"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="0" y="0" width="2" height="2" fill="#c9a800" />
-              <rect x="2" y="2" width="2" height="2" fill="#1a130a" />
-              <rect x="2" y="0" width="2" height="2" fill="#7a5f00" />
-              <rect x="0" y="2" width="2" height="2" fill="#3a2c08" />
+              <rect x="0" y="0" width="2" height="2" fill="#d8c9a8" />
+              <rect x="2" y="2" width="2" height="2" fill="#b8a578" />
+              <rect x="2" y="0" width="2" height="2" fill="#ccbb90" />
+              <rect x="0" y="2" width="2" height="2" fill="#c0af80" />
             </pattern>
             {/* fine parchment/sepia static */}
             <pattern
@@ -144,10 +144,10 @@ export default function PortraitFrameVisual() {
               height="2"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="0" y="0" width="1" height="1" fill="#e6d3a3" />
-              <rect x="1" y="1" width="1" height="1" fill="#2a1f12" />
-              <rect x="1" y="0" width="1" height="1" fill="#8a6d00" />
-              <rect x="0" y="1" width="1" height="1" fill="#1a130a" />
+              <rect x="0" y="0" width="1" height="1" fill="#ece0c4" />
+              <rect x="1" y="1" width="1" height="1" fill="#b8a578" />
+              <rect x="1" y="0" width="1" height="1" fill="#d8c9a8" />
+              <rect x="0" y="1" width="1" height="1" fill="#c0af80" />
             </pattern>
           </defs>
 
@@ -160,7 +160,7 @@ export default function PortraitFrameVisual() {
           {/* sunken molding around the picture */}
           <rect x="4" y="4" width="88" height="28" fill="#7a5f00" />
           {/* picture recess */}
-          <rect x="6" y="5" width="84" height="26" fill="#1a130a" />
+          <rect x="6" y="5" width="84" height="26" fill="#f4ead2" />
 
           {/* ---- the finished cameo (always drawn underneath the static) ---- */}
           {OVAL.map((r, i) => (
@@ -180,7 +180,7 @@ export default function PortraitFrameVisual() {
               y={r[0]}
               width={r[2]}
               height={1}
-              fill="#2a1f12"
+              fill="#4a3a26"
             />
           ))}
           {RIM.map((r, i) => (
@@ -190,7 +190,7 @@ export default function PortraitFrameVisual() {
               y={r[0]}
               width={1}
               height={1}
-              fill="#5a4326"
+              fill="#7a6242"
             />
           ))}
 
@@ -214,8 +214,8 @@ export default function PortraitFrameVisual() {
 
           {/* ---- gold "paint head" sweeping down during the re-render ---- */}
           <g className="epv-scan">
-            <rect x="6" y="6" width="84" height="1" fill="#fff2a8" />
-            <rect x="6" y="7" width="84" height="1" fill="#f7d51d" />
+            <rect x="6" y="6" width="84" height="1" fill="#e8b028" />
+            <rect x="6" y="7" width="84" height="1" fill="#cf8f14" />
           </g>
 
           {/* ---- brass nameplate ---- */}

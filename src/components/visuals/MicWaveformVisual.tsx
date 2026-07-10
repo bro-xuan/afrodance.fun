@@ -54,7 +54,7 @@ function PixelWord({
 export default function MicWaveformVisual() {
   return (
     <div className="relative w-full shrink-0">
-      <div className="border-4 border-[#2d2d2d] bg-[#0a1f16]">
+      <div className="border-4 border-[#2d2d2d] bg-[#f2efe0]">
         <svg
           viewBox="0 0 96 40"
           className="block h-auto w-full"
@@ -68,36 +68,36 @@ export default function MicWaveformVisual() {
               height="8"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="3" y="3" width="1" height="1" fill="#123d28" />
+              <rect x="3" y="3" width="1" height="1" fill="#e4dac2" />
             </pattern>
             <clipPath id="grv-clip">
               <rect x="35" y="13" width="30" height="20" />
             </clipPath>
           </defs>
 
-          <rect x="0" y="0" width="96" height="40" fill="#0a1f16" />
+          <rect x="0" y="0" width="96" height="40" fill="#f2efe0" />
           <rect x="4" y="4" width="88" height="29" fill="url(#grv-grid)" />
 
           {/* floor line + brighter tick under the meter */}
-          <rect x="6" y="33" width="84" height="1" fill="#123d28" />
-          <rect x="35" y="33" width="30" height="1" fill="#1e5a35" />
+          <rect x="6" y="33" width="84" height="1" fill="#cdc0a0" />
+          <rect x="35" y="33" width="30" height="1" fill="#6f9c33" />
 
           {/* EQ meter — tall bars clipped so they grow from the baseline */}
           <g clipPath="url(#grv-clip)">
-            <rect className="grv-bar grv-bar1" x="36" y="13" width="3" height="20" fill="#92cc41" />
-            <rect className="grv-bar grv-bar2" x="41" y="13" width="3" height="20" fill="#92cc41" />
-            <rect className="grv-bar grv-bar3" x="46" y="13" width="3" height="20" fill="#92cc41" />
-            <rect className="grv-bar grv-bar4" x="51" y="13" width="3" height="20" fill="#92cc41" />
-            <rect className="grv-bar grv-bar5" x="56" y="13" width="3" height="20" fill="#92cc41" />
-            <rect className="grv-bar grv-bar6" x="61" y="13" width="3" height="20" fill="#92cc41" />
+            <rect className="grv-bar grv-bar1" x="36" y="13" width="3" height="20" fill="#4a7c10" />
+            <rect className="grv-bar grv-bar2" x="41" y="13" width="3" height="20" fill="#6aad30" />
+            <rect className="grv-bar grv-bar3" x="46" y="13" width="3" height="20" fill="#4a7c10" />
+            <rect className="grv-bar grv-bar4" x="51" y="13" width="3" height="20" fill="#6aad30" />
+            <rect className="grv-bar grv-bar5" x="56" y="13" width="3" height="20" fill="#4a7c10" />
+            <rect className="grv-bar grv-bar6" x="61" y="13" width="3" height="20" fill="#6aad30" />
           </g>
 
           {/* microphone head */}
-          <rect x="16" y="4" width="8" height="1" fill="#b7c2cc" />
-          <rect x="15" y="5" width="10" height="12" fill="#b7c2cc" />
-          <rect x="16" y="17" width="8" height="1" fill="#b7c2cc" />
-          <rect x="23" y="5" width="2" height="12" fill="#8a94a0" />
-          <rect x="15" y="5" width="1" height="12" fill="#92cc41" />
+          <rect x="16" y="4" width="8" height="1" fill="#9aa4b0" />
+          <rect x="15" y="5" width="10" height="12" fill="#9aa4b0" />
+          <rect x="16" y="17" width="8" height="1" fill="#9aa4b0" />
+          <rect x="23" y="5" width="2" height="12" fill="#737d89" />
+          <rect x="15" y="5" width="1" height="12" fill="#2d2d2d" />
           <rect x="17" y="7" width="6" height="1" fill="#6b7580" />
           <rect x="17" y="9" width="6" height="1" fill="#6b7580" />
           <rect x="17" y="11" width="6" height="1" fill="#6b7580" />
@@ -107,7 +107,7 @@ export default function MicWaveformVisual() {
           <rect x="18" y="18" width="4" height="2" fill="#6b7580" />
           <rect x="18" y="20" width="4" height="5" fill="#9aa4b0" />
           <rect x="21" y="20" width="1" height="5" fill="#6b7580" />
-          <rect className="grv-led" x="19" y="22" width="2" height="2" fill="#92cc41" />
+          <rect className="grv-led" x="19" y="22" width="2" height="2" fill="#4a7c10" />
 
           {/* stand pole + base */}
           <rect x="19" y="25" width="2" height="7" fill="#5a6470" />
@@ -118,20 +118,20 @@ export default function MicWaveformVisual() {
           <polygon
             className="grv-beam"
             points="17,1 22,1 28,22 10,22"
-            fill="#92cc41"
+            fill="#6aad30"
             fillOpacity="0.12"
           />
 
           {/* REC indicator */}
-          <g className="grv-rec" fill="#ff4a4a">
+          <g className="grv-rec" fill="#d44332">
             <rect x="67" y="5" width="2" height="1" />
             <rect x="66" y="6" width="4" height="2" />
             <rect x="67" y="8" width="2" height="1" />
           </g>
-          <PixelWord word="REC" x={72} y={5} fill="#ff7a6e" />
+          <PixelWord word="REC" x={72} y={5} fill="#cf3a2a" />
 
           {/* one-shot ring that flashes as the check pops */}
-          <g className="grv-checkring" fill="#92cc41">
+          <g className="grv-checkring" fill="#6aad30">
             <rect x="77" y="22" width="9" height="1" />
             <rect x="77" y="31" width="9" height="1" />
             <rect x="76" y="23" width="1" height="8" />
@@ -149,7 +149,7 @@ export default function MicWaveformVisual() {
               <rect x="83" y="26" width="1" height="2" />
               <rect x="84" y="25" width="1" height="2" />
             </g>
-            <g fill="#b6e56b">
+            <g fill="#6aad30">
               <rect x="78" y="26" width="1" height="2" />
               <rect x="79" y="27" width="1" height="2" />
               <rect x="80" y="28" width="1" height="2" />

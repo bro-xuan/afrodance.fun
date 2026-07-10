@@ -45,18 +45,18 @@ function RcvWave({ pts, cls, fill }: { pts: RcvPx[]; cls: string; fill: string }
 function RcvBox({ by }: { by: number }) {
   return (
     <g>
-      <rect x={53} y={by + 1} width={4} height={4} fill="#0e2a40" />
-      <rect x={52} y={by} width={6} height={1} fill="#3f6180" />
-      <rect x={52} y={by + 5} width={6} height={1} fill="#3f6180" />
-      <rect x={52} y={by} width={1} height={6} fill="#3f6180" />
-      <rect x={57} y={by} width={1} height={6} fill="#3f6180" />
+      <rect x={53} y={by + 1} width={4} height={4} fill="#fbf7ee" />
+      <rect x={52} y={by} width={6} height={1} fill="#2d2d2d" />
+      <rect x={52} y={by + 5} width={6} height={1} fill="#2d2d2d" />
+      <rect x={52} y={by} width={1} height={6} fill="#2d2d2d" />
+      <rect x={57} y={by} width={1} height={6} fill="#2d2d2d" />
     </g>
   );
 }
 
 function RcvCheck({ by, cls }: { by: number; cls: string }) {
   return (
-    <g className={cls} fill="#209cee">
+    <g className={cls} fill="#1a7abb">
       {RCV_CHECK.map((p, i) => (
         <rect key={i} x={52 + p[0]} y={by + p[1]} width={1} height={1} />
       ))}
@@ -66,7 +66,7 @@ function RcvCheck({ by, cls }: { by: number; cls: string }) {
 
 function RcvItem({ y, segs }: { y: number; segs: RcvPx[] }) {
   return (
-    <g fill="#4f6d88">
+    <g fill="#9a8f7d">
       {segs.map((s, i) => (
         <rect key={i} x={s[0]} y={y} width={s[1]} height={2} />
       ))}
@@ -77,7 +77,7 @@ function RcvItem({ y, segs }: { y: number; segs: RcvPx[] }) {
 export default function ReferenceCallVisual() {
   return (
     <div className="relative w-full shrink-0">
-      <div className="border-4 border-[#2d2d2d] bg-[#0b2033]">
+      <div className="border-4 border-[#2d2d2d] bg-[#f7f1e3]">
         <svg
           viewBox="0 0 96 40"
           className="block h-auto w-full"
@@ -91,15 +91,15 @@ export default function ReferenceCallVisual() {
               height="8"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="3" y="3" width="1" height="1" fill="#123048" />
+              <rect x="3" y="3" width="1" height="1" fill="#e4dac2" />
             </pattern>
           </defs>
 
-          <rect x="0" y="0" width="96" height="40" fill="#0b2033" />
+          <rect x="0" y="0" width="96" height="40" fill="#f7f1e3" />
           <rect x="2" y="2" width="92" height="36" fill="url(#rcv-grid)" />
 
           {/* telephone handset */}
-          <g fill="#d7e6f2">
+          <g fill="#1a7abb">
             <rect x="16" y="12" width="4" height="1" />
             <rect x="15" y="13" width="6" height="4" />
             <rect x="16" y="17" width="4" height="1" />
@@ -111,7 +111,7 @@ export default function ReferenceCallVisual() {
             <rect x="11" y="21" width="3" height="2" />
             <rect x="10" y="23" width="3" height="2" />
           </g>
-          <g fill="#7c9cb8">
+          <g fill="#0e4d78">
             <rect x="20" y="13" width="1" height="4" />
             <rect x="16" y="17" width="4" height="1" />
             <rect x="11" y="25" width="1" height="4" />
@@ -120,14 +120,14 @@ export default function ReferenceCallVisual() {
             <rect x="14" y="20" width="1" height="1" />
             <rect x="13" y="22" width="1" height="1" />
           </g>
-          <g fill="#f2f8fd">
+          <g fill="#5cb0e6">
             <rect x="16" y="13" width="1" height="1" />
             <rect x="7" y="25" width="1" height="1" />
           </g>
 
           {/* concentric sound waves (blue accent) rippling outward */}
-          <RcvWave pts={RCV_WAVE1} cls="rcv-wave1" fill="#6bc5f7" />
-          <RcvWave pts={RCV_WAVE2} cls="rcv-wave2" fill="#33a6f0" />
+          <RcvWave pts={RCV_WAVE1} cls="rcv-wave1" fill="#3d9bd4" />
+          <RcvWave pts={RCV_WAVE2} cls="rcv-wave2" fill="#2585c5" />
           <RcvWave pts={RCV_WAVE3} cls="rcv-wave3" fill="#1a7abb" />
 
           {/* 3-item prep checklist */}

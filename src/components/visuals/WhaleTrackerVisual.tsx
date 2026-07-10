@@ -52,7 +52,7 @@ function PixelWord({
 export default function WhaleTrackerVisual() {
   return (
     <div className="relative w-full shrink-0">
-      <div className="border-4 border-[#2d2d2d] bg-[#071a2b]">
+      <div className="border-4 border-[#2d2d2d] bg-[#f7f1e3]">
         <svg
           viewBox="0 0 96 40"
           className="block h-auto w-full"
@@ -66,22 +66,22 @@ export default function WhaleTrackerVisual() {
               height="8"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="3" y="3" width="1" height="1" fill="#103048" />
+              <rect x="3" y="3" width="1" height="1" fill="#e4dac2" />
             </pattern>
           </defs>
 
           {/* deep-water screen */}
-          <rect x="0" y="0" width="96" height="40" fill="#071a2b" />
+          <rect x="0" y="0" width="96" height="40" fill="#f7f1e3" />
           <rect x="2" y="2" width="92" height="36" fill="url(#whv-grid)" />
           {/* faint depth strata */}
-          <rect x="2" y="13" width="92" height="1" fill="#0d2a41" />
-          <rect x="2" y="30" width="92" height="1" fill="#0d2a41" />
+          <rect x="2" y="13" width="92" height="1" fill="#ece3d0" />
+          <rect x="2" y="30" width="92" height="1" fill="#ece3d0" />
 
           {/* sonar sweep line — green scan gliding across the water */}
           <g className="whv-sweep">
-            <rect x="0" y="4" width="1" height="32" fill="#92cc41" opacity="0.08" />
-            <rect x="1" y="4" width="1" height="32" fill="#92cc41" opacity="0.16" />
-            <rect x="2" y="4" width="2" height="32" fill="#92cc41" opacity="0.42" />
+            <rect x="0" y="4" width="1" height="32" fill="#4a7c10" opacity="0.08" />
+            <rect x="1" y="4" width="1" height="32" fill="#4a7c10" opacity="0.16" />
+            <rect x="2" y="4" width="2" height="32" fill="#4a7c10" opacity="0.42" />
           </g>
 
           {/* tracked marker buoy (static): dotted post + diamond */}
@@ -96,7 +96,7 @@ export default function WhaleTrackerVisual() {
             <rect x="63" y="22" width="1" height="1" />
             <rect x="63" y="24" width="1" height="1" />
           </g>
-          <g fill="#92cc41">
+          <g fill="#4a7c10">
             <rect x="62" y="6" width="3" height="1" />
             <rect x="63" y="5" width="1" height="1" />
             <rect x="63" y="7" width="1" height="1" />
@@ -116,7 +116,7 @@ export default function WhaleTrackerVisual() {
               <rect x="0" y="24" width="2" height="1" />
             </g>
             {/* body */}
-            <g fill="#2b5a86">
+            <g fill="#3f6f9c">
               <rect x="9" y="17" width="13" height="1" />
               <rect x="7" y="18" width="17" height="1" />
               <rect x="6" y="19" width="19" height="1" />
@@ -139,7 +139,7 @@ export default function WhaleTrackerVisual() {
               <rect x="24" y="22" width="1" height="1" />
             </g>
             {/* spout — puffs from the blowhole */}
-            <g className="whv-spout" fill="#bfe9ff">
+            <g className="whv-spout" fill="#3f6f9c">
               <rect x="18" y="16" width="1" height="1" />
               <rect x="18" y="15" width="1" height="1" />
               <rect x="17" y="14" width="1" height="1" />
@@ -151,7 +151,7 @@ export default function WhaleTrackerVisual() {
           </g>
 
           {/* wallet leaderboard (top-left) — top row flashes on a hit */}
-          <rect className="whv-lead" x="5" y="5" width="18" height="2" fill="#92cc41" />
+          <rect className="whv-lead" x="5" y="5" width="18" height="2" fill="#6f9c33" />
           <rect x="5" y="8" width="12" height="2" fill="#4a7c10" />
           <rect x="5" y="11" width="7" height="2" fill="#3a610d" />
 
@@ -162,19 +162,19 @@ export default function WhaleTrackerVisual() {
             y="13"
             width="3"
             height="13"
-            fill="#92cc41"
+            fill="#4a7c10"
           />
 
           {/* "+$2M" alert tag — pops above the marker */}
           <g className="whv-tag">
-            <rect x="51" y="3" width="22" height="10" fill="#08240f" />
-            <rect x="51" y="3" width="22" height="1" fill="#92cc41" />
-            <rect x="51" y="12" width="22" height="1" fill="#92cc41" />
-            <rect x="51" y="3" width="1" height="10" fill="#92cc41" />
-            <rect x="72" y="3" width="1" height="10" fill="#92cc41" />
-            <rect x="61" y="13" width="3" height="1" fill="#92cc41" />
-            <rect x="62" y="14" width="1" height="1" fill="#92cc41" />
-            <PixelWord word="+$2M" x={54} y={5} fill="#92cc41" />
+            <rect x="51" y="3" width="22" height="10" fill="#4a7c10" />
+            <rect x="51" y="3" width="22" height="1" fill="#2d2d2d" />
+            <rect x="51" y="12" width="22" height="1" fill="#2d2d2d" />
+            <rect x="51" y="3" width="1" height="10" fill="#2d2d2d" />
+            <rect x="72" y="3" width="1" height="10" fill="#2d2d2d" />
+            <rect x="61" y="13" width="3" height="1" fill="#2d2d2d" />
+            <rect x="62" y="14" width="1" height="1" fill="#2d2d2d" />
+            <PixelWord word="+$2M" x={54} y={5} fill="#2d2d2d" />
           </g>
         </svg>
       </div>

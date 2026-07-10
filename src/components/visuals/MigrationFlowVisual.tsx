@@ -13,7 +13,7 @@
 export default function MigrationFlowVisual() {
   return (
     <div className="relative w-full shrink-0">
-      <div className="border-4 border-[#2d2d2d] bg-[#0e1726]">
+      <div className="border-4 border-[#2d2d2d] bg-[#efe4cf]">
         <svg
           viewBox="0 0 96 40"
           className="block h-auto w-full"
@@ -27,16 +27,16 @@ export default function MigrationFlowVisual() {
               height="8"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="3" y="3" width="1" height="1" fill="#1b2740" />
+              <rect x="3" y="3" width="1" height="1" fill="#e4dac2" />
             </pattern>
           </defs>
 
           {/* dark sea + faint map grid */}
-          <rect x="0" y="0" width="96" height="40" fill="#0e1726" />
+          <rect x="0" y="0" width="96" height="40" fill="#efe4cf" />
           <rect x="0" y="0" width="96" height="40" fill="url(#mfv-grid)" />
 
           {/* landmasses */}
-          <g fill="#26384f">
+          <g fill="#cdbd93">
             {/* left — origin */}
             <rect x="14" y="9" width="10" height="3" />
             <rect x="12" y="12" width="15" height="4" />
@@ -50,13 +50,13 @@ export default function MigrationFlowVisual() {
             <rect x="72" y="23" width="8" height="3" />
           </g>
           {/* lit coasts for a touch of depth */}
-          <g fill="#3a5478">
+          <g fill="#8a7748">
             <rect x="14" y="9" width="10" height="1" />
             <rect x="71" y="12" width="9" height="1" />
           </g>
 
           {/* dim static routes so the map still reads when frozen */}
-          <g fill="none" stroke="#3f3320" strokeWidth="1">
+          <g fill="none" stroke="#b5602a" strokeWidth="1">
             <path d="M27 14 Q48 2 68 12" />
             <path d="M27 18 Q48 9 68 16" />
             <path d="M68 24 Q48 30 27 22" />
@@ -68,14 +68,14 @@ export default function MigrationFlowVisual() {
             className="mfv-flow-a1"
             d="M27 14 Q48 2 68 12"
             fill="none"
-            stroke="#f7d51d"
+            stroke="#e07b39"
             strokeWidth="2"
           />
           <path
             className="mfv-flow-a2"
             d="M27 18 Q48 9 68 16"
             fill="none"
-            stroke="#f59e6b"
+            stroke="#b5602a"
             strokeWidth="2"
           />
 
@@ -84,24 +84,24 @@ export default function MigrationFlowVisual() {
             className="mfv-flow-b1"
             d="M68 24 Q48 30 27 22"
             fill="none"
-            stroke="#f59e6b"
+            stroke="#b5602a"
             strokeWidth="2"
           />
           <path
             className="mfv-flow-b2"
             d="M68 28 Q48 38 27 26"
             fill="none"
-            stroke="#f7d51d"
+            stroke="#e07b39"
             strokeWidth="2"
           />
 
           {/* ports that send (origins) */}
-          <g className="mfv-port-a" fill="#f7d51d">
+          <g className="mfv-port-a" fill="#2d2d2d">
             <rect x="25" y="13" width="2" height="5" />
             <rect x="66" y="23" width="2" height="6" />
           </g>
           {/* ports that receive (destinations) */}
-          <g className="mfv-port-b" fill="#f59e6b">
+          <g className="mfv-port-b" fill="#a8501f">
             <rect x="66" y="11" width="2" height="6" />
             <rect x="25" y="21" width="2" height="6" />
           </g>
