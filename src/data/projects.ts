@@ -188,6 +188,7 @@ export const projects: Project[] = [
     emoji: "📉",
     color: "error",
     stack: ["Next.js", "bitcoin-data.com", "On-chain"],
+    visual: "btc-cycle",
   },
   {
     title: "ADHD Saver",

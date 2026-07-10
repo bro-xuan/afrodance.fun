@@ -1,4 +1,11 @@
-import { Project } from "@/types";
+import type { ComponentType } from "react";
+import { Project, ProjectVisual } from "@/types";
+import BtcCycleVisual from "./visuals/BtcCycleVisual";
+
+// Animated pixel-art scenes; projects without one fall back to the emoji tile.
+const visuals: Record<ProjectVisual, ComponentType> = {
+  "btc-cycle": BtcCycleVisual,
+};
 
 const buttonClass: Record<string, string> = {
   primary: "nes-btn is-primary",
@@ -19,6 +26,7 @@ export default function ProjectCard({ project }: { project: Project }) {
   const color = project.color ?? "primary";
   const btnCls = buttonClass[color];
   const isExternal = project.url.startsWith("http");
+  const Visual = project.visual ? visuals[project.visual] : undefined;
 
   return (
     <a
@@ -31,12 +39,16 @@ export default function ProjectCard({ project }: { project: Project }) {
           {project.title}
         </p>
         <div className="flex flex-col items-center text-center gap-4 p-2 flex-1">
-          <span
-            className="emoji-tile inline-flex h-16 w-16 shrink-0 items-center justify-center border-4 border-[#2d2d2d] text-4xl leading-none"
-            style={{ backgroundColor: accentBg[color] }}
-          >
-            {project.emoji}
-          </span>
+          {Visual ? (
+            <Visual />
+          ) : (
+            <span
+              className="emoji-tile inline-flex h-16 w-16 shrink-0 items-center justify-center border-4 border-[#2d2d2d] text-4xl leading-none"
+              style={{ backgroundColor: accentBg[color] }}
+            >
+              {project.emoji}
+            </span>
+          )}
           <p className="font-body text-sm text-muted-foreground flex-1 w-full">
             {project.description}
           </p>

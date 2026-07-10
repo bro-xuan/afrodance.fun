@@ -1,3 +1,6 @@
+/** Registered animated pixel-art scenes a project card can render instead of its emoji tile. */
+export type ProjectVisual = "btc-cycle";
+
 export interface Project {
   title: string;
   description: string;
@@ -5,6 +8,7 @@ export interface Project {
   emoji: string;
   color?: "primary" | "success" | "warning" | "error";
   stack?: string[];
+  visual?: ProjectVisual;
 }
 
 export interface SkillCategory {
