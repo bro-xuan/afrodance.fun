@@ -2,7 +2,7 @@
  * Animated pixel-art scene for the "BTC Bottom & Top Indicator" project card.
  *
  * A miniature of the real dashboard: a price line draws itself through one
- * full market cycle on a dark terminal screen, SELL flashes as it enters the
+ * full market cycle on a cream dashboard screen, SELL flashes as it enters the
  * red top zone, BUY as it capitulates into the green bottom zone, then the
  * live tip blinks until the next cycle. A pixel Bitcoin coin spins on the
  * corner of the frame. Pure SVG + CSS keyframes (see globals.css, "BTC cycle
@@ -64,7 +64,7 @@ const CYCLE_PATH =
 export default function BtcCycleVisual() {
   return (
     <div className="relative w-full shrink-0">
-      <div className="border-4 border-[#2d2d2d] bg-[#0a0e17]">
+      <div className="border-4 border-[#2d2d2d] bg-[#f7f1e3]">
         <svg
           viewBox="0 0 96 40"
           className="block h-auto w-full"
@@ -78,7 +78,7 @@ export default function BtcCycleVisual() {
               height="8"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="3" y="3" width="1" height="1" fill="#1c2637" />
+              <rect x="3" y="3" width="1" height="1" fill="#e4dac2" />
             </pattern>
             <pattern
               id="btcv-dither-red"
@@ -86,8 +86,8 @@ export default function BtcCycleVisual() {
               height="2"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="0" y="0" width="1" height="1" fill="#e05f4e" />
-              <rect x="1" y="1" width="1" height="1" fill="#7a2c22" />
+              <rect x="0" y="0" width="1" height="1" fill="#e59486" />
+              <rect x="1" y="1" width="1" height="1" fill="#cf6a58" />
             </pattern>
             <pattern
               id="btcv-dither-green"
@@ -95,12 +95,12 @@ export default function BtcCycleVisual() {
               height="2"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="0" y="0" width="1" height="1" fill="#92cc41" />
-              <rect x="1" y="1" width="1" height="1" fill="#3d5c14" />
+              <rect x="0" y="0" width="1" height="1" fill="#9fc75f" />
+              <rect x="1" y="1" width="1" height="1" fill="#6f9c33" />
             </pattern>
           </defs>
 
-          <rect x="0" y="0" width="96" height="40" fill="#0a0e17" />
+          <rect x="0" y="0" width="96" height="40" fill="#f7f1e3" />
           <rect x="4" y="6" width="88" height="28" fill="url(#btcv-grid)" />
 
           {/* top (sell) and bottom (buy) zones — glow while the line is inside */}
@@ -127,7 +127,7 @@ export default function BtcCycleVisual() {
             d={CYCLE_PATH}
             pathLength={100}
             fill="none"
-            stroke="#f7931a"
+            stroke="#ec7c15"
             strokeWidth="2"
           />
 
@@ -138,14 +138,14 @@ export default function BtcCycleVisual() {
             y="14"
             width="3"
             height="3"
-            fill="#ffdd57"
+            fill="#d98c12"
           />
 
           <g className="btcv-sell">
-            <PixelWord word="SELL" x={66} y={11} fill="#ff5a49" />
+            <PixelWord word="SELL" x={66} y={11} fill="#cf3a2a" />
           </g>
           <g className="btcv-buy">
-            <PixelWord word="BUY" x={24} y={25} fill="#92cc41" />
+            <PixelWord word="BUY" x={24} y={25} fill="#4a7c10" />
           </g>
         </svg>
       </div>
