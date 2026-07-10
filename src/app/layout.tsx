@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Press_Start_2P, Pixelify_Sans } from "next/font/google";
 import "nes.css/css/nes.min.css";
 import "./globals.css";
@@ -24,6 +24,11 @@ export const metadata: Metadata = {
       "Building fun things on the internet, mostly AI and crypto. Open to AM / Sales roles in AI or blockchain.",
     type: "website",
   },
+};
+
+// Tints the mobile browser UI (address bar / task switcher) with the brand green.
+export const viewport: Viewport = {
+  themeColor: "#6aad30",
 };
 
 export default function RootLayout({
