@@ -1,10 +1,30 @@
 import type { ComponentType } from "react";
 import { Project, ProjectVisual } from "@/types";
 import BtcCycleVisual from "./visuals/BtcCycleVisual";
+import WhaleTrackerVisual from "./visuals/WhaleTrackerVisual";
+import ReferenceCallVisual from "./visuals/ReferenceCallVisual";
+import AnalogCameraVisual from "./visuals/AnalogCameraVisual";
+import JargonDecoderVisual from "./visuals/JargonDecoderVisual";
+import PortraitFrameVisual from "./visuals/PortraitFrameVisual";
+import InstaClawDeployVisual from "./visuals/InstaClawDeployVisual";
+import HouseBuildVisual from "./visuals/HouseBuildVisual";
+import MigrationFlowVisual from "./visuals/MigrationFlowVisual";
+import FocusTrackerVisual from "./visuals/FocusTrackerVisual";
+import MicWaveformVisual from "./visuals/MicWaveformVisual";
 
 // Animated pixel-art scenes; projects without one fall back to the emoji tile.
 const visuals: Record<ProjectVisual, ComponentType> = {
   "btc-cycle": BtcCycleVisual,
+  "whale-tracker": WhaleTrackerVisual,
+  "reference-call": ReferenceCallVisual,
+  "analog-camera": AnalogCameraVisual,
+  "jargon-decoder": JargonDecoderVisual,
+  "portrait-frame": PortraitFrameVisual,
+  "instaclaw-deploy": InstaClawDeployVisual,
+  "house-build": HouseBuildVisual,
+  "migration-flow": MigrationFlowVisual,
+  "focus-tracker": FocusTrackerVisual,
+  "mic-waveform": MicWaveformVisual,
 };
 
 const buttonClass: Record<string, string> = {

@@ -128,6 +128,7 @@ export const projects: Project[] = [
     emoji: "🐋",
     color: "success",
     stack: ["Next.js", "Polymarket API", "Ethereum"],
+    visual: "whale-tracker",
   },
   {
     title: "ReferReady",
@@ -136,6 +137,7 @@ export const projects: Project[] = [
     emoji: "📋",
     color: "primary",
     stack: ["Next.js", "Stripe"],
+    visual: "reference-call",
   },
   {
     title: "Analog Camera Museum",
@@ -143,6 +145,7 @@ export const projects: Project[] = [
     url: "https://analogcams.com",
     emoji: "📷",
     color: "primary",
+    visual: "analog-camera",
   },
   {
     title: "Corporate Translator",
@@ -150,6 +153,7 @@ export const projects: Project[] = [
     url: "/corperate_translator",
     emoji: "💼",
     color: "success",
+    visual: "jargon-decoder",
   },
   {
     title: "Earl",
@@ -158,6 +162,7 @@ export const projects: Project[] = [
     emoji: "🖼️",
     color: "warning",
     stack: ["Next.js", "Diffusion", "OpenAI API"],
+    visual: "portrait-frame",
   },
   {
     title: "InstaClaw",
@@ -166,6 +171,7 @@ export const projects: Project[] = [
     emoji: "🤖",
     color: "error",
     stack: ["Next.js", "EU infra", "LLM APIs"],
+    visual: "instaclaw-deploy",
   },
   {
     title: "NL House Buying Tool",
@@ -173,6 +179,7 @@ export const projects: Project[] = [
     url: "/NLHousebuying",
     emoji: "🏠",
     color: "primary",
+    visual: "house-build",
   },
   {
     title: "China Migration",
@@ -180,6 +187,7 @@ export const projects: Project[] = [
     url: "/china-migration",
     emoji: "🌏",
     color: "warning",
+    visual: "migration-flow",
   },
   {
     title: "BTC Bottom & Top Indicator",
@@ -196,6 +204,7 @@ export const projects: Project[] = [
     url: "/adhd_saver",
     emoji: "🧠",
     color: "warning",
+    visual: "focus-tracker",
   },
   // Hidden until the /date-scoring route exists — linking to it today 404s.
   // {
@@ -212,5 +221,6 @@ export const projects: Project[] = [
     emoji: "🎙️",
     color: "success",
     stack: ["Next.js", "Vapi", "Cala.ai", "Anthropic API"],
+    visual: "mic-waveform",
   },
 ];
