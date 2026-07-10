@@ -1,9 +1,11 @@
 # afrodance.fun — pixel logo
 
-The site mark is a **16×16 pixel-art tile** drawn to match the NES/8-bit brand
-(Press Start 2P, brand green `#6aad30`). The active logo is a terminal prompt
-(`>_`) — a nod to the hero's blinking `_` cursor and the "building on the
-internet" tagline — and it stays legible right down to a 16px browser tab.
+The site mark is a **16×16 pixel-art portrait** drawn to match the NES/8-bit
+brand (Press Start 2P, brand green `#6aad30`). The active logo is Stefan's
+pixel face with the signature glasses — the same identity as the hero selfie —
+set on a soft cream tile with a light-green border (`#d5e7b4`, the hero title's
+shadow color) so it stays legible in both light and dark browser tabs, right
+down to 16px.
 
 ## Where the favicon lives (Next.js App Router auto-detects these)
 
@@ -21,11 +23,11 @@ are both brand green `#6aad30`.
 
 Two other designs were explored and are kept here as SVGs:
 
-- `afrodance-terminal.svg` — **active** logo.
+- `afrodance-face.svg` — **active** logo (pixel portrait with glasses).
+- `afrodance-terminal.svg` — a green terminal-prompt (`>_`) tile, nodding to the
+  hero's blinking cursor.
 - `afrodance-dancer.svg` — an afro dancing figure (most literal to "afrodance",
   but shrinks at true 16px because of transparent margins).
-- `afrodance-face.svg` — Stefan's pixel identity with the signature glasses,
-  matching the hero selfie.
 
 ## Swapping the active logo
 
