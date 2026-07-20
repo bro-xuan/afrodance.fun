@@ -3,6 +3,22 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.3.0.0] - 2026-07-20
+
+### Added
+- **Pixel-art critters bring the page to life.** Original, hand-built pixel
+  mascots now live in the gutters of every section and on the hero's grass —
+  a cat that waves back when you hover it, a dino pacing the far side, a robot
+  and chick on patrol, a ghost drifting, a butterfly on a loopy flight path,
+  plus a bee, fish, frog, mushroom, slime, sprout, star and UFO. About 25 in
+  all, sized from tiny to large. Some come alive on a timer (walking, hopping,
+  floating, fluttering, buzzing, swimming); some react to scroll (walking
+  sideways, spinning, rising, peeking up on entry); and a few pop a little
+  emote bubble (a heart or sparkle) when you hover them. All are decorative
+  vector SVG, so they stay crisp at any size, add no image downloads, and hide
+  themselves on small screens and from screen readers. Every animation freezes
+  under `prefers-reduced-motion` and when printing.
+
 ## [0.2.3.1] - 2026-07-07
 
 ### Changed

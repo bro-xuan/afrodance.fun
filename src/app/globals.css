@@ -1654,3 +1654,413 @@ body:has(.bottom-indicator-page) {
     transform: none;
   }
 }
+
+/* ==== Pixel-art critters ====================================================
+   Original mascots rendered as crisp SVG (PixelSprite / sprites.ts). The sprite
+   draws the character; a wrapping "critter-*" class drives motion. Self-contained
+   block: keyframes, behaviors, and its own reduced-motion + print freeze, matching
+   the per-feature convention used by the project visuals above. */
+
+.sprite {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+  image-rendering: pixelated;
+}
+.sprite > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Two-frame walk/flap cycle: frames trade visibility on a stepped timer.
+   With no animation (or reduced motion) only frame 0 shows. */
+.sprite-anim > .sf1 {
+  opacity: 0;
+}
+.sprite-anim > .sf0 {
+  animation: sprite-frame-a var(--sframe, 0.42s) steps(1) infinite;
+}
+.sprite-anim > .sf1 {
+  animation: sprite-frame-b var(--sframe, 0.42s) steps(1) infinite;
+}
+@keyframes sprite-frame-a {
+  0%,
+  49.999% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes sprite-frame-b {
+  0%,
+  49.999% {
+    opacity: 0;
+  }
+  50%,
+  100% {
+    opacity: 1;
+  }
+}
+
+.critter {
+  line-height: 0;
+}
+.critter-hop,
+.critter-bob,
+.critter-float,
+.critter-patrol,
+.critter-walk-scroll,
+.critter-hop-scroll,
+.critter-rise-scroll {
+  display: inline-block;
+}
+
+/* Squash-hop in place — a jump with anticipation and a landing squash. */
+.critter-hop {
+  transform-origin: bottom center;
+  animation: critter-hop 1.7s ease-in-out infinite;
+}
+@keyframes critter-hop {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  12% {
+    transform: translateY(0) scaleY(0.82);
+  }
+  40% {
+    transform: translateY(-0.9rem) scaleY(1.08);
+  }
+  62% {
+    transform: translateY(-0.9rem) scaleY(1.04);
+  }
+  82% {
+    transform: translateY(0) scaleY(0.88);
+  }
+}
+
+/* Gentle idle bob. */
+.critter-bob {
+  animation: critter-bob 2.4s ease-in-out infinite;
+}
+@keyframes critter-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.35rem);
+  }
+}
+
+/* Lazy float with a slight tilt — for the ghost. */
+.critter-float {
+  animation: critter-float 3.6s ease-in-out infinite;
+}
+@keyframes critter-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-0.65rem) rotate(3deg);
+  }
+}
+
+/* Patrol: walk out, turn (flip to face the new heading), walk back. Pairs with
+   the sprite's own two-frame leg cycle so it reads as walking, not sliding.
+   --cdir flips the heading: right-anchored critters set it to -1 so they pace
+   inward (into the page) instead of off the clipped section edge. */
+.critter-patrol {
+  transform-origin: bottom center;
+  animation: critter-patrol 7s ease-in-out infinite;
+}
+@keyframes critter-patrol {
+  0%,
+  6% {
+    transform: translateX(0) scaleX(1);
+  }
+  44% {
+    transform: translateX(calc(var(--crange, 6rem) * var(--cdir, 1))) scaleX(1);
+  }
+  50%,
+  56% {
+    transform: translateX(calc(var(--crange, 6rem) * var(--cdir, 1))) scaleX(-1);
+  }
+  94% {
+    transform: translateX(0) scaleX(-1);
+  }
+  100% {
+    transform: translateX(0) scaleX(1);
+  }
+}
+
+/* Scroll-driven behaviors — position tied to the element's pass through the
+   viewport. Browsers without scroll-timeline support fall back to a static
+   sprite (still animated by its own leg/float cycle). */
+@supports (animation-timeline: view()) {
+  .critter-walk-scroll {
+    animation: critter-walk-across linear both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 100%;
+  }
+  .critter-hop-scroll {
+    animation: critter-hop-arc steps(7, jump-none) both;
+    animation-timeline: view();
+    animation-range: entry 5% entry 65%;
+  }
+  .critter-rise-scroll {
+    animation: critter-rise linear both;
+    animation-timeline: view();
+    animation-range: cover -15% cover 130%;
+  }
+}
+@keyframes critter-walk-across {
+  from {
+    transform: translateX(calc(var(--crange, 8rem) / -2));
+  }
+  to {
+    transform: translateX(calc(var(--crange, 8rem) / 2));
+  }
+}
+@keyframes critter-hop-arc {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1.1rem);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+@keyframes critter-rise {
+  from {
+    transform: translateY(1.3rem);
+  }
+  to {
+    transform: translateY(-1.3rem);
+  }
+}
+
+/* Critters freeze on their first frame when motion is reduced or printing. */
+@media (prefers-reduced-motion: reduce), print {
+  .sprite-anim > .sf0,
+  .sprite-anim > .sf1,
+  .critter-hop,
+  .critter-bob,
+  .critter-float,
+  .critter-patrol,
+  .critter-walk-scroll,
+  .critter-hop-scroll,
+  .critter-rise-scroll {
+    animation: none !important;
+  }
+}
+
+/* ==== Critters, part 2: extra behaviors, hover reactions, emote bubbles ==== */
+
+.critter-flutter,
+.critter-buzz,
+.critter-swim,
+.critter-sway,
+.critter-spin-scroll,
+.critter-peek-scroll,
+.critter-hover-jump,
+.critter-hover-spin,
+.critter-hover-wiggle {
+  display: inline-block;
+}
+
+/* Flutter — a butterfly drifting on a lazy loop. */
+.critter-flutter {
+  animation: critter-flutter 3.4s ease-in-out infinite;
+}
+@keyframes critter-flutter {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(-5deg);
+  }
+  25% {
+    transform: translate(0.5rem, -0.6rem) rotate(4deg);
+  }
+  50% {
+    transform: translate(0.1rem, -1rem) rotate(-4deg);
+  }
+  75% {
+    transform: translate(-0.5rem, -0.5rem) rotate(5deg);
+  }
+}
+
+/* Buzz — a bee vibrating in place. */
+.critter-buzz {
+  animation: critter-buzz 0.55s steps(6) infinite;
+}
+@keyframes critter-buzz {
+  0% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(0.1rem, -0.35rem);
+  }
+  40% {
+    transform: translate(-0.1rem, -0.12rem);
+  }
+  60% {
+    transform: translate(0.12rem, -0.42rem);
+  }
+  80% {
+    transform: translate(-0.08rem, -0.2rem);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* Swim — a fish swaying side to side (tail flaps via its 2-frame cycle). */
+.critter-swim {
+  animation: critter-swim 4.2s ease-in-out infinite;
+}
+@keyframes critter-swim {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-0.45rem) rotate(-4deg);
+  }
+  75% {
+    transform: translateX(0.45rem) rotate(4deg);
+  }
+}
+
+/* Sway — a gentle pendulum (hung from the top). */
+.critter-sway {
+  transform-origin: top center;
+  animation: critter-sway 3.2s ease-in-out infinite;
+}
+@keyframes critter-sway {
+  0%,
+  100% {
+    transform: rotate(-7deg);
+  }
+  50% {
+    transform: rotate(7deg);
+  }
+}
+
+/* Hover-interactive: idle bob until hovered, then a one-shot reaction. */
+.critter-hover-jump,
+.critter-hover-spin,
+.critter-hover-wiggle {
+  animation: critter-bob 2.6s ease-in-out infinite;
+}
+.critter-interactive:hover .critter-hover-jump {
+  animation: critter-hop 0.5s ease-out;
+}
+.critter-interactive:hover .critter-hover-spin {
+  animation: critter-spin 0.6s ease-in-out;
+}
+.critter-interactive:hover .critter-hover-wiggle {
+  animation: critter-wiggle 0.55s ease-in-out;
+}
+@keyframes critter-spin {
+  0% {
+    transform: translateY(0) rotate(0);
+  }
+  45% {
+    transform: translateY(-0.6rem) rotate(180deg);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg);
+  }
+}
+@keyframes critter-wiggle {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  20% {
+    transform: rotate(-13deg);
+  }
+  40% {
+    transform: rotate(10deg);
+  }
+  60% {
+    transform: rotate(-8deg);
+  }
+  80% {
+    transform: rotate(6deg);
+  }
+}
+
+/* Emote bubble — pops above an interactive critter on hover. */
+.critter-emote {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translate(-50%, 0.3rem) scale(0.6);
+  opacity: 0;
+  transition:
+    opacity 0.15s steps(2),
+    transform 0.15s steps(2);
+  pointer-events: none;
+}
+.critter-interactive:hover .critter-emote {
+  opacity: 1;
+  transform: translate(-50%, -0.15rem) scale(1);
+}
+
+/* Scroll-driven: spin with scroll, or peek up on entry. */
+@supports (animation-timeline: view()) {
+  .critter-spin-scroll {
+    animation: critter-spin-360 linear both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 100%;
+  }
+  .critter-peek-scroll {
+    animation: critter-peek steps(6, jump-none) both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 55%;
+  }
+}
+@keyframes critter-spin-360 {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes critter-peek {
+  from {
+    transform: translateY(2.6rem);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce), print {
+  .critter-flutter,
+  .critter-buzz,
+  .critter-swim,
+  .critter-sway,
+  .critter-spin-scroll,
+  .critter-peek-scroll,
+  .critter-hover-jump,
+  .critter-hover-spin,
+  .critter-hover-wiggle,
+  .critter-interactive:hover .critter-hover-jump,
+  .critter-interactive:hover .critter-hover-spin,
+  .critter-interactive:hover .critter-hover-wiggle {
+    animation: none !important;
+  }
+  .critter-emote {
+    transition: none !important;
+  }
+}

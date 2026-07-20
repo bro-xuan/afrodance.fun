@@ -28,6 +28,10 @@
   **Priority:** P2
   `layout.tsx` imports `nes.css/css/nes.min.css` unlayered, so its bare element rules (e.g. `p { margin-bottom: 1rem }`) outrank every Tailwind v4 layered utility — margin utilities on `p`/headings silently don't apply. Fix: move the import into `globals.css` as `@import "nes.css/css/nes.min.css" layer(base);`, then do a full visual pass — several spacings were tuned around the broken cascade and will shift.
 
+- **Pause off-screen critter animations**
+  **Priority:** P3
+  From /ship adversarial review (2026-07-20): the ~24 time-based `critter-*` and `sprite-frame-a/b` animations run `infinite` regardless of viewport visibility, so they keep the compositor busy (and drain battery) while scrolled off-screen. Gate `animation-play-state` on an IntersectionObserver, or tie the idle loops to `animation-timeline: view()` so they only run in view. Purely a power/perf optimization — no visual change.
+
 - **Polish scroll-motion edge cases**
   **Priority:** P3
   From /ship adversarial review (2026-07-03): (1) elements whose reveal range straddles the initial scroll position render mid-step (partial opacity) until the first scroll — consider `entry 0%` range start or accepting; (2) the Konami body shake makes `body` a containing block for 0.6s, so the fixed XP bar jumps during the shake — move the shake to a wrapper if it bothers; (3) rem-sized dither/grass tiles land on fractional device pixels at some fluid-root sizes on 1x displays, causing hairline seams.

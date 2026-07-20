@@ -1,6 +1,21 @@
 import Image from "next/image";
 import { siteConfig } from "@/data/projects";
 import SocialLinks from "@/components/SocialLinks";
+import PixelCritters, { type Critter } from "@/components/PixelCritters";
+import { robot, chick, cat, dino, butterfly, EMOTES } from "@/data/sprites";
+
+// Critters on the hero's grass strip — the page's first sign of life. A big cat
+// waves back when you hover it; a dino paces the far side; a butterfly drifts
+// overhead. Robot, chick and slime fill in between.
+// Positions keep the standing critters in the clear zones left and right of the
+// button row so the interactive cat never sits over a CTA.
+const heroCritters: Critter[] = [
+  { sprite: robot, pos: "bottom-[0.7rem] left-[4%]", width: "2.9rem", behavior: "patrol", range: "5rem", frameDur: "0.32s" },
+  { sprite: cat, pos: "bottom-[0.55rem] left-[13%]", width: "3.8rem", behavior: "hover-wiggle", emote: EMOTES.heart, delay: "0.5s" },
+  { sprite: chick, pos: "bottom-[0.8rem] right-[18%]", width: "2.2rem", behavior: "patrol", range: "4rem", delay: "0.4s", frameDur: "0.26s" },
+  { sprite: dino, pos: "bottom-[0.7rem] right-[5%]", width: "4rem", behavior: "patrol", range: "5rem", frameDur: "0.34s" },
+  { sprite: butterfly, pos: "top-[20%] right-[26%]", width: "2.2rem", behavior: "flutter", delay: "0.3s" },
+];
 
 // Decorative floating pixels — same palette as PixelDivider.
 // Each bobs in place and drifts upward on scroll at its own speed.
@@ -31,6 +46,8 @@ export default function Hero() {
         aria-hidden="true"
         className="pixel-grass pointer-events-none absolute inset-x-0 bottom-0 h-6"
       />
+
+      <PixelCritters critters={heroCritters} className="hidden sm:block" />
 
       <div className="relative flex flex-col items-center">
         <Image
