@@ -57,11 +57,14 @@ src/
 │   ├── PixelDivider.tsx    # Decorative section divider
 │   ├── DitherBand.tsx      # Full-bleed section tint with dithered edges
 │   ├── DriftPixels.tsx     # Scroll-parallax decorative gutter pixels
+│   ├── PixelSprite.tsx     # Renders an original pixel-art sprite as crisp SVG
+│   ├── PixelCritters.tsx   # Animated critter mascots per section (scroll/hover)
 │   ├── SocialLinks.tsx     # GitHub/X/LinkedIn pixel icon row
 │   ├── Footer.tsx          # Site footer
 │   └── ui/                 # shadcn/ui + 8-bit component variants
 ├── data/
-│   └── projects.ts         # All site content (projects, articles, config)
+│   ├── projects.ts         # All site content (projects, articles, config)
+│   └── sprites.ts          # Pixel-art critter sprite data + palette
 ├── hooks/
 │   └── useKonamiCode.ts    # Konami code detection hook
 ├── lib/
