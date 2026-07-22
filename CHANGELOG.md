@@ -3,6 +3,17 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.3.0.1] - 2026-07-22
+
+### Changed
+- **More readable body text.** The muted gray used for project descriptions,
+  section subtitles, and the intro bio darkened from `#777777` to `#595959` —
+  contrast goes from ~4.4:1 (below WCAG AA) to ~7:1, with the soft retro look
+  intact.
+- **Easier-to-tap social icons.** The GitHub / X / LinkedIn icon links now have
+  a 44px minimum tap area (the icons themselves stay 32px), meeting Apple/WCAG
+  touch-target guidance on phones.
+
 ## [0.3.0.0] - 2026-07-20
 
 ### Added
