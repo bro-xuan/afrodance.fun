@@ -1559,7 +1559,7 @@ body:has(.bottom-indicator-page) {
   --secondary: #f0ece4;
   --secondary-foreground: #2d2d2d;
   --muted: #f0ece4;
-  --muted-foreground: #777777;
+  --muted-foreground: #595959;
   --accent: #f0ece4;
   --accent-foreground: #2d2d2d;
   --destructive: #d44332;

@@ -18,6 +18,22 @@
   **Priority:** P4
   Type the tagline character-by-character on load (respecting prefers-reduced-motion) to push the retro feel further.
 
+- **Align "View articles" button label with "Writing" section title**
+  **Priority:** P3
+  From /design-review (2026-07-22): the hero CTA says "View articles" but the section it scrolls to is titled "Writing". Pick one word and use it in both places.
+
+- **Decide on one primary hero CTA**
+  **Priority:** P4
+  From /design-review (2026-07-22): the three hero buttons (green/blue/yellow) carry equal visual weight, so no action reads as primary. Consider keeping "View projects" loud and demoting the other two to outline style. Taste call — the color chaos is arguably on-brand.
+
+- **Reconcile Twitter bird icon with "X / Twitter" label**
+  **Priority:** P4
+  From /design-review (2026-07-22): hero/footer use the pre-2023 bird icon while the contact button says "X / Twitter". If the bird is intentional retro, keep it — just make it a decision, not an accident.
+
+- **Even out Writing card rhythm**
+  **Priority:** P4
+  From /design-review (2026-07-22): one Writing card has an italic subtitle and the other doesn't, and both show the same date (Jun 9, 2026), which reads as placeholder-ish. Add a subtitle to both or neither.
+
 ## Code health
 
 - **Fix pre-existing ESLint errors in subpages**
@@ -43,3 +59,6 @@
   The Writing section has 2 articles; it will feel fuller with 3-4.
 
 ## Completed
+
+- **Muted text WCAG AA contrast** — `--muted-foreground` darkened `#777777 → #595959` (~4.4:1 → ~7:1). Fixed by /design-review on main, 2026-07-22 (`6a41a86`).
+- **44px tap areas on social icon links** — anchors in `SocialLinks.tsx` now have a `min-h-11 min-w-11` centered hit area; icons stay 32px. Fixed by /design-review on main, 2026-07-22 (`44a88aa`).

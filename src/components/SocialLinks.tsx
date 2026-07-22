@@ -51,7 +51,7 @@ export default function SocialLinks({
         target="_blank"
         rel="noopener noreferrer"
         aria-label="GitHub"
-        className="inline-flex transition-opacity hover:opacity-70"
+        className="inline-flex min-h-11 min-w-11 items-center justify-center transition-opacity hover:opacity-70"
       >
         <i className={`nes-icon github ${nesSize[size]}`} />
       </a>
@@ -60,7 +60,7 @@ export default function SocialLinks({
         target="_blank"
         rel="noopener noreferrer"
         aria-label="X"
-        className="inline-flex transition-opacity hover:opacity-70"
+        className="inline-flex min-h-11 min-w-11 items-center justify-center transition-opacity hover:opacity-70"
       >
         <i className={`nes-icon twitter ${nesSize[size]}`} />
       </a>
@@ -69,7 +69,7 @@ export default function SocialLinks({
         target="_blank"
         rel="noopener noreferrer"
         aria-label="LinkedIn"
-        className="inline-flex transition-opacity hover:opacity-70"
+        className="inline-flex min-h-11 min-w-11 items-center justify-center transition-opacity hover:opacity-70"
       >
         <LinkedInPixel px={linkedinPx[size]} />
       </a>
