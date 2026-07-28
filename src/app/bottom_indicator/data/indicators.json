@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-28T07:57:31.030Z",
-  "btcPrice": 63518,
+  "generatedAt": "2026-07-28T09:29:32.535Z",
+  "btcPrice": 63466,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -11,7 +11,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-07-28T07:57:28.106Z",
+      "fetchedAt": "2026-07-28T09:29:30.428Z",
       "available": false,
       "side": "both"
     },
@@ -24,7 +24,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-07-28T07:57:28.458Z",
+      "fetchedAt": "2026-07-28T09:29:30.665Z",
       "available": false,
       "side": "both"
     },
@@ -37,7 +37,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-07-28T07:57:28.812Z",
+      "fetchedAt": "2026-07-28T09:29:30.930Z",
       "available": false,
       "side": "both"
     },
@@ -50,7 +50,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-07-28T07:57:29.207Z",
+      "fetchedAt": "2026-07-28T09:29:31.232Z",
       "available": false,
       "side": "both"
     },
@@ -63,7 +63,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-07-28T07:57:29.552Z",
+      "fetchedAt": "2026-07-28T09:29:31.486Z",
       "available": false,
       "side": "both"
     },
@@ -76,7 +76,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-07-28T07:57:29.905Z",
+      "fetchedAt": "2026-07-28T09:29:31.728Z",
       "available": false,
       "side": "both"
     },
@@ -89,7 +89,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-07-28T07:57:30.258Z",
+      "fetchedAt": "2026-07-28T09:29:31.981Z",
       "available": false,
       "side": "both"
     },
@@ -102,7 +102,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-07-28T07:57:26.936Z",
+      "fetchedAt": "2026-07-28T09:29:29.611Z",
       "available": false,
       "side": "both"
     },
@@ -115,7 +115,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-07-28T07:57:27.349Z",
+      "fetchedAt": "2026-07-28T09:29:29.909Z",
       "available": false,
       "side": "both"
     },
@@ -128,7 +128,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-07-28T07:57:27.707Z",
+      "fetchedAt": "2026-07-28T09:29:30.162Z",
       "available": false,
       "side": "bottom"
     },
@@ -141,7 +141,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-07-28T07:57:30.630Z",
+      "fetchedAt": "2026-07-28T09:29:32.285Z",
       "available": false,
       "side": "both"
     },
@@ -154,7 +154,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-07-28T07:57:31.023Z",
+      "fetchedAt": "2026-07-28T09:29:32.526Z",
       "available": false,
       "side": "both"
     },
@@ -165,9 +165,9 @@
       "phase": "Bearish",
       "score": 26,
       "change30d": 12,
-      "rawValue": 0.8834,
+      "rawValue": 0.8827,
       "asOfDate": "2026-07-28",
-      "fetchedAt": "2026-07-28T07:57:31.025Z",
+      "fetchedAt": "2026-07-28T09:29:32.529Z",
       "available": true,
       "side": "both"
     },
@@ -178,9 +178,9 @@
       "phase": "Bottom",
       "score": 7,
       "change30d": 4,
-      "rawValue": 1.0026,
+      "rawValue": 1.0017,
       "asOfDate": "2026-07-28",
-      "fetchedAt": "2026-07-28T07:57:31.027Z",
+      "fetchedAt": "2026-07-28T09:29:32.530Z",
       "available": true,
       "side": "both"
     },
@@ -193,7 +193,7 @@
       "change30d": -2,
       "rawValue": 1.0412,
       "asOfDate": "2026-07-28",
-      "fetchedAt": "2026-07-28T07:57:31.029Z",
+      "fetchedAt": "2026-07-28T09:29:32.533Z",
       "available": true,
       "side": "bottom"
     },
@@ -206,7 +206,7 @@
       "change30d": 3,
       "rawValue": 0.4086,
       "asOfDate": "2026-07-28",
-      "fetchedAt": "2026-07-28T07:57:31.030Z",
+      "fetchedAt": "2026-07-28T09:29:32.535Z",
       "available": true,
       "side": "top"
     }
