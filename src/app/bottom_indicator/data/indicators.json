@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-30T07:44:05.624Z",
-  "btcPrice": 63944,
+  "generatedAt": "2026-07-30T09:23:39.586Z",
+  "btcPrice": 64488,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -139,9 +139,9 @@
       "phase": "Bottom",
       "score": 18,
       "change30d": 5,
-      "rawValue": 1.2192,
-      "asOfDate": "2026-07-28",
-      "fetchedAt": "2026-07-29T09:30:49.322Z",
+      "rawValue": 1.2201,
+      "asOfDate": "2026-07-29",
+      "fetchedAt": "2026-07-30T09:23:38.530Z",
       "available": true,
       "side": "both"
     },
@@ -151,10 +151,10 @@
       "blurb": "Realized minus transferred price. Spot near it marked cycle bottoms; a large premium marked late-cycle heat.",
       "phase": "Bottom",
       "score": 19,
-      "change30d": 5,
-      "rawValue": 2.2427,
-      "asOfDate": "2026-07-28",
-      "fetchedAt": "2026-07-29T09:30:50.023Z",
+      "change30d": 4,
+      "rawValue": 2.2443,
+      "asOfDate": "2026-07-29",
+      "fetchedAt": "2026-07-30T09:23:39.178Z",
       "available": true,
       "side": "both"
     },
@@ -165,9 +165,9 @@
       "phase": "Bearish",
       "score": 28,
       "change30d": 15,
-      "rawValue": 0.8926,
+      "rawValue": 0.9002,
       "asOfDate": "2026-07-30",
-      "fetchedAt": "2026-07-30T07:44:05.619Z",
+      "fetchedAt": "2026-07-30T09:23:39.580Z",
       "available": true,
       "side": "both"
     },
@@ -176,11 +176,11 @@
       "name": "200-Week MA Ratio",
       "blurb": "Price vs its 200-week average — the line macro bottoms touch; multiples of ~3+ accompanied past tops.",
       "phase": "Bottom",
-      "score": 7,
-      "change30d": 6,
-      "rawValue": 1.0083,
+      "score": 9,
+      "change30d": 8,
+      "rawValue": 1.0168,
       "asOfDate": "2026-07-30",
-      "fetchedAt": "2026-07-30T07:44:05.620Z",
+      "fetchedAt": "2026-07-30T09:23:39.582Z",
       "available": true,
       "side": "both"
     },
@@ -191,9 +191,9 @@
       "phase": "Bottom",
       "score": 13,
       "change30d": -2,
-      "rawValue": 1.0397,
+      "rawValue": 1.0398,
       "asOfDate": "2026-07-30",
-      "fetchedAt": "2026-07-30T07:44:05.622Z",
+      "fetchedAt": "2026-07-30T09:23:39.584Z",
       "available": true,
       "side": "bottom"
     },
@@ -206,7 +206,7 @@
       "change30d": 3,
       "rawValue": 0.4093,
       "asOfDate": "2026-07-30",
-      "fetchedAt": "2026-07-30T07:44:05.623Z",
+      "fetchedAt": "2026-07-30T09:23:39.586Z",
       "available": true,
       "side": "top"
     }
