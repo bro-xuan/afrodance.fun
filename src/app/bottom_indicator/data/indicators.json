@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-24T05:58:13.154Z",
-  "btcPrice": 77116,
+  "generatedAt": "2026-08-24T07:46:38.372Z",
+  "btcPrice": 77402,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -138,10 +138,10 @@
       "blurb": "Aggregate on-chain cost basis. Spot below it = the market underwater; spot far above it = historically stretched.",
       "phase": "Neutral",
       "score": 40,
-      "change30d": 20,
-      "rawValue": 1.4706,
-      "asOfDate": "2026-08-22",
-      "fetchedAt": "2026-08-23T07:22:34.349Z",
+      "change30d": 22,
+      "rawValue": 1.4827,
+      "asOfDate": "2026-08-23",
+      "fetchedAt": "2026-08-24T07:46:37.248Z",
       "available": true,
       "side": "both"
     },
@@ -151,10 +151,10 @@
       "blurb": "Realized minus transferred price. Spot near it marked cycle bottoms; a large premium marked late-cycle heat.",
       "phase": "Neutral",
       "score": 42,
-      "change30d": 21,
-      "rawValue": 2.7034,
-      "asOfDate": "2026-08-22",
-      "fetchedAt": "2026-08-23T07:22:35.127Z",
+      "change30d": 24,
+      "rawValue": 2.7256,
+      "asOfDate": "2026-08-23",
+      "fetchedAt": "2026-08-24T07:46:37.964Z",
       "available": true,
       "side": "both"
     },
@@ -163,11 +163,11 @@
       "name": "Mayer Multiple",
       "blurb": "Price vs its 200-day average. Readings near 0.5 marked deep bottoms; above ~2.4 marked overheated tops.",
       "phase": "Neutral",
-      "score": 55,
-      "change30d": 28,
-      "rawValue": 1.1158,
+      "score": 56,
+      "change30d": 29,
+      "rawValue": 1.1199,
       "asOfDate": "2026-08-24",
-      "fetchedAt": "2026-08-24T05:58:13.149Z",
+      "fetchedAt": "2026-08-24T07:46:38.366Z",
       "available": true,
       "side": "both"
     },
@@ -176,11 +176,11 @@
       "name": "200-Week MA Ratio",
       "blurb": "Price vs its 200-week average — the line macro bottoms touch; multiples of ~3+ accompanied past tops.",
       "phase": "Bearish",
-      "score": 20,
-      "change30d": 10,
-      "rawValue": 1.2,
+      "score": 21,
+      "change30d": 11,
+      "rawValue": 1.2044,
       "asOfDate": "2026-08-24",
-      "fetchedAt": "2026-08-24T05:58:13.151Z",
+      "fetchedAt": "2026-08-24T07:46:38.368Z",
       "available": true,
       "side": "both"
     },
@@ -193,7 +193,7 @@
       "change30d": 0,
       "rawValue": 1.0422,
       "asOfDate": "2026-08-24",
-      "fetchedAt": "2026-08-24T05:58:13.152Z",
+      "fetchedAt": "2026-08-24T07:46:38.370Z",
       "available": true,
       "side": "bottom"
     },
@@ -206,7 +206,7 @@
       "change30d": 2,
       "rawValue": 0.4121,
       "asOfDate": "2026-08-24",
-      "fetchedAt": "2026-08-24T05:58:13.154Z",
+      "fetchedAt": "2026-08-24T07:46:38.372Z",
       "available": true,
       "side": "top"
     }
