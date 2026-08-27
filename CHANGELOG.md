@@ -3,6 +3,27 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.3.1.0] - 2026-08-27
+
+### Added
+- **Cycle charts on the BTC bottom/top indicator.** Two interactive charts
+  (Benjamin Cowen–style) sit between the gauge and the signal table:
+  - **4-year cycle overlay** — every cycle re-based to its bear-market low
+    and drawn on one "days since the low" axis (2011 / 2015 / 2018 / 2022
+    cycles), with the prior-bottom window (day 1,431 & 1,437) shaded and a
+    "day N" marker on the current cycle. Toggle to *Drawdown from peak* to see
+    the same cycles aligned on their tops.
+  - **Support band & 200-week SMA** — weekly close with the 20W SMA / 21W EMA
+    band (Bull Market Support / Bear Market Resistance) and the 200-week SMA,
+    with a plain-English regime line ("above the band, +24% vs 200W") and 2y /
+    4y / all ranges.
+  Both are dependency-free SVG, server-rendered with a client crosshair +
+  tooltip, keyboard-focusable, and backed by a `<details>` table view.
+- `scripts/fetch-indicators.mjs` now also writes
+  `src/app/bottom_indicator/data/cycles.json`, merging blockchain.info daily
+  history (2010→) with Binance closes (2017→). Costs no bitcoin-data.com
+  budget; the daily workflow commits it alongside the indicator snapshot.
+
 ## [0.3.0.1] - 2026-07-22
 
 ### Changed

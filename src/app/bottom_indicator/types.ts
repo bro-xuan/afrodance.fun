@@ -81,3 +81,33 @@ export interface IndicatorsSnapshot {
   btcPrice: number | null;
   rows: IndicatorRow[];
 }
+
+// ── Cycle charts (data/cycles.json, built by scripts/fetch-indicators.mjs) ──
+
+export interface CycleSeries {
+  /** e.g. "2018 cycle" — named by the year of the low it starts from. */
+  label: string;
+  lowDate: string;
+  lowPrice: number;
+  peakDate: string;
+  peakPrice: number;
+  /** Days from the low to the cycle's highest close. */
+  peakDay: number;
+  /** Last day index in `roi` (days from the low to the next low, or to today). */
+  endDay: number;
+  /** false for the in-progress cycle. */
+  endedAtNextLow: boolean;
+  /** price ÷ lowPrice, index = days since the low. */
+  roi: number[];
+}
+
+/** [weekEnd ISO date, close, sma20w, ema21w, sma200w] — nulls before warm-up. */
+export type BandRow = [string, number, number | null, number | null, number | null];
+
+export interface CyclesSnapshot {
+  generatedAt: string;
+  asOfDate: string;
+  sources: string[];
+  cycles: CycleSeries[];
+  bands: { columns: string[]; rows: BandRow[] };
+}

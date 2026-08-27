@@ -39,6 +39,16 @@ const OUT_PATH = new URL("./indicators.json", OUT_DIR);
 const BD_BASE = "https://bitcoin-data.com/v1";
 const BINANCE_HOSTS = ["https://api.binance.com", "https://api.binance.us"];
 const BTCUSDT_GENESIS = Date.UTC(2017, 7, 17); // first BTCUSDT daily candle
+// Full daily history back to 2009 (keyless, one request). Fills the pre-Binance
+// years the cycle charts need; Binance wins wherever both have a close.
+const BLOCKCHAIN_INFO_URL =
+  "https://api.blockchain.info/charts/market-price?timespan=all&format=json&sampled=false";
+const CYCLES_PATH = new URL("./cycles.json", OUT_DIR);
+
+// Cycle anchors = bear-market lows (daily close). Cowen counts cycle days from
+// low to low: 2015-01-14 → 2018-12-15 = 1,431 days, 2018-12-15 → 2022-11-21 =
+// 1,437 days. The peak inside each cycle is computed, not hard-coded.
+const CYCLE_LOWS = ["2011-11-18", "2015-01-14", "2018-12-15", "2022-11-21"];
 
 // ── Metric registry ────────────────────────────────────────────────────────
 // kind "oscillator":   mean-reverting ratio → score = percentile of raw value.
@@ -195,6 +205,78 @@ function priceSeriesFromMap(priceByDate) {
     .sort((a, b) => a.ts - b.ts);
 }
 
+// ── Cycle-chart series (pure) ──────────────────────────────────────────────
+// Chart 1: each cycle re-based to its low → [dayIndex, price / lowPrice], so
+// four cycles overlay on one "days since cycle low" axis. Chart 2: weekly
+// closes with the Bull-Market-Support / Bear-Market-Resistance band (20W SMA +
+// 21W EMA — same two lines, Cowen names them by regime) and the 200W SMA.
+const round4 = (v) => Number(v.toPrecision(4));
+
+function buildCycles(points) {
+  const byDate = new Map(points.map((p, i) => [p.d, i]));
+  const cycles = [];
+  for (let c = 0; c < CYCLE_LOWS.length; c++) {
+    const lowIdx = byDate.get(CYCLE_LOWS[c]);
+    if (lowIdx === undefined) continue;
+    const nextLowIdx = c + 1 < CYCLE_LOWS.length ? byDate.get(CYCLE_LOWS[c + 1]) : undefined;
+    const endIdx = nextLowIdx ?? points.length - 1;
+    const low = points[lowIdx];
+    let peakIdx = lowIdx;
+    for (let i = lowIdx; i <= endIdx; i++) if (points[i].v > points[peakIdx].v) peakIdx = i;
+    const series = [];
+    for (let i = lowIdx; i <= endIdx; i++) series.push(round4(points[i].v / low.v));
+    cycles.push({
+      label: `${low.d.slice(0, 4)} cycle`,
+      lowDate: low.d,
+      lowPrice: round4(low.v),
+      peakDate: points[peakIdx].d,
+      peakPrice: round4(points[peakIdx].v),
+      peakDay: peakIdx - lowIdx,
+      endDay: endIdx - lowIdx,
+      endedAtNextLow: nextLowIdx !== undefined,
+      /** price ÷ lowPrice for day 0..endDay (index = days since the low). */
+      roi: series,
+    });
+  }
+  return cycles;
+}
+
+// Weekly closes (Mon–Sun weeks, Sunday close — TradingView's crypto week).
+function weeklyCloses(points) {
+  const weeks = [];
+  let cur = null;
+  for (const p of points) {
+    const dow = (new Date(p.ts * 1000).getUTCDay() + 6) % 7; // Mon=0 … Sun=6
+    const weekStart = p.ts - dow * 86400;
+    if (!cur || cur.start !== weekStart) {
+      cur = { start: weekStart, d: p.d, v: p.v };
+      weeks.push(cur);
+    } else {
+      cur.d = p.d; cur.v = p.v;
+    }
+  }
+  return weeks;
+}
+
+function buildBands(points, fromDate = "2012-01-01") {
+  const weeks = weeklyCloses(points);
+  const closes = weeks.map((w) => w.v);
+  const sma20 = smaSeries(closes, 20);
+  const ema21 = emaSeries(closes, 21);
+  const sma200 = smaSeries(closes, 200);
+  const rows = [];
+  for (let i = 0; i < weeks.length; i++) {
+    if (weeks[i].d < fromDate) continue;
+    rows.push([
+      weeks[i].d, round4(closes[i]),
+      sma20[i] === null ? null : round4(sma20[i]),
+      ema21[i] === null ? null : round4(ema21[i]),
+      sma200[i] === null ? null : round4(sma200[i]),
+    ]);
+  }
+  return { columns: ["weekEnd", "close", "sma20w", "ema21w", "sma200w"], rows };
+}
+
 // ── Fetch helpers ──────────────────────────────────────────────────────────
 class RateLimitError extends Error {}
 
@@ -259,6 +341,28 @@ async function getBtcPriceByDate() {
     }
   }
   throw lastErr ?? new Error("no keyless BTC price source available");
+}
+
+// blockchain.info: { values: [{ x: unixSeconds, y: usd }] } daily since 2009.
+async function blockchainInfoPrices() {
+  const res = await fetch(BLOCKCHAIN_INFO_URL, { headers: { accept: "application/json" } });
+  if (!res.ok) throw new Error(`blockchain.info → HTTP ${res.status}`);
+  const body = await res.json();
+  const map = new Map();
+  for (const p of body?.values ?? []) {
+    const v = Number(p.y);
+    if (Number.isFinite(v) && v > 0) map.set(new Date(p.x * 1000).toISOString().slice(0, 10), v);
+  }
+  return map;
+}
+
+// Long history for the cycle charts: blockchain.info for 2010–2017, Binance
+// (exchange close, more precise) overriding wherever it has the date.
+async function getLongPriceByDate(binanceByDate) {
+  const map = await blockchainInfoPrices();
+  if (map.size < 2000) throw new Error("blockchain.info returned too little history");
+  for (const [d, v] of binanceByDate ?? []) map.set(d, v);
+  return map;
 }
 
 // index of the point whose ts is closest to `targetTs`.
@@ -466,6 +570,30 @@ writeFileSync(OUT_PATH, JSON.stringify(snapshot, null, 2) + "\n");
 
 const ok = rows.filter((r) => r.available).length;
 console.log(`\nWrote ${rows.length} rows (${ok} available) → ${OUT_PATH.pathname}`);
+
+// ── Cycle charts ───────────────────────────────────────────────────────────
+// Costs no bitcoin-data budget. A source outage keeps the previous file
+// (stale beats blank), same as the price-derived rows above.
+if (!only) {
+  try {
+    console.log("Building cycle charts (blockchain.info + Binance)…");
+    const longSeries = priceSeriesFromMap(await getLongPriceByDate(priceByDate));
+    const cycles = buildCycles(longSeries);
+    const bands = buildBands(longSeries);
+    const cyclesOut = {
+      generatedAt: new Date().toISOString(),
+      asOfDate: longSeries.at(-1).d,
+      sources: ["blockchain.info market-price (2010→)", "Binance BTCUSDT daily close (2017→, wins on overlap)"],
+      cycles,
+      bands,
+    };
+    writeFileSync(CYCLES_PATH, JSON.stringify(cyclesOut) + "\n");
+    const cur = cycles.at(-1);
+    console.log(`  ${cycles.length} cycles, current on day ${cur?.endDay} (peak day ${cur?.peakDay}); ${bands.rows.length} weekly rows → ${CYCLES_PATH.pathname}`);
+  } catch (e) {
+    console.warn(`  cycle charts skipped (${e.message}) — keeping previous cycles.json`);
+  }
+}
 if (remaining.length) {
   console.log(`Rate-limited before: ${remaining.join(", ")} — re-run in ~1h to finish.`);
 }
