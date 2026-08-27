@@ -3,6 +3,19 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.3.3.0] - 2026-08-27
+
+### Changed
+- **Bottom indicator split into four routes** instead of one long page:
+  - `/bottom_indicator` — gauge, verdict, bottom/top watch panels and "Go deeper" cards.
+  - `/bottom_indicator/signals` — every signal, grouped and ranked.
+  - `/bottom_indicator/cycle` — timing charts: 4-year overlay, drawdown from ATH, monthly seasonality.
+  - `/bottom_indicator/valuation` — price-level charts: score-colored price, log regression bands,
+    200W SMA / support band, 2-year MA multiplier.
+- Shared `PageShell` (header, sticky section nav, provenance footer) and a `summary()` helper so each
+  page computes the headline numbers the same way. `CycleCharts` became `CycleTimingCharts` and
+  `ValuationCharts`, each still a single client boundary. Per-route `metadata` for titles/descriptions.
+
 ## [0.3.2.0] - 2026-08-27
 
 ### Added

@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-bi", display: "swap"
 export const metadata = {
   title: "BTC Bottom & Top Indicator · afrodance.fun",
   description:
-    "Where is Bitcoin in its cycle? 16 on-chain, miner, and price signals ranked against their own history — a 0–100 cycle score, bottom-watch and top-watch trigger panels, plus 4-year cycle overlay and 200-week SMA / support-band charts, refreshed daily.",
+    "Where is Bitcoin in its cycle? 16 on-chain, miner, and price signals ranked against their own history — a 0–100 cycle score, bottom-watch and top-watch trigger panels, with separate pages for every signal, cycle-timing charts and valuation charts, refreshed daily.",
 };
 
 export default function BottomIndicatorLayout({ children }: { children: ReactNode }) {

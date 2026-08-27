@@ -1,37 +1,18 @@
 "use client";
 
-import { useMemo, type ReactNode } from "react";
+import { useMemo } from "react";
 import type { CyclesSnapshot, ScoreHistory } from "../types";
-import { CycleOverlayChart } from "./CycleOverlayChart";
+import { ChartCard } from "./ChartCard";
 import { BandsChart } from "./BandsChart";
 import { PriceLinesChart } from "./PriceLinesChart";
 import { RiskColoredPriceChart } from "./RiskColoredPriceChart";
-import { DrawdownChart } from "./DrawdownChart";
-import { MonthlyReturnsHeatmap } from "./MonthlyReturnsHeatmap";
 import { CHART, fmtPct, fmtUsd, regressionPrice } from "../lib/chart";
 import { aggregateScoreHistory } from "../lib/score-history";
 
-/**
- * One client boundary for every cycle chart, so the snapshot crosses the
- * server→client boundary once instead of once per chart (the weekly rows are
- * the bulk of the page payload). Derived series are computed here.
- */
-
-function ChartCard({ title, intro, children }: { title: string; intro: ReactNode; children: ReactNode }) {
-  return (
-    <section className="mb-4 rounded-2xl border border-[rgba(255,255,255,0.07)] bg-[#121a2b] p-5 sm:p-6">
-      <h3 className="text-[15px] font-semibold text-[#f2f6fb]">{title}</h3>
-      <p className="mb-4 mt-1 text-[13px] leading-relaxed text-[#8695ac]">{intro}</p>
-      {children}
-    </section>
-  );
-}
-
 interface Props { cycles: CyclesSnapshot; scoreHistory: ScoreHistory; totalSignals: number }
 
-export function CycleCharts({ cycles, scoreHistory, totalSignals }: Props) {
-  const cur = cycles.cycles[cycles.cycles.length - 1];
-  const priorEnds = cycles.cycles.slice(1, -1).map((c) => c.endDay);
+/** One client boundary for the "how cheap" charts; derived series are computed here. */
+export function ValuationCharts({ cycles, scoreHistory, totalSignals }: Props) {
   const reg = cycles.regression;
   const bandRows = cycles.bands.rows;
   const regRows = bandRows.map((r) => ({
@@ -46,30 +27,8 @@ export function CycleCharts({ cycles, scoreHistory, totalSignals }: Props) {
   const riskPoints = bandRows.map((r, i) => ({ d: r[0], close: r[1], score: riskAgg[i].score, count: riskAgg[i].count }));
   return (
     <>
-      <div className="mb-2 mt-7 flex flex-wrap items-baseline justify-between gap-x-4 px-1">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-[#aab6c9]">Cycle charts</h2>
-        <span className="text-xs text-[#7f8ca3]">where this cycle sits against the last three · hover for values</span>
-      </div>
-
-      <ChartCard title="Where are we in the 4-year cycle?" intro={<>
-        Each cycle starts at its bear-market low and is drawn on the same day axis. The last two cycles
-        bottomed again on day {priorEnds.join(" and day ")}; today is day{" "}
-        <span className="tabular-nums text-[#c7d0de]">{cur.endDay}</span> of this one (peak was day {cur.peakDay}).
-        The shaded window marks where the prior lows landed. Switch to the halving view to count from the
-        2024 halving instead.
-      </>}>
-        <CycleOverlayChart cycles={cycles.cycles} halvings={cycles.halvings} asOfDate={cycles.asOfDate} />
-      </ChartCard>
-
-      <ChartCard title="How deep is this bear market?" intro={<>
-        Drawdown from the running all-time high. Every past cycle low sat 77–84% below the prior peak,
-        roughly a year after it — the two numbers Cowen keeps returning to.
-      </>}>
-        <DrawdownChart daily={cycles.daily} bears={cycles.bears} asOfDate={cycles.asOfDate} />
-      </ChartCard>
-
       <ChartCard title="Price color-coded by cycle score" intro={<>
-        The page&apos;s own 0–100 score painted onto price history — the Cowen &ldquo;risk&rdquo; view.
+        The site&apos;s own 0–100 score painted onto price history — the Cowen &ldquo;risk&rdquo; view.
         Green weeks were historically cheap, red weeks historically expensive; the pattern at past
         bottoms is what to compare today against.
       </>}>
@@ -133,13 +92,6 @@ export function CycleCharts({ cycles, scoreHistory, totalSignals }: Props) {
             {invLast.values[0]! < invLast.values[1] ? " — inside the historical accumulation zone." : " — above the accumulation zone."}
           </p> : null}
         />
-      </ChartCard>
-
-      <ChartCard title="Monthly returns and seasonality" intro={<>
-        Calendar returns by year. The bottom rows average each month across all years — the basis for
-        the &ldquo;Q4 seasonality&rdquo; argument, and where the past mid-term-year lows show up.
-      </>}>
-        <MonthlyReturnsHeatmap data={cycles.monthlyReturns} />
       </ChartCard>
     </>
   );
