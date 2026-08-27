@@ -49,6 +49,11 @@ const CYCLES_PATH = new URL("./cycles.json", OUT_DIR);
 // low to low: 2015-01-14 → 2018-12-15 = 1,431 days, 2018-12-15 → 2022-11-21 =
 // 1,437 days. The peak inside each cycle is computed, not hard-coded.
 const CYCLE_LOWS = ["2011-11-18", "2015-01-14", "2018-12-15", "2022-11-21"];
+const HALVINGS = ["2012-11-28", "2016-07-09", "2020-05-11", "2024-04-20"];
+const GENESIS_MS = Date.UTC(2009, 0, 3);
+// Per-metric score history (weekly), merged across runs like the snapshot, so
+// the "price colored by risk" chart can average whatever has been fetched.
+const SCORE_HISTORY_PATH = new URL("./score-history.json", OUT_DIR);
 
 // ── Metric registry ────────────────────────────────────────────────────────
 // kind "oscillator":   mean-reverting ratio → score = percentile of raw value.
@@ -234,11 +239,118 @@ function buildCycles(points) {
       peakDay: peakIdx - lowIdx,
       endDay: endIdx - lowIdx,
       endedAtNextLow: nextLowIdx !== undefined,
-      /** price ÷ lowPrice for day 0..endDay (index = days since the low). */
-      roi: series,
+      /** Unsampled multiples at the peak and at the last day. */
+      peakMultiple: round4(points[peakIdx].v / low.v),
+      endMultiple: round4(points[endIdx].v / low.v),
+      /** price ÷ lowPrice on days 0, 2, 4, … and endDay (see `step`). */
+      step: 2,
+      roi: sampleEvery(series, 2),
     });
   }
   return cycles;
+}
+
+// Halving epochs: price ÷ halving-day price, index = days since the halving.
+// Sampled every 2nd day (the overlay chart can't show finer at its width).
+function buildHalvings(points) {
+  const byDate = new Map(points.map((p, i) => [p.d, i]));
+  const out = [];
+  for (let h = 0; h < HALVINGS.length; h++) {
+    const startIdx = byDate.get(HALVINGS[h]);
+    if (startIdx === undefined) continue;
+    const nextIdx = h + 1 < HALVINGS.length ? byDate.get(HALVINGS[h + 1]) : undefined;
+    const endIdx = nextIdx ?? points.length - 1;
+    const base = points[startIdx].v;
+    let peakIdx = startIdx;
+    for (let i = startIdx; i <= endIdx; i++) if (points[i].v > points[peakIdx].v) peakIdx = i;
+    out.push({
+      label: `${HALVINGS[h].slice(0, 4)} halving`,
+      date: HALVINGS[h],
+      price: round4(base),
+      peakDay: peakIdx - startIdx,
+      peakMultiple: round4(points[peakIdx].v / base),
+      endDay: endIdx - startIdx,
+      ended: nextIdx !== undefined,
+      /** price ÷ halving price on days 0, 2, 4, … and endDay. */
+      roi: sampleEvery(points.slice(startIdx, endIdx + 1).map((p) => round4(p.v / base)), 2),
+    });
+  }
+  return out;
+}
+
+// Keep every `step`-th element plus the last one.
+function sampleEvery(arr, step) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += step) out.push(arr[i]);
+  if ((arr.length - 1) % step !== 0) out.push(arr[arr.length - 1]);
+  return out;
+}
+
+// Log-log regression: log10(price) ~ a + b·log10(days since genesis). OLS for
+// the trend, then residual quantiles for the band fan (Cowen-style: the
+// lower bands hug the bear-market lows, the upper ones the blow-off tops).
+function buildRegression(points) {
+  const xs = [], ys = [];
+  for (const p of points) {
+    const days = (p.ts * 1000 - GENESIS_MS) / 86_400_000;
+    if (days < 365) continue; // pre-2010 pennies distort the fit
+    xs.push(Math.log10(days)); ys.push(Math.log10(p.v));
+  }
+  const n = xs.length;
+  const mx = xs.reduce((a, b) => a + b, 0) / n, my = ys.reduce((a, b) => a + b, 0) / n;
+  let sxy = 0, sxx = 0;
+  for (let i = 0; i < n; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) ** 2; }
+  const b = sxy / sxx, a = my - b * mx;
+  const resid = xs.map((x, i) => ys[i] - (a + b * x)).sort((p, q) => p - q);
+  const q = (f) => resid[Math.min(n - 1, Math.max(0, Math.round(f * (n - 1))))];
+  return {
+    a: Number(a.toFixed(5)), b: Number(b.toFixed(5)),
+    /** log10 offsets to add to the trend for each named band. */
+    bands: { floor: Number(q(0.005).toFixed(4)), low: Number(q(0.1).toFixed(4)), mid: 0,
+      high: Number(q(0.9).toFixed(4)), ceiling: Number(q(0.995).toFixed(4)) },
+    fittedThrough: points.at(-1).d,
+    genesis: "2009-01-03",
+  };
+}
+
+// Calendar-month returns: { year: [12 × pct or null] }, from month-end closes.
+function buildMonthlyReturns(points) {
+  const monthEnd = new Map(); // "YYYY-MM" → last close of that month
+  for (const p of points) monthEnd.set(p.d.slice(0, 7), p.v);
+  const keys = [...monthEnd.keys()].sort();
+  const out = {};
+  for (let i = 1; i < keys.length; i++) {
+    const [y, m] = keys[i].split("-");
+    if (Number(y) < 2011) continue;
+    (out[y] ??= new Array(12).fill(null))[Number(m) - 1] =
+      Number(((monthEnd.get(keys[i]) / monthEnd.get(keys[i - 1]) - 1) * 100).toFixed(1));
+  }
+  return out;
+}
+
+// Full daily closes (every 2nd day + latest) for drawdown / risk-colored
+// charts, as a compact [startDate, step, closes[]] triple.
+function buildDaily(points, fromDate = "2011-01-01") {
+  const from = points.findIndex((p) => p.d >= fromDate);
+  const slice = points.slice(from);
+  return { start: slice[0].d, step: 2, closes: sampleEvery(slice.map((p) => round4(p.v)), 2) };
+}
+
+// Bear markets: from each cycle peak to the next cycle low.
+function buildBears(cycles) {
+  const out = [];
+  for (let i = 0; i < cycles.length; i++) {
+    const c = cycles[i];
+    out.push({
+      peakDate: c.peakDate, peakPrice: c.peakPrice,
+      lowDate: c.endedAtNextLow ? cycles[i + 1]?.lowDate ?? null : null,
+      lowPrice: round4(c.endMultiple * c.lowPrice),
+      drawdown: Number((c.endMultiple / c.peakMultiple - 1).toFixed(4)),
+      days: c.endDay - c.peakDay,
+      ended: c.endedAtNextLow,
+    });
+  }
+  return out;
 }
 
 // Weekly closes (Mon–Sun weeks, Sunday close — TradingView's crypto week).
@@ -264,17 +376,23 @@ function buildBands(points, fromDate = "2012-01-01") {
   const sma20 = smaSeries(closes, 20);
   const ema21 = emaSeries(closes, 21);
   const sma200 = smaSeries(closes, 200);
+  // 2-year (730-day) daily SMA, read at each week's end — the Investor Tool line.
+  const daily730 = smaSeries(points.map((p) => p.v), 730);
+  const idxByDate = new Map(points.map((p, i) => [p.d, i]));
   const rows = [];
   for (let i = 0; i < weeks.length; i++) {
     if (weeks[i].d < fromDate) continue;
+    const di = idxByDate.get(weeks[i].d);
+    const s2y = di === undefined ? null : daily730[di];
     rows.push([
       weeks[i].d, round4(closes[i]),
       sma20[i] === null ? null : round4(sma20[i]),
       ema21[i] === null ? null : round4(ema21[i]),
       sma200[i] === null ? null : round4(sma200[i]),
+      s2y === null ? null : round4(s2y),
     ]);
   }
-  return { columns: ["weekEnd", "close", "sma20w", "ema21w", "sma200w"], rows };
+  return { columns: ["weekEnd", "close", "sma20w", "ema21w", "sma200w", "sma2y"], rows };
 }
 
 // ── Fetch helpers ──────────────────────────────────────────────────────────
@@ -386,6 +504,16 @@ function scoreSeries(def, points) {
   const idx30 = nearestIndex(points, latest.ts - 30 * 86400);
   const score30 = computeScore(points[idx30].v, sorted, def.direction);
 
+  // Weekly score history (every 7th point, always including the latest).
+  // Same full-history percentile as the headline score, so the history is
+  // exactly "what the gauge would read on that day with today's ranking".
+  const history = [];
+  for (let i = points.length - 1; i >= 0; i -= 7) {
+    history.push([points[i].d, computeScore(points[i].v, sorted, def.direction)]);
+  }
+  history.reverse();
+  scoreHistoryBySlug.set(def.slug, { side: def.side ?? "both", history });
+
   return {
     slug: def.slug,
     name: def.name,
@@ -421,6 +549,10 @@ const existing = existsSync(OUT_PATH)
   ? JSON.parse(readFileSync(OUT_PATH, "utf8"))
   : { generatedAt: null, btcPrice: null, rows: [] };
 const rowBySlug = new Map(existing.rows.map((r) => [r.slug, r]));
+const existingHistory = existsSync(SCORE_HISTORY_PATH)
+  ? JSON.parse(readFileSync(SCORE_HISTORY_PATH, "utf8"))
+  : { generatedAt: null, metrics: {} };
+const scoreHistoryBySlug = new Map(Object.entries(existingHistory.metrics ?? {}));
 
 // A bitcoin-data metric already fetched successfully within the window doesn't
 // need re-fetching this run. (Unavailable rows are always retried.)
@@ -568,6 +700,18 @@ const snapshot = {
 mkdirSync(OUT_DIR, { recursive: true });
 writeFileSync(OUT_PATH, JSON.stringify(snapshot, null, 2) + "\n");
 
+// Score history in registry order; metrics never fetched are simply absent.
+const metricsHistory = {};
+for (const m of METRICS) {
+  const h = scoreHistoryBySlug.get(m.slug);
+  if (h) metricsHistory[m.slug] = { ...h, side: m.side ?? "both" };
+}
+writeFileSync(SCORE_HISTORY_PATH, JSON.stringify({
+  generatedAt: new Date().toISOString(),
+  metrics: metricsHistory,
+}) + "\n");
+console.log(`Score history: ${Object.keys(metricsHistory).length} metrics → ${SCORE_HISTORY_PATH.pathname}`);
+
 const ok = rows.filter((r) => r.available).length;
 console.log(`\nWrote ${rows.length} rows (${ok} available) → ${OUT_PATH.pathname}`);
 
@@ -585,7 +729,12 @@ if (!only) {
       asOfDate: longSeries.at(-1).d,
       sources: ["blockchain.info market-price (2010→)", "Binance BTCUSDT daily close (2017→, wins on overlap)"],
       cycles,
+      halvings: buildHalvings(longSeries),
+      bears: buildBears(cycles),
       bands,
+      regression: buildRegression(longSeries),
+      monthlyReturns: buildMonthlyReturns(longSeries),
+      daily: buildDaily(longSeries),
     };
     writeFileSync(CYCLES_PATH, JSON.stringify(cyclesOut) + "\n");
     const cur = cycles.at(-1);

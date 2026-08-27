@@ -2,7 +2,8 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import snapshot from "./data/indicators.json";
 import cyclesSnapshot from "./data/cycles.json";
-import type { CyclesSnapshot, IndicatorsSnapshot } from "./types";
+import scoreHistorySnapshot from "./data/score-history.json";
+import type { CyclesSnapshot, IndicatorsSnapshot, ScoreHistory } from "./types";
 import { metaForPhase, phaseForScore } from "./lib/phase-meta";
 import { buildGroups, buildTriggers, buildWatch, isTwoSided, phaseCounts, verdict } from "./lib/insights";
 import { Gauge } from "./components/Gauge";
@@ -10,11 +11,11 @@ import { LivePrice } from "./components/LivePrice";
 import { ConvictionBar } from "./components/ConvictionBar";
 import { ExtremeWatch } from "./components/ExtremeWatch";
 import { IndicatorGroups } from "./components/IndicatorGroups";
-import { CycleOverlayChart } from "./components/CycleOverlayChart";
-import { BandsChart } from "./components/BandsChart";
+import { CycleCharts } from "./components/CycleCharts";
 
 const data = snapshot as unknown as IndicatorsSnapshot;
 const cycles = cyclesSnapshot as unknown as CyclesSnapshot;
+const scoreHistory = scoreHistorySnapshot as unknown as ScoreHistory;
 
 function fmtDate(iso: string | null): string {
   if (!iso) return "—";
@@ -146,39 +147,9 @@ export default function BottomIndicatorPage() {
       </div>
 
       {/* ── Cycle charts: time and level, Cowen-style ─────────────── */}
-      {cycles.cycles?.length > 0 && (() => {
-        const cur = cycles.cycles[cycles.cycles.length - 1];
-        const priorEnds = cycles.cycles.slice(1, -1).map((c) => c.endDay);
-        return (
-          <>
-            <div className="mb-2 mt-7 flex flex-wrap items-baseline justify-between gap-x-4 px-1">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-[#aab6c9]">Cycle charts</h2>
-              <span className="text-xs text-[#7f8ca3]">where this cycle sits against the last three · hover for values</span>
-            </div>
-
-            <section className="mb-4 rounded-2xl border border-[rgba(255,255,255,0.07)] bg-[#121a2b] p-5 sm:p-6">
-              <h3 className="text-[15px] font-semibold text-[#f2f6fb]">Where are we in the 4-year cycle?</h3>
-              <p className="mb-4 mt-1 text-[13px] leading-relaxed text-[#8695ac]">
-                Each cycle starts at its bear-market low and is drawn on the same day axis. The last two cycles
-                bottomed again on day {priorEnds.join(" and day ")}; today is day{" "}
-                <span className="tabular-nums text-[#c7d0de]">{cur.endDay}</span> of this one (peak was day {cur.peakDay}).
-                The shaded window marks where the prior lows landed.
-              </p>
-              <CycleOverlayChart cycles={cycles.cycles} asOfDate={cycles.asOfDate} />
-            </section>
-
-            <section className="mb-4 rounded-2xl border border-[rgba(255,255,255,0.07)] bg-[#121a2b] p-5 sm:p-6">
-              <h3 className="text-[15px] font-semibold text-[#f2f6fb]">Support band and the 200-week average</h3>
-              <p className="mb-4 mt-1 text-[13px] leading-relaxed text-[#8695ac]">
-                The 20-week SMA / 21-week EMA band is support in bull markets and resistance in bear markets; the
-                200-week SMA is the floor every past cycle low has tested. Price squeezed between the two is the
-                classic pre-bottom setup.
-              </p>
-              <BandsChart rows={cycles.bands.rows} asOfDate={cycles.asOfDate} />
-            </section>
-          </>
-        );
-      })()}
+      {cycles.cycles?.length > 0 && (
+        <CycleCharts cycles={cycles} scoreHistory={scoreHistory} totalSignals={core.length} />
+      )}
 
       {/* ── The signals, grouped ──────────────────────────────────── */}
       <div className="mb-2 mt-7 flex flex-wrap items-baseline justify-between gap-x-4 px-1">

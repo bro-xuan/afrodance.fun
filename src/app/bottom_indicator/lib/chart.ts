@@ -95,7 +95,7 @@ const trim0 = (s: string) => s.replace(/\.0+$/, "");
 export function fmtUsd(v: number): string {
   if (v >= 1e6) return `$${trim0((v / 1e6).toFixed(2))}M`;
   if (v >= 1e3) return `$${trim0((v / 1e3).toFixed(v >= 1e4 ? 1 : 2))}k`;
-  if (v >= 100) return `$${Math.round(v)}`;
+  if (v >= 100 || Number.isInteger(v)) return `$${Math.round(v)}`;
   return `$${v.toFixed(2)}`;
 }
 
@@ -135,3 +135,31 @@ export const CHART = {
   /** Emphasis line for "now" — distinguished by weight + direct label, not hue. */
   current: "#f2f6fb",
 } as const;
+
+/** Value of a sampled series at an arbitrary day (nearest sample). */
+export function sampledAt(arr: number[], step: number, day: number): number {
+  const i = Math.min(arr.length - 1, Math.max(0, Math.round(day / step)));
+  return arr[i];
+}
+
+/**
+ * Push label y-positions apart to >= gap px, preserving order. Returns the
+ * adjusted positions; a leader line is warranted where |adjusted - y| > 2.
+ */
+export function spreadLabels(ys: number[], gap = 13): number[] {
+  const order = ys.map((y, i) => [y, i] as const).sort((a, b) => a[0] - b[0]);
+  const out = order.map(([y]) => y);
+  for (let i = 1; i < out.length; i++) out[i] = Math.max(out[i], out[i - 1] + gap);
+  for (let i = out.length - 2; i >= 0; i--) out[i] = Math.min(out[i], out[i + 1] - gap);
+  const res = new Array(ys.length).fill(0);
+  order.forEach(([, idx], k) => { res[idx] = out[k]; });
+  return res;
+}
+
+/** Log-log regression trend value (USD) on a given ISO date. */
+export function regressionPrice(
+  reg: { a: number; b: number; genesis: string }, iso: string, offsetLog10 = 0,
+): number {
+  const days = (Date.parse(`${iso}T00:00:00Z`) - Date.parse(`${reg.genesis}T00:00:00Z`)) / 86_400_000;
+  return 10 ** (reg.a + reg.b * Math.log10(Math.max(1, days)) + offsetLog10);
+}

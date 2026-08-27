@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-27T17:55:59.611Z",
-  "btcPrice": 80534,
+  "generatedAt": "2026-08-27T18:05:01.379Z",
+  "btcPrice": 80379,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -11,7 +11,7 @@
       "change30d": 20,
       "rawValue": 0.8592,
       "asOfDate": "2026-08-26",
-      "fetchedAt": "2026-08-27T16:34:55.204Z",
+      "fetchedAt": "2026-08-27T18:04:59.012Z",
       "available": true,
       "side": "both"
     },
@@ -24,7 +24,7 @@
       "change30d": 24,
       "rawValue": 1.5013,
       "asOfDate": "2026-08-26",
-      "fetchedAt": "2026-08-27T16:34:55.739Z",
+      "fetchedAt": "2026-08-27T18:04:59.489Z",
       "available": true,
       "side": "both"
     },
@@ -37,7 +37,7 @@
       "change30d": 24,
       "rawValue": 0.3339,
       "asOfDate": "2026-08-26",
-      "fetchedAt": "2026-08-27T16:34:56.287Z",
+      "fetchedAt": "2026-08-27T18:04:59.969Z",
       "available": true,
       "side": "both"
     },
@@ -50,7 +50,7 @@
       "change30d": 53,
       "rawValue": 1.0126,
       "asOfDate": "2026-08-26",
-      "fetchedAt": "2026-08-27T16:34:56.825Z",
+      "fetchedAt": "2026-08-27T18:05:00.449Z",
       "available": true,
       "side": "both"
     },
@@ -63,7 +63,7 @@
       "change30d": 21,
       "rawValue": 0.0006,
       "asOfDate": "2026-08-26",
-      "fetchedAt": "2026-08-27T16:34:57.478Z",
+      "fetchedAt": "2026-08-27T18:05:00.926Z",
       "available": true,
       "side": "both"
     },
@@ -102,7 +102,7 @@
       "change30d": 29,
       "rawValue": 1.001,
       "asOfDate": "2026-08-26",
-      "fetchedAt": "2026-08-27T16:34:53.357Z",
+      "fetchedAt": "2026-08-27T18:04:57.534Z",
       "available": true,
       "side": "both"
     },
@@ -115,7 +115,7 @@
       "change30d": 16,
       "rawValue": 1263.834,
       "asOfDate": "2026-08-26",
-      "fetchedAt": "2026-08-27T16:34:54.016Z",
+      "fetchedAt": "2026-08-27T18:04:58.054Z",
       "available": true,
       "side": "both"
     },
@@ -128,7 +128,7 @@
       "change30d": 24,
       "rawValue": 1.0034,
       "asOfDate": "2026-08-26",
-      "fetchedAt": "2026-08-27T16:34:54.665Z",
+      "fetchedAt": "2026-08-27T18:04:58.530Z",
       "available": true,
       "side": "bottom"
     },
@@ -139,9 +139,9 @@
       "phase": "Neutral",
       "score": 42,
       "change30d": 26,
-      "rawValue": 1.5038,
+      "rawValue": 1.5036,
       "asOfDate": "2026-08-26",
-      "fetchedAt": "2026-08-27T17:16:01.922Z",
+      "fetchedAt": "2026-08-27T18:04:56.543Z",
       "available": true,
       "side": "both"
     },
@@ -152,9 +152,9 @@
       "phase": "Neutral",
       "score": 43,
       "change30d": 26,
-      "rawValue": 2.7646,
+      "rawValue": 2.7643,
       "asOfDate": "2026-08-26",
-      "fetchedAt": "2026-08-27T17:16:02.694Z",
+      "fetchedAt": "2026-08-27T18:04:57.050Z",
       "available": true,
       "side": "both"
     },
@@ -163,11 +163,11 @@
       "name": "Mayer Multiple",
       "blurb": "Price vs its 200-day average. Readings near 0.5 marked deep bottoms; above ~2.4 marked overheated tops.",
       "phase": "Bullish",
-      "score": 62,
-      "change30d": 35,
-      "rawValue": 1.1628,
+      "score": 66,
+      "change30d": 34,
+      "rawValue": 1.1605,
       "asOfDate": "2026-08-27",
-      "fetchedAt": "2026-08-27T17:55:59.605Z",
+      "fetchedAt": "2026-08-27T18:05:01.363Z",
       "available": true,
       "side": "both"
     },
@@ -176,11 +176,11 @@
       "name": "200-Week MA Ratio",
       "blurb": "Price vs its 200-week average — the line macro bottoms touch; multiples of ~3+ accompanied past tops.",
       "phase": "Bearish",
-      "score": 24,
-      "change30d": 16,
-      "rawValue": 1.2507,
+      "score": 36,
+      "change30d": 17,
+      "rawValue": 1.2484,
       "asOfDate": "2026-08-27",
-      "fetchedAt": "2026-08-27T17:55:59.607Z",
+      "fetchedAt": "2026-08-27T18:05:01.365Z",
       "available": true,
       "side": "both"
     },
@@ -189,11 +189,11 @@
       "name": "Pi Cycle Bottom",
       "blurb": "150-day EMA vs 0.745× the 471-day average. Ratios near/below 1 have pinned cycle lows; says nothing about tops.",
       "phase": "Bottom",
-      "score": 15,
+      "score": 17,
       "change30d": 1,
-      "rawValue": 1.0502,
+      "rawValue": 1.0503,
       "asOfDate": "2026-08-27",
-      "fetchedAt": "2026-08-27T17:55:59.610Z",
+      "fetchedAt": "2026-08-27T18:05:01.374Z",
       "available": true,
       "side": "bottom"
     },
@@ -202,11 +202,11 @@
       "name": "Pi Cycle Top",
       "blurb": "111-day MA vs 2× the 350-day MA. The upward cross of 1 called the 2013, 2017 and 2021 tops within days.",
       "phase": "Bearish",
-      "score": 20,
-      "change30d": 2,
-      "rawValue": 0.4134,
+      "score": 23,
+      "change30d": 1,
+      "rawValue": 0.4135,
       "asOfDate": "2026-08-27",
-      "fetchedAt": "2026-08-27T17:55:59.611Z",
+      "fetchedAt": "2026-08-27T18:05:01.379Z",
       "available": true,
       "side": "top"
     }

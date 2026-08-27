@@ -97,17 +97,68 @@ export interface CycleSeries {
   endDay: number;
   /** false for the in-progress cycle. */
   endedAtNextLow: boolean;
-  /** price ÷ lowPrice, index = days since the low. */
+  peakMultiple: number;
+  endMultiple: number;
+  /** Sampling step in days: roi[i] is day i*step (last entry = endDay). */
+  step: number;
   roi: number[];
 }
 
-/** [weekEnd ISO date, close, sma20w, ema21w, sma200w] — nulls before warm-up. */
-export type BandRow = [string, number, number | null, number | null, number | null];
+/** [weekEnd, close, sma20w, ema21w, sma200w, sma2y] — nulls before warm-up. */
+export type BandRow = [string, number, number | null, number | null, number | null, number | null];
 
 export interface CyclesSnapshot {
   generatedAt: string;
   asOfDate: string;
   sources: string[];
   cycles: CycleSeries[];
+  halvings: HalvingEpoch[];
+  bears: BearMarket[];
   bands: { columns: string[]; rows: BandRow[] };
+  regression: Regression;
+  /** year → 12 monthly % returns (null = no data yet). */
+  monthlyReturns: Record<string, (number | null)[]>;
+  daily: DailySeries;
+}
+
+export interface HalvingEpoch {
+  label: string;
+  date: string;
+  price: number;
+  peakDay: number;
+  peakMultiple: number;
+  endDay: number;
+  ended: boolean;
+  /** price ÷ halving price on days 0, 2, 4, … and endDay. */
+  roi: number[];
+}
+
+export interface BearMarket {
+  peakDate: string;
+  peakPrice: number;
+  lowDate: string | null;
+  lowPrice: number;
+  /** Fractional drawdown from peak to low (or to date), e.g. -0.77. */
+  drawdown: number;
+  days: number;
+  ended: boolean;
+}
+
+export interface Regression {
+  a: number;
+  b: number;
+  bands: { floor: number; low: number; mid: number; high: number; ceiling: number };
+  fittedThrough: string;
+  genesis: string;
+}
+
+export interface DailySeries {
+  start: string;
+  step: number;
+  closes: number[];
+}
+
+export interface ScoreHistory {
+  generatedAt: string;
+  metrics: Record<string, { side: Side; history: [string, number][] }>;
 }

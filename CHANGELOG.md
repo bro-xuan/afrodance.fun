@@ -3,6 +3,34 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.3.2.0] - 2026-08-27
+
+### Added
+- **Six more cycle charts on the BTC bottom/top indicator**, after a sweep of
+  Into The Cryptoverse, LookIntoBitcoin, Bitbo and Checkonchain for the charts
+  that actually speak to "where are we in the cycle":
+  - **Drawdown from ATH** with each bear-market floor labelled (−80% / −83% /
+    −77%) and stat tiles: drawdown, days since ATH, average past-bear length
+    and floor.
+  - **Price color-coded by cycle score** — the page's own 0–100 score painted
+    onto weekly price history (Cowen's "risk" view). Backed by a new
+    `data/score-history.json` of per-signal weekly scores that the daily job
+    fills in as it rotates through the registry.
+  - **Logarithmic regression bands** — log-log OLS trend since genesis with
+    0.5 / 10 / 90 / 99.5 % residual bands (fit parameters shown under the chart).
+  - **2-year MA multiplier (Investor Tool)** — 2-year MA and 5× it.
+  - **Monthly returns heatmap** with per-month average and hit-rate rows
+    (seasonality).
+  - **ROI after halving** as a third view on the cycle overlay, plus a
+    halving table.
+- All charts now live behind one client boundary (`CycleCharts`) so the
+  weekly data crosses the server→client boundary once.
+
+### Changed
+- `cycles.json` gained halving epochs, bear-market table, regression fit,
+  monthly returns, a 2-day-sampled daily series and the 2-year MA column; cycle
+  ROI series are now sampled every 2nd day (half the payload, same picture).
+
 ## [0.3.1.0] - 2026-08-27
 
 ### Added

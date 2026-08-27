@@ -58,7 +58,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/app/bottom_indicator/data/indicators.json src/app/bottom_indicator/data/cycles.json
+          git add src/app/bottom_indicator/data/indicators.json src/app/bottom_indicator/data/cycles.json src/app/bottom_indicator/data/score-history.json
           # -I: a run that only bumped timestamps (no new data) is not worth
           # a commit + production deploy.
           if git diff --cached --quiet -I '"generatedAt":' -I '"fetchedAt":'; then
