@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-28T19:06:27.425Z",
-  "btcPrice": 77567,
+  "generatedAt": "2026-08-29T11:42:10.354Z",
+  "btcPrice": 77697,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -164,10 +164,10 @@
       "blurb": "Price vs its 200-day average. Readings near 0.5 marked deep bottoms; above ~2.4 marked overheated tops.",
       "phase": "Neutral",
       "score": 56,
-      "change30d": 29,
-      "rawValue": 1.1193,
-      "asOfDate": "2026-08-28",
-      "fetchedAt": "2026-08-28T19:06:27.418Z",
+      "change30d": 27,
+      "rawValue": 1.1205,
+      "asOfDate": "2026-08-29",
+      "fetchedAt": "2026-08-29T11:42:10.347Z",
       "available": true,
       "side": "both"
     },
@@ -177,10 +177,10 @@
       "blurb": "Price vs its 200-week average — the line macro bottoms touch; multiples of ~3+ accompanied past tops.",
       "phase": "Bearish",
       "score": 21,
-      "change30d": 12,
-      "rawValue": 1.2038,
-      "asOfDate": "2026-08-28",
-      "fetchedAt": "2026-08-28T19:06:27.420Z",
+      "change30d": 11,
+      "rawValue": 1.2051,
+      "asOfDate": "2026-08-29",
+      "fetchedAt": "2026-08-29T11:42:10.349Z",
       "available": true,
       "side": "both"
     },
@@ -191,9 +191,9 @@
       "phase": "Bottom",
       "score": 15,
       "change30d": 1,
-      "rawValue": 1.0523,
-      "asOfDate": "2026-08-28",
-      "fetchedAt": "2026-08-28T19:06:27.422Z",
+      "rawValue": 1.0546,
+      "asOfDate": "2026-08-29",
+      "fetchedAt": "2026-08-29T11:42:10.352Z",
       "available": true,
       "side": "bottom"
     },
@@ -204,9 +204,9 @@
       "phase": "Bearish",
       "score": 20,
       "change30d": 2,
-      "rawValue": 0.4138,
-      "asOfDate": "2026-08-28",
-      "fetchedAt": "2026-08-28T19:06:27.425Z",
+      "rawValue": 0.4141,
+      "asOfDate": "2026-08-29",
+      "fetchedAt": "2026-08-29T11:42:10.354Z",
       "available": true,
       "side": "top"
     }
