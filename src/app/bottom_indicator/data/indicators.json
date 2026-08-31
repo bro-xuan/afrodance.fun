@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-31T11:40:43.671Z",
-  "btcPrice": 77817,
+  "generatedAt": "2026-08-31T14:30:14.721Z",
+  "btcPrice": 78030,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -45,12 +45,12 @@
       "slug": "sopr",
       "name": "SOPR",
       "blurb": "Spent-output profit ratio. Sustained sub-1 = coins selling at a loss; persistently rich = heavy profit-taking near tops.",
-      "phase": "Bearish",
-      "score": 34,
-      "change30d": 4,
-      "rawValue": 1,
-      "asOfDate": "2026-08-29",
-      "fetchedAt": "2026-08-30T12:20:18.047Z",
+      "phase": "Neutral",
+      "score": 45,
+      "change30d": 31,
+      "rawValue": 1.0029,
+      "asOfDate": "2026-08-30",
+      "fetchedAt": "2026-08-31T14:30:13.617Z",
       "available": true,
       "side": "both"
     },
@@ -60,10 +60,10 @@
       "blurb": "Long-term-holder conviction vs price. Lows flag attractive risk/reward; highs flag late-cycle complacency.",
       "phase": "Bearish",
       "score": 28,
-      "change30d": 18,
+      "change30d": 22,
       "rawValue": 0.0006,
-      "asOfDate": "2026-08-29",
-      "fetchedAt": "2026-08-30T12:20:18.814Z",
+      "asOfDate": "2026-08-30",
+      "fetchedAt": "2026-08-31T14:30:14.313Z",
       "available": true,
       "side": "both"
     },
@@ -163,11 +163,11 @@
       "name": "Mayer Multiple",
       "blurb": "Price vs its 200-day average. Readings near 0.5 marked deep bottoms; above ~2.4 marked overheated tops.",
       "phase": "Neutral",
-      "score": 56,
-      "change30d": 30,
-      "rawValue": 1.1204,
+      "score": 57,
+      "change30d": 31,
+      "rawValue": 1.1234,
       "asOfDate": "2026-08-31",
-      "fetchedAt": "2026-08-31T11:40:43.665Z",
+      "fetchedAt": "2026-08-31T14:30:14.715Z",
       "available": true,
       "side": "both"
     },
@@ -178,9 +178,9 @@
       "phase": "Bearish",
       "score": 21,
       "change30d": 15,
-      "rawValue": 1.2054,
+      "rawValue": 1.2087,
       "asOfDate": "2026-08-31",
-      "fetchedAt": "2026-08-31T11:40:43.667Z",
+      "fetchedAt": "2026-08-31T14:30:14.716Z",
       "available": true,
       "side": "both"
     },
@@ -193,7 +193,7 @@
       "change30d": 2,
       "rawValue": 1.059,
       "asOfDate": "2026-08-31",
-      "fetchedAt": "2026-08-31T11:40:43.669Z",
+      "fetchedAt": "2026-08-31T14:30:14.719Z",
       "available": true,
       "side": "bottom"
     },
@@ -206,7 +206,7 @@
       "change30d": 2,
       "rawValue": 0.4149,
       "asOfDate": "2026-08-31",
-      "fetchedAt": "2026-08-31T11:40:43.670Z",
+      "fetchedAt": "2026-08-31T14:30:14.721Z",
       "available": true,
       "side": "top"
     }
