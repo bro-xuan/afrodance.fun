@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-05T09:10:08.895Z",
-  "btcPrice": 79704,
+  "generatedAt": "2026-09-05T10:57:58.207Z",
+  "btcPrice": 79622,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -45,12 +45,12 @@
       "slug": "sopr",
       "name": "SOPR",
       "blurb": "Spent-output profit ratio. Sustained sub-1 = coins selling at a loss; persistently rich = heavy profit-taking near tops.",
-      "phase": "Bullish",
-      "score": 63,
-      "change30d": 41,
-      "rawValue": 1.0082,
-      "asOfDate": "2026-09-03",
-      "fetchedAt": "2026-09-04T11:48:11.101Z",
+      "phase": "Neutral",
+      "score": 49,
+      "change30d": 32,
+      "rawValue": 1.004,
+      "asOfDate": "2026-09-04",
+      "fetchedAt": "2026-09-05T10:57:57.067Z",
       "available": true,
       "side": "both"
     },
@@ -59,11 +59,11 @@
       "name": "Reserve Risk",
       "blurb": "Long-term-holder conviction vs price. Lows flag attractive risk/reward; highs flag late-cycle complacency.",
       "phase": "Bearish",
-      "score": 31,
-      "change30d": 24,
+      "score": 30,
+      "change30d": 21,
       "rawValue": 0.0006,
-      "asOfDate": "2026-09-03",
-      "fetchedAt": "2026-09-04T11:48:11.863Z",
+      "asOfDate": "2026-09-04",
+      "fetchedAt": "2026-09-05T10:57:57.799Z",
       "available": true,
       "side": "both"
     },
@@ -165,9 +165,9 @@
       "phase": "Bullish",
       "score": 60,
       "change30d": 30,
-      "rawValue": 1.1433,
+      "rawValue": 1.1421,
       "asOfDate": "2026-09-05",
-      "fetchedAt": "2026-09-05T09:10:08.890Z",
+      "fetchedAt": "2026-09-05T10:57:58.202Z",
       "available": true,
       "side": "both"
     },
@@ -178,9 +178,9 @@
       "phase": "Bearish",
       "score": 23,
       "change30d": 14,
-      "rawValue": 1.2307,
+      "rawValue": 1.2294,
       "asOfDate": "2026-09-05",
-      "fetchedAt": "2026-09-05T09:10:08.891Z",
+      "fetchedAt": "2026-09-05T10:57:58.203Z",
       "available": true,
       "side": "both"
     },
@@ -193,7 +193,7 @@
       "change30d": 4,
       "rawValue": 1.0714,
       "asOfDate": "2026-09-05",
-      "fetchedAt": "2026-09-05T09:10:08.894Z",
+      "fetchedAt": "2026-09-05T10:57:58.205Z",
       "available": true,
       "side": "bottom"
     },
@@ -206,7 +206,7 @@
       "change30d": 2,
       "rawValue": 0.4177,
       "asOfDate": "2026-09-05",
-      "fetchedAt": "2026-09-05T09:10:08.895Z",
+      "fetchedAt": "2026-09-05T10:57:58.207Z",
       "available": true,
       "side": "top"
     }
