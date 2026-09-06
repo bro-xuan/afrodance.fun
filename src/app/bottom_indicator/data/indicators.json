@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-06T09:31:26.989Z",
-  "btcPrice": 79981,
+  "generatedAt": "2026-09-06T11:23:31.099Z",
+  "btcPrice": 79922,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -46,11 +46,11 @@
       "name": "SOPR",
       "blurb": "Spent-output profit ratio. Sustained sub-1 = coins selling at a loss; persistently rich = heavy profit-taking near tops.",
       "phase": "Neutral",
-      "score": 49,
-      "change30d": 32,
-      "rawValue": 1.004,
-      "asOfDate": "2026-09-04",
-      "fetchedAt": "2026-09-05T10:57:57.067Z",
+      "score": 59,
+      "change30d": 20,
+      "rawValue": 1.0069,
+      "asOfDate": "2026-09-05",
+      "fetchedAt": "2026-09-06T11:23:30.039Z",
       "available": true,
       "side": "both"
     },
@@ -60,10 +60,10 @@
       "blurb": "Long-term-holder conviction vs price. Lows flag attractive risk/reward; highs flag late-cycle complacency.",
       "phase": "Bearish",
       "score": 30,
-      "change30d": 21,
+      "change30d": 22,
       "rawValue": 0.0006,
-      "asOfDate": "2026-09-04",
-      "fetchedAt": "2026-09-05T10:57:57.799Z",
+      "asOfDate": "2026-09-05",
+      "fetchedAt": "2026-09-06T11:23:30.690Z",
       "available": true,
       "side": "both"
     },
@@ -165,9 +165,9 @@
       "phase": "Bullish",
       "score": 60,
       "change30d": 30,
-      "rawValue": 1.1461,
+      "rawValue": 1.1453,
       "asOfDate": "2026-09-06",
-      "fetchedAt": "2026-09-06T09:31:26.984Z",
+      "fetchedAt": "2026-09-06T11:23:31.093Z",
       "available": true,
       "side": "both"
     },
@@ -178,9 +178,9 @@
       "phase": "Bearish",
       "score": 24,
       "change30d": 14,
-      "rawValue": 1.2342,
+      "rawValue": 1.2332,
       "asOfDate": "2026-09-06",
-      "fetchedAt": "2026-09-06T09:31:26.986Z",
+      "fetchedAt": "2026-09-06T11:23:31.095Z",
       "available": true,
       "side": "both"
     },
@@ -193,7 +193,7 @@
       "change30d": 4,
       "rawValue": 1.0739,
       "asOfDate": "2026-09-06",
-      "fetchedAt": "2026-09-06T09:31:26.987Z",
+      "fetchedAt": "2026-09-06T11:23:31.097Z",
       "available": true,
       "side": "bottom"
     },
@@ -206,7 +206,7 @@
       "change30d": 2,
       "rawValue": 0.4184,
       "asOfDate": "2026-09-06",
-      "fetchedAt": "2026-09-06T09:31:26.989Z",
+      "fetchedAt": "2026-09-06T11:23:31.099Z",
       "available": true,
       "side": "top"
     }
