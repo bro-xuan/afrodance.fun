@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-10T09:52:02.373Z",
-  "btcPrice": 77966,
+  "generatedAt": "2026-09-10T11:53:41.243Z",
+  "btcPrice": 77895,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -11,7 +11,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-09-10T09:52:01.926Z",
+      "fetchedAt": "2026-09-10T11:53:41.102Z",
       "available": false,
       "side": "both"
     },
@@ -45,26 +45,26 @@
       "slug": "sopr",
       "name": "SOPR",
       "blurb": "Spent-output profit ratio. Sustained sub-1 = coins selling at a loss; persistently rich = heavy profit-taking near tops.",
-      "phase": "Neutral",
-      "score": 42,
-      "change30d": 20,
-      "rawValue": 1.0022,
-      "asOfDate": "2026-09-08",
-      "fetchedAt": "2026-09-09T11:59:48.527Z",
-      "available": true,
+      "phase": null,
+      "score": null,
+      "change30d": null,
+      "rawValue": null,
+      "asOfDate": null,
+      "fetchedAt": "2026-09-10T11:53:39.655Z",
+      "available": false,
       "side": "both"
     },
     {
       "slug": "reserve-risk",
       "name": "Reserve Risk",
       "blurb": "Long-term-holder conviction vs price. Lows flag attractive risk/reward; highs flag late-cycle complacency.",
-      "phase": "Bearish",
-      "score": 27,
-      "change30d": 18,
-      "rawValue": 0.0006,
-      "asOfDate": "2026-09-08",
-      "fetchedAt": "2026-09-09T11:59:49.285Z",
-      "available": true,
+      "phase": null,
+      "score": null,
+      "change30d": null,
+      "rawValue": null,
+      "asOfDate": null,
+      "fetchedAt": "2026-09-10T11:53:40.043Z",
+      "available": false,
       "side": "both"
     },
     {
@@ -76,7 +76,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-09-10T09:52:00.553Z",
+      "fetchedAt": "2026-09-10T11:53:40.176Z",
       "available": false,
       "side": "both"
     },
@@ -89,7 +89,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-09-10T09:52:01.039Z",
+      "fetchedAt": "2026-09-10T11:53:40.306Z",
       "available": false,
       "side": "both"
     },
@@ -102,7 +102,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-09-10T09:52:01.482Z",
+      "fetchedAt": "2026-09-10T11:53:40.706Z",
       "available": false,
       "side": "both"
     },
@@ -115,7 +115,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-09-10T09:52:01.631Z",
+      "fetchedAt": "2026-09-10T11:53:40.836Z",
       "available": false,
       "side": "both"
     },
@@ -128,7 +128,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-09-10T09:52:01.779Z",
+      "fetchedAt": "2026-09-10T11:53:40.971Z",
       "available": false,
       "side": "bottom"
     },
@@ -141,7 +141,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-09-10T09:52:01.186Z",
+      "fetchedAt": "2026-09-10T11:53:40.442Z",
       "available": false,
       "side": "both"
     },
@@ -154,7 +154,7 @@
       "change30d": null,
       "rawValue": null,
       "asOfDate": null,
-      "fetchedAt": "2026-09-10T09:52:01.334Z",
+      "fetchedAt": "2026-09-10T11:53:40.573Z",
       "available": false,
       "side": "both"
     },
@@ -163,11 +163,11 @@
       "name": "Mayer Multiple",
       "blurb": "Price vs its 200-day average. Readings near 0.5 marked deep bottoms; above ~2.4 marked overheated tops.",
       "phase": "Neutral",
-      "score": 55,
-      "change30d": 26,
-      "rawValue": 1.1138,
+      "score": 54,
+      "change30d": 25,
+      "rawValue": 1.1127,
       "asOfDate": "2026-09-10",
-      "fetchedAt": "2026-09-10T09:52:02.369Z",
+      "fetchedAt": "2026-09-10T11:53:41.236Z",
       "available": true,
       "side": "both"
     },
@@ -178,9 +178,9 @@
       "phase": "Bearish",
       "score": 20,
       "change30d": 13,
-      "rawValue": 1.1999,
+      "rawValue": 1.1988,
       "asOfDate": "2026-09-10",
-      "fetchedAt": "2026-09-10T09:52:02.371Z",
+      "fetchedAt": "2026-09-10T11:53:41.239Z",
       "available": true,
       "side": "both"
     },
@@ -193,7 +193,7 @@
       "change30d": 4,
       "rawValue": 1.083,
       "asOfDate": "2026-09-10",
-      "fetchedAt": "2026-09-10T09:52:02.372Z",
+      "fetchedAt": "2026-09-10T11:53:41.241Z",
       "available": true,
       "side": "bottom"
     },
@@ -206,7 +206,7 @@
       "change30d": 2,
       "rawValue": 0.4207,
       "asOfDate": "2026-09-10",
-      "fetchedAt": "2026-09-10T09:52:02.373Z",
+      "fetchedAt": "2026-09-10T11:53:41.242Z",
       "available": true,
       "side": "top"
     }
