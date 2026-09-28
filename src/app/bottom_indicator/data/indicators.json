@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-28T11:48:37.756Z",
-  "btcPrice": 83109,
+  "generatedAt": "2026-09-28T14:36:25.751Z",
+  "btcPrice": 83400,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -8,10 +8,10 @@
       "blurb": "Market cap vs realized cap in standard deviations. Deep lows marked historic bottoms; extremes above ~7 marked every major top.",
       "phase": "Neutral",
       "score": 43,
-      "change30d": 7,
-      "rawValue": 0.9372,
-      "asOfDate": "2026-09-20",
-      "fetchedAt": "2026-09-27T12:32:22.690Z",
+      "change30d": 2,
+      "rawValue": 0.9336,
+      "asOfDate": "2026-09-21",
+      "fetchedAt": "2026-09-28T14:36:25.342Z",
       "available": true,
       "side": "both"
     },
@@ -123,12 +123,12 @@
       "slug": "hashrate",
       "name": "Hash Ribbons",
       "blurb": "30-day vs 60-day hashrate momentum. Dips below 1 mark miner-capitulation bottoms; says nothing about tops.",
-      "phase": "Neutral",
-      "score": 56,
-      "change30d": 20,
-      "rawValue": 1.0188,
-      "asOfDate": "2026-09-26",
-      "fetchedAt": "2026-09-27T12:32:22.034Z",
+      "phase": "Bullish",
+      "score": 65,
+      "change30d": 32,
+      "rawValue": 1.0235,
+      "asOfDate": "2026-09-27",
+      "fetchedAt": "2026-09-28T14:36:24.606Z",
       "available": true,
       "side": "bottom"
     },
@@ -163,11 +163,11 @@
       "name": "Mayer Multiple",
       "blurb": "Price vs its 200-day average. Readings near 0.5 marked deep bottoms; above ~2.4 marked overheated tops.",
       "phase": "Bullish",
-      "score": 63,
-      "change30d": 6,
-      "rawValue": 1.1677,
+      "score": 64,
+      "change30d": 7,
+      "rawValue": 1.1718,
       "asOfDate": "2026-09-28",
-      "fetchedAt": "2026-09-28T11:48:37.752Z",
+      "fetchedAt": "2026-09-28T14:36:25.744Z",
       "available": true,
       "side": "both"
     },
@@ -178,9 +178,9 @@
       "phase": "Bearish",
       "score": 27,
       "change30d": 5,
-      "rawValue": 1.2629,
+      "rawValue": 1.2673,
       "asOfDate": "2026-09-28",
-      "fetchedAt": "2026-09-28T11:48:37.753Z",
+      "fetchedAt": "2026-09-28T14:36:25.746Z",
       "available": true,
       "side": "both"
     },
@@ -193,7 +193,7 @@
       "change30d": 7,
       "rawValue": 1.1271,
       "asOfDate": "2026-09-28",
-      "fetchedAt": "2026-09-28T11:48:37.755Z",
+      "fetchedAt": "2026-09-28T14:36:25.749Z",
       "available": true,
       "side": "bottom"
     },
@@ -206,7 +206,7 @@
       "change30d": 4,
       "rawValue": 0.4425,
       "asOfDate": "2026-09-28",
-      "fetchedAt": "2026-09-28T11:48:37.756Z",
+      "fetchedAt": "2026-09-28T14:36:25.750Z",
       "available": true,
       "side": "top"
     }
