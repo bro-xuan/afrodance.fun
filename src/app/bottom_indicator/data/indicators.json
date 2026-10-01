@@ -1,17 +1,17 @@
 {
-  "generatedAt": "2026-10-01T11:41:30.616Z",
-  "btcPrice": 83903,
+  "generatedAt": "2026-10-01T13:58:21.768Z",
+  "btcPrice": 83867,
   "rows": [
     {
       "slug": "mvrv-zscore",
       "name": "MVRV Z-Score",
       "blurb": "Market cap vs realized cap in standard deviations. Deep lows marked historic bottoms; extremes above ~7 marked every major top.",
       "phase": "Neutral",
-      "score": 45,
-      "change30d": 5,
-      "rawValue": 1.0948,
-      "asOfDate": "2026-09-23",
-      "fetchedAt": "2026-09-30T13:07:13.428Z",
+      "score": 44,
+      "change30d": 3,
+      "rawValue": 1.0328,
+      "asOfDate": "2026-09-24",
+      "fetchedAt": "2026-10-01T13:58:21.357Z",
       "available": true,
       "side": "both"
     },
@@ -124,11 +124,11 @@
       "name": "Hash Ribbons",
       "blurb": "30-day vs 60-day hashrate momentum. Dips below 1 mark miner-capitulation bottoms; says nothing about tops.",
       "phase": "Bullish",
-      "score": 70,
-      "change30d": 39,
-      "rawValue": 1.0273,
-      "asOfDate": "2026-09-29",
-      "fetchedAt": "2026-09-30T13:07:12.663Z",
+      "score": 69,
+      "change30d": 42,
+      "rawValue": 1.0267,
+      "asOfDate": "2026-09-30",
+      "fetchedAt": "2026-10-01T13:58:20.697Z",
       "available": true,
       "side": "bottom"
     },
@@ -165,9 +165,9 @@
       "phase": "Bullish",
       "score": 64,
       "change30d": 9,
-      "rawValue": 1.1759,
+      "rawValue": 1.1754,
       "asOfDate": "2026-10-01",
-      "fetchedAt": "2026-10-01T11:41:30.610Z",
+      "fetchedAt": "2026-10-01T13:58:21.760Z",
       "available": true,
       "side": "both"
     },
@@ -178,9 +178,9 @@
       "phase": "Bearish",
       "score": 28,
       "change30d": 8,
-      "rawValue": 1.2722,
+      "rawValue": 1.2716,
       "asOfDate": "2026-10-01",
-      "fetchedAt": "2026-10-01T11:41:30.611Z",
+      "fetchedAt": "2026-10-01T13:58:21.763Z",
       "available": true,
       "side": "both"
     },
@@ -193,7 +193,7 @@
       "change30d": 7,
       "rawValue": 1.1351,
       "asOfDate": "2026-10-01",
-      "fetchedAt": "2026-10-01T11:41:30.613Z",
+      "fetchedAt": "2026-10-01T13:58:21.765Z",
       "available": true,
       "side": "bottom"
     },
@@ -206,7 +206,7 @@
       "change30d": 4,
       "rawValue": 0.4475,
       "asOfDate": "2026-10-01",
-      "fetchedAt": "2026-10-01T11:41:30.616Z",
+      "fetchedAt": "2026-10-01T13:58:21.767Z",
       "available": true,
       "side": "top"
     }
