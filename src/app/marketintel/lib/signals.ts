@@ -22,6 +22,14 @@ export const HORIZONS: { key: Horizon; label: string; span: string }[] = [
   { key: "macro", label: "Macro", span: "1 to 3 months" },
 ];
 export type Weights = Partial<Record<Horizon, number>>;
+
+/** |net| below this, the pulse says "no edge"; at or above it, it's a call (and gets graded). */
+export const NO_EDGE = 8;
+/**
+ * Bump whenever reads, weights or thresholds change, so the track record
+ * never grades two different scoring models as one.
+ */
+export const MODEL = 2;
 export type Signal = {
   key: string;
   label: string;
@@ -132,29 +140,30 @@ export function buildSignals({ d, l, e, p, m, v, px, now = Date.now() }: PulseIn
   const closed = px?.daily.filter((c) => c.t < Math.floor(now / 86_400_000) * 86_400_000) ?? [];
   const ma50 = sma(closed, 50);
   const ma200 = sma(closed, 200);
-  if (spot && ma50 && closed.length > 31) {
-    const d50 = spot / ma50 - 1;
-    const d200 = ma200 ? spot / ma200 - 1 : null;
-    const cross = ma200 ? ma50 / ma200 - 1 : null;
+  // Needs the full 200 days: a shorter feed would silently switch formulas
+  // and make the logged score jump with no change in the market.
+  // Spot close from the same feed as the averages, so a derivatives outage
+  // doesn't take the trend read down with it.
+  const close = px?.daily.at(-1)?.c ?? null;
+  if (close && ma50 && ma200) {
+    const d200 = close / ma200 - 1;
+    const cross = ma50 / ma200 - 1;
     // 20-day return in σ units of daily vol, so a quiet grind and a volatile
     // spike of the same size don't score the same.
     const rv = realizedVol(closed, 30);
-    const r20 = Math.log(spot / closed.at(-20)!.c);
+    const r20 = Math.log(close / closed.at(-20)!.c);
     const z = rv ? r20 / ((rv / 100) * Math.sqrt(20 / 365)) : 0;
-    const parts = d200 !== null && cross !== null
-      ? 0.4 * clamp(d200 / 0.1) + 0.3 * clamp(cross / 0.05) + 0.3 * clamp(z / 2)
-      : 0.6 * clamp(d50 / 0.08) + 0.4 * clamp(z / 2);
-    const above200 = d200 !== null ? d200 >= 0 : null;
-    const golden = cross !== null ? cross >= 0 : null;
+    const parts = 0.4 * clamp(d200 / 0.1) + 0.3 * clamp(cross / 0.05) + 0.3 * clamp(z / 2);
+    const above200 = d200 >= 0;
+    const golden = cross >= 0;
     out.push({
       key: "trend",
       label: "Trend, daily",
       kind: "Trend",
       contrarian: false,
-      value: d200 !== null ? `${pct(d200 * 100, 1)} vs 200D` : `${pct(d50 * 100, 1)} vs 50D`,
+      value: `${pct(d200 * 100, 1)} vs 200D`,
       read: `${
-        above200 === null ? `${d50 >= 0 ? "Above" : "Below"} the 50D (${price(ma50)})`
-        : above200 && golden ? "Above the 200D, 50D over 200D: uptrend, dips get bought"
+        above200 && golden ? "Above the 200D, 50D over 200D: uptrend, dips get bought"
         : !above200 && !golden ? "Below the 200D, 50D under 200D: downtrend, rallies get sold"
         : above200 ? "Back above the 200D but 50D still under it: recovery, unconfirmed"
         : "Lost the 200D with 50D still over it: trend breaking down"
@@ -167,10 +176,11 @@ export function buildSignals({ d, l, e, p, m, v, px, now = Date.now() }: PulseIn
   // Intraday tape: where price sits against today's volume-weighted average,
   // and whether aggressive spot buyers or sellers are behind it.
   const day = px?.hourly.slice(-24) ?? [];
-  if (spot && day.length >= 12) {
-    const vol = day.reduce((s, c) => s + c.v, 0);
+  const vol = day.reduce((s, c) => s + c.v, 0);
+  if (day.length >= 12 && vol > 0) {
+    // Spot close vs spot VWAP: the perp price would bake the basis into it.
     const vwap = day.reduce((s, c) => s + ((c.h + c.l + c.c) / 3) * c.v, 0) / vol;
-    const dv = spot / vwap - 1;
+    const dv = day[day.length - 1].c / vwap - 1;
     const taker = day.reduce((s, c) => s + c.delta, 0) / vol; // net taker share, −1 … +1
     const hasDelta = day.some((c) => c.delta !== 0); // Bybit fallback has no taker split
     const flow = hasDelta ? clamp(dz(taker, 0.01) / 0.05) : 0;
@@ -475,7 +485,7 @@ export function composite(all: Signal[], h: Horizon) {
   const agree = bullW + bearW > 0 ? Math.max(bullW, bearW) / (bullW + bearW) : null;
   const a = Math.abs(net);
   const side = net > 0 ? "bullish" : "bearish";
-  const label = a < 8 ? "No edge, reads cancel out" : a < 20 ? `Mildly ${side}` : a < 40 ? `Moderately ${side}` : `Strongly ${side}`;
+  const label = a < NO_EDGE ? "No edge, reads cancel out" : a < 20 ? `Mildly ${side}` : a < 40 ? `Moderately ${side}` : `Strongly ${side}`;
   const drivers = signals
     .filter((x) => x.lean !== "neutral")
     .sort((a, b) => Math.abs(b.score * wt(b)) - Math.abs(a.score * wt(a)))

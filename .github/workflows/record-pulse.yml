@@ -26,4 +26,4 @@ jobs:
         run: |
           curl -fsS --retry 2 --retry-delay 20 --max-time 70 \
             "https://www.afrodance.fun/api/marketintel/pulse?record=1" \
-            | jq -c '{samples, recorded: (.recorded | if . then {t, px, h} else null end), sources}'
+            | jq -c '{reason, sample: (.sample | if . then {at, px, h, n} else null end)}'

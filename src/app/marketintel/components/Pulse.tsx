@@ -1,5 +1,5 @@
 import { C, price } from "../lib/format";
-import { composite, HORIZONS, type Horizon, type Signal, type volRegime } from "../lib/signals";
+import { composite, HORIZONS, NO_EDGE, type Horizon, type Signal, type volRegime } from "../lib/signals";
 import { LeanChip, Skeleton } from "./ui";
 
 type Regime = ReturnType<typeof volRegime>;
@@ -129,7 +129,7 @@ function Cell({ label, value, sub }: { label: string; value: string; sub?: strin
 type Comp = NonNullable<ReturnType<typeof composite>>;
 
 function HorizonRow({ label, span, c }: { label: string; span: string; c: Comp }) {
-  const color = c.net >= 8 ? C.longInk : c.net <= -8 ? C.shortInk : C.ink;
+  const color = c.net >= NO_EDGE ? C.longInk : c.net <= -NO_EDGE ? C.shortInk : C.ink;
   return (
     <div className="flex flex-col gap-2 border-t py-3" style={{ borderColor: C.line }}>
       <div className="flex items-baseline justify-between gap-3">
@@ -145,7 +145,7 @@ function HorizonRow({ label, span, c }: { label: string; span: string; c: Comp }
         </span>
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <span className="text-[0.95rem] font-medium">{c.label}</span>
-          <Meter score={c.net / 100} h={8} color={c.net >= 8 ? C.long : c.net <= -8 ? C.short : C.neutral} />
+          <Meter score={c.net / 100} h={8} color={c.net >= NO_EDGE ? C.long : c.net <= -NO_EDGE ? C.short : C.neutral} />
         </div>
       </div>
       <div className="text-[0.85rem] leading-snug" style={{ color: C.ink2 }}>

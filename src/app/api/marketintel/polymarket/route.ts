@@ -1,5 +1,6 @@
 import type { PolyKind, PolyMarket, PolymarketData, PolyRung } from "@/app/marketintel/lib/types";
 import { cachedJson, getJSON, num } from "../_lib/http";
+import { dropStale } from "../_lib/ladder";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -59,29 +60,6 @@ function quote(m: GMarket): { p: number; firm: boolean } | null {
 }
 
 const prob = (m: GMarket) => quote(m)?.p ?? null;
-
-/**
- * Odds must fall as the strike moves away from spot: P(above) and P(hit up)
- * drop as the strike rises, P(hit down) rises with it. A rung that breaks
- * that is a stale quote in a thin market (a $74K "above" at 53% under a $78K
- * at 94%), so drop it. Firm quotes from a tight book win over stale ones.
- */
-function dropStale(r: (PolyRung & { firm: boolean })[]): PolyRung[] {
-  const ordered = (a: PolyRung, b: PolyRung) => // a.strike < b.strike, same dir
-    a.dir === "down" ? a.p <= b.p + 0.02 : a.p + 0.02 >= b.p;
-  let xs = r;
-  for (let pass = 0; pass < r.length; pass++) {
-    const bad = xs.map((x) =>
-      xs.filter((y) => y !== x && y.dir === x.dir && !(x.strike < y.strike ? ordered(x, y) : ordered(y, x))).length,
-    );
-    const worst = Math.max(0, ...bad);
-    if (!worst) break;
-    // Drop the rung with the most conflicts, preferring stale over firm.
-    const i = bad.reduce((bi, n, j) => (n > bad[bi] || (n === bad[bi] && !xs[j].firm && xs[bi].firm) ? j : bi), bad.indexOf(worst));
-    xs = xs.filter((_, j) => j !== i);
-  }
-  return xs.map((x) => ({ strike: x.strike, dir: x.dir, p: x.p, question: x.question }));
-}
 
 const open = (e: GEvent) => (e.markets ?? []).filter((m) => !m.closed && m.active !== false);
 

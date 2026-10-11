@@ -24,10 +24,12 @@ export function TrackRecord({ hist, now }: { hist: PulseHistory | null; now: num
       footnote={
         <>
           Every hour the three scores are logged with BTC&apos;s price, then graded once their horizon has passed: intraday
-          against the next 24h, swing the next 7 days, macro the next 30 days. A call is a score of ±{CALL} or more; hit rate
-          is how often price then moved the called way. &quot;All hours&quot; is BTC&apos;s average move over the same window,
-          the drift a call has to beat. Hourly samples overlap, so the honest sample size is the number of separate windows:
-          below about 20, treat the numbers as anecdotes.
+          against the next 24h, swing the next 7 days, macro the next 30 days. A call is a score of ±{CALL} or more (anything
+          the pulse labels bullish or bearish); hit rate is how often price then moved the called way. &quot;Up anyway&quot; is
+          how often BTC rose over that window regardless, so it&apos;s the hit rate of always being long: a useful pulse beats
+          it. &quot;All hours&quot; is BTC&apos;s average move over the window. Graded over the last year, current scoring model
+          only. Hours with too few live reads are left out. Hourly samples overlap, so the honest sample size is the number
+          of separate windows: below about 20, treat the numbers as anecdotes.
         </>
       }
     >
@@ -45,10 +47,10 @@ function StatsTable({ stats, since, now }: { stats: PulseHistory["stats"]; since
   const ret = (x: number | null) => (x === null ? "n/a" : pct(x, 2));
   return (
     <div className="mt-4 overflow-x-auto">
-      <table className="w-full min-w-[40rem] text-[0.85rem]">
+      <table className="w-full min-w-[46rem] text-[0.85rem]">
         <thead>
           <tr className="text-left" style={{ color: C.muted }}>
-            {["Horizon", "Calls", "Hit rate", "After bullish", "After bearish", "All hours", "Windows"].map((h, i) => (
+            {["Horizon", "Calls", "Hit rate", "Up anyway", "After bullish", "After bearish", "All hours", "Windows"].map((h, i) => (
               <th key={h} className={`border-b pb-2 font-medium ${i ? "text-right" : ""}`} style={{ borderColor: C.line }}>{h}</th>
             ))}
           </tr>
@@ -65,7 +67,7 @@ function StatsTable({ stats, since, now }: { stats: PulseHistory["stats"]; since
                   <span style={{ color: C.muted }}>vs next {FORWARD_LABEL[key]}</span>
                 </td>
                 {s.graded === 0 ? (
-                  <td colSpan={6} className="py-2 text-right" style={{ color: C.muted }}>
+                  <td colSpan={7} className="py-2 text-right" style={{ color: C.muted }}>
                     {firstGrade === null ? "Waiting for the first snapshot" : firstGrade > now ? `First grade ${countdown(firstGrade, now)}` : "Not enough history yet"}
                   </td>
                 ) : (
@@ -73,6 +75,9 @@ function StatsTable({ stats, since, now }: { stats: PulseHistory["stats"]; since
                     <td className="mi-num py-2 text-right">{s.calls}</td>
                     <td className="mi-num py-2 text-right font-semibold" style={{ color: s.hitRate === null ? C.ink : s.hitRate >= 0.55 ? C.longInk : s.hitRate < 0.45 ? C.shortInk : C.ink }}>
                       {s.hitRate === null ? "n/a" : `${(s.hitRate * 100).toFixed(0)}%`}
+                    </td>
+                    <td className="mi-num py-2 text-right" style={{ color: C.muted }}>
+                      {s.baseUp === null ? "n/a" : `${(s.baseUp * 100).toFixed(0)}%`}
                     </td>
                     <td className="mi-num py-2 text-right">{ret(s.bullAvg)}</td>
                     <td className="mi-num py-2 text-right">{ret(s.bearAvg)}</td>
