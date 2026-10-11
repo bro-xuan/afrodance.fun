@@ -3,6 +3,19 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.4.0.0] - 2026-10-11
+
+### Added
+- **Market Intel, a BTC trading monitor at `/marketintel`.** One white page with everything a trader checks before a position:
+  - **Market pulse:** eight one-line reads (funding, OI regime, Binance positioning, ETF flows, Coinbase premium, nearby liquidations, Polymarket skew, Fear and Greed).
+  - **Positioning:** open interest across Binance, Bybit, OKX, Hyperliquid, Bitget and Deribit; 48h OI in BTC vs price; OI change by venue; funding by venue; who is long.
+  - **Liquidation map:** estimated liquidation levels within ±15% of spot, with the densest pools above and below.
+  - **ETF flows:** 30 sessions of US spot ETF net flows (Farside) under the BTC daily close, plus the latest session by fund.
+  - **Prediction markets:** Polymarket BTC markets that roll to the next market automatically (daily close ranges, "above" odds, weekly/monthly/yearly touch odds), CPI and Fed cuts.
+  - **Fed rate odds:** next three FOMC meetings, CME FedWatch method on live fed funds futures next to Polymarket.
+  - **Catalyst calendar:** FOMC, CPI, jobs, PCE, NVIDIA earnings, options expiries and this week's US releases, in the viewer's time zone.
+  - **Macro and sentiment:** net liquidity, stablecoins, dollar, 10Y, equities, VIX, DVOL, dominance, options max pain.
+
 ## [0.3.3.0] - 2026-08-27
 
 ### Changed
