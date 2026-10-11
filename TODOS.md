@@ -4,7 +4,11 @@
 
 - **Add tests for the Fed odds maths and the Polymarket slug matching**
   **Priority:** P2
-  `src/app/api/marketintel/fed/route.ts` turns fed funds futures into move odds and `polymarket/route.ts` picks markets by slug regex. Both break silently if inputs shift (a new FOMC year, a renamed Polymarket slug). The repo has no test runner yet; add vitest and cover these two first.
+  `src/app/api/marketintel/fed/route.ts` turns fed funds futures into move odds and `polymarket/route.ts` picks markets by slug regex. Both break silently if inputs shift (a new FOMC year, a renamed Polymarket slug). Vitest is set up (`npm test`); pull the FedWatch maths and the slug regexes into `_lib/` like `_lib/ladder.ts` so they can be tested.
+
+- **Re-tune pulse weights against the track record**
+  **Priority:** P2
+  Each hourly sample in Redis (`marketintel:pulse:v1`) stores every read's score, not just the three totals. After a few months, fit the per-horizon weights in `src/app/marketintel/lib/signals.ts` against forward returns, then bump `MODEL` so old and new scoring aren't graded together.
 
 - **Add the 2027 second half FOMC dates**
   **Priority:** P3

@@ -3,6 +3,15 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## 2026-10-11, Market Intel: bias by horizon, with a track record
+
+- **The pulse now gives three biases, Intraday, Swing and Macro, instead of one blended number.** Each read counts only toward the horizons it informs, with its weight shown on its card, so a bullish intraday tape no longer cancels out bearish multi-week ETF flows.
+- **New reads:** daily trend (vs the 200D and 50D, 20-day momentum in vol units), 24h tape (spot vs VWAP plus net taker buying, flags rallies without buyers), and liquidity/dollar/rates (net liquidity, stablecoins, dollar, 10Y).
+- **Track record:** every hour the three scores are logged with BTC's price and later graded against the next 24h, 7 days and 30 days. Shows hit rate next to how often always-long would have been right, average return after bullish vs bearish calls, and the honest sample size. Hours with too few live reads are left out.
+- **Key levels** now include the 50D and 200D averages.
+- Falling open interest into a move now counts against it (short covering, capitulation) instead of being ignored.
+- Polymarket ladders drop stale quotes that break the odds ordering (e.g. a $74K "above" at 53% under a $78K at 94%).
+
 ## 2026-10-11, Market Intel upgrade
 
 - **Market pulse now gives one weighted net bias (−100 to +100)** instead of counting votes. Each read is scored against its normal range, so noise like near-zero funding no longer shows up as "bullish". Cards say whether a read is a flow, leverage, options, crowd or odds signal and whether it's contrarian.
