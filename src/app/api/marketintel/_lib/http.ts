@@ -5,7 +5,8 @@ import type { SourceStatus } from "@/app/marketintel/lib/types";
  * Shared plumbing for the /api/marketintel/* routes.
  *
  * All upstreams are keyless public APIs. Several (Binance, Bybit) geo-block US
- * IPs, so every route pins itself to Frankfurt via `preferredRegion`. Responses
+ * IPs, so functions run in Frankfurt: vercel.json sets the project region
+ * (the per-route `preferredRegion` is ignored on the Hobby plan). Responses
  * are cached at the CDN with `s-maxage`, so a burst of visitors costs one
  * upstream round-trip per window rather than one per viewer.
  */
