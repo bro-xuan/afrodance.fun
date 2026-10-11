@@ -43,36 +43,63 @@ const RX = {
   cuts: /^how-many-fed-rate-cuts-in-\d{4}$/,
 };
 
-function prob(m: GMarket): number | null {
+/** Mid of a tight book (firm), else the last trade or listed price (may be stale). */
+function quote(m: GMarket): { p: number; firm: boolean } | null {
   const bid = num(m.bestBid);
   const ask = num(m.bestAsk);
-  if (bid !== null && ask !== null && ask - bid <= 0.1) return (bid + ask) / 2;
+  if (bid !== null && ask !== null && ask - bid <= 0.1) return { p: (bid + ask) / 2, firm: true };
   const last = num(m.lastTradePrice);
-  if (last !== null) return last;
+  if (last !== null) return { p: last, firm: false };
   try {
-    return num(JSON.parse(m.outcomePrices ?? "[]")[0]);
+    const p = num(JSON.parse(m.outcomePrices ?? "[]")[0]);
+    return p === null ? null : { p, firm: false };
   } catch {
     return null;
   }
+}
+
+const prob = (m: GMarket) => quote(m)?.p ?? null;
+
+/**
+ * Odds must fall as the strike moves away from spot: P(above) and P(hit up)
+ * drop as the strike rises, P(hit down) rises with it. A rung that breaks
+ * that is a stale quote in a thin market (a $74K "above" at 53% under a $78K
+ * at 94%), so drop it. Firm quotes from a tight book win over stale ones.
+ */
+function dropStale(r: (PolyRung & { firm: boolean })[]): PolyRung[] {
+  const ordered = (a: PolyRung, b: PolyRung) => // a.strike < b.strike, same dir
+    a.dir === "down" ? a.p <= b.p + 0.02 : a.p + 0.02 >= b.p;
+  let xs = r;
+  for (let pass = 0; pass < r.length; pass++) {
+    const bad = xs.map((x) =>
+      xs.filter((y) => y !== x && y.dir === x.dir && !(x.strike < y.strike ? ordered(x, y) : ordered(y, x))).length,
+    );
+    const worst = Math.max(0, ...bad);
+    if (!worst) break;
+    // Drop the rung with the most conflicts, preferring stale over firm.
+    const i = bad.reduce((bi, n, j) => (n > bad[bi] || (n === bad[bi] && !xs[j].firm && xs[bi].firm) ? j : bi), bad.indexOf(worst));
+    xs = xs.filter((_, j) => j !== i);
+  }
+  return xs.map((x) => ({ strike: x.strike, dir: x.dir, p: x.p, question: x.question }));
 }
 
 const open = (e: GEvent) => (e.markets ?? []).filter((m) => !m.closed && m.active !== false);
 
 function rungs(e: GEvent, kind: PolyKind): PolyRung[] {
   const seen = new Set<string>();
-  const out: PolyRung[] = [];
+  const out: (PolyRung & { firm: boolean })[] = [];
   for (const m of open(e)) {
-    const p = prob(m);
+    const q = quote(m);
     const strike = num((m.groupItemTitle ?? "").replace(/[^\d.]/g, ""));
-    if (p === null || strike === null) continue;
+    if (q === null || strike === null) continue;
     const dir: PolyRung["dir"] =
       kind === "above" ? "above" : /dip|below|↓/i.test(m.question + (m.groupItemTitle ?? "")) ? "down" : "up";
     const k = `${dir}:${strike}`;
     if (seen.has(k)) continue;
     seen.add(k);
-    out.push({ strike, dir, p, question: m.question });
+    out.push({ strike, dir, p: q.p, firm: q.firm, question: m.question });
   }
-  return out.sort((a, b) => a.strike - b.strike);
+  return dropStale(out.sort((a, b) => a.strike - b.strike));
 }
 
 function outcomes(e: GEvent) {

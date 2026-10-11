@@ -1,5 +1,5 @@
 import { C, price } from "../lib/format";
-import { composite, type Signal, type volRegime } from "../lib/signals";
+import { composite, HORIZONS, type Horizon, type Signal, type volRegime } from "../lib/signals";
 import { LeanChip, Skeleton } from "./ui";
 
 type Regime = ReturnType<typeof volRegime>;
@@ -26,60 +26,23 @@ function Meter({ score, h = 6, color }: { score: number; h?: number; color?: str
 }
 
 export function Pulse({ signals, regime, spot }: { signals: Signal[]; regime: Regime; spot: number | null }) {
-  const c = composite(signals);
-  if (!signals.length || !c) return <Skeleton h="16rem" />;
-
-  const drivers = [...signals]
-    .filter((s) => s.lean !== "neutral")
-    .sort((a, b) => Math.abs(b.score * b.weight) - Math.abs(a.score * a.weight))
-    .slice(0, 3);
-  const netColor = c.net >= 8 ? C.longInk : c.net <= -8 ? C.shortInk : C.ink;
+  const rows = HORIZONS.map((h) => ({ ...h, c: composite(signals, h.key) }));
+  if (!signals.length || rows.every((r) => !r.c)) return <Skeleton h="16rem" />;
 
   return (
     <div className="space-y-4">
       <div className="grid gap-4 lg:grid-cols-12">
-        {/* Net bias */}
-        <div className="flex flex-col gap-3 rounded-xl border bg-white p-5 lg:col-span-5" style={{ borderColor: C.line }}>
-          <div className="flex items-center justify-between">
-            <span className="mi-label">Net bias, weighted</span>
-            <span className="text-[0.8rem]" style={{ color: C.muted }}>{signals.length} reads, −100 to +100</span>
+        {/* Net bias, one per horizon */}
+        <div className="flex flex-col rounded-xl border bg-white px-5 py-3 lg:col-span-5" style={{ borderColor: C.line }}>
+          <div className="flex items-center justify-between py-2">
+            <span className="mi-label">Net bias, by horizon</span>
+            <span className="text-[0.8rem]" style={{ color: C.muted }}>−100 to +100</span>
           </div>
-          <div className="flex items-baseline gap-3">
-            <span className="mi-num text-[2.6rem] font-semibold leading-none tracking-[-0.04em]" style={{ color: netColor }}>
-              {c.net > 0 ? "+" : c.net < 0 ? "−" : ""}{Math.abs(c.net).toFixed(0)}
-            </span>
-            <span className="text-[1.1rem] font-medium">{c.label}</span>
-          </div>
-          <div>
-            <Meter score={c.net / 100} h={10} color={c.net >= 8 ? C.long : c.net <= -8 ? C.short : C.neutral} />
-            <div className="mt-1 flex justify-between text-[0.8rem]" style={{ color: C.muted }}>
-              <span>Bearish</span>
-              <span>Bullish</span>
-            </div>
-          </div>
-          <div className="text-[0.9rem] leading-snug" style={{ color: C.ink2 }}>
-            <span className="mi-num font-semibold" style={{ color: C.longInk }}>{c.bull.length}</span> bullish,{" "}
-            <span className="mi-num font-semibold" style={{ color: C.shortInk }}>{c.bear.length}</span> bearish,{" "}
-            <span className="mi-num font-semibold">{c.neutral.length}</span> inside their normal band.
-            {c.agree !== null && (
-              <> {(c.agree * 100).toFixed(0)}% of the directional weight agrees{c.agree < 0.65 ? ", so conviction is low" : ""}.</>
-            )}
-          </div>
-          {drivers.length > 0 && (
-            <div className="text-[0.85rem]" style={{ color: C.muted }}>
-              Driven by{" "}
-              {drivers.map((d, i) => (
-                <span key={d.key}>
-                  {i > 0 && ", "}
-                  <span className="font-medium" style={{ color: d.score > 0 ? C.longInk : C.shortInk }}>{d.label.split(",")[0]}</span>
-                </span>
-              ))}
-            </div>
-          )}
+          {rows.map((r) => r.c && <HorizonRow key={r.key} label={r.label} span={r.span} c={r.c} />)}
         </div>
 
         {/* Expected move + vol regime */}
-        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border sm:grid-cols-3 lg:col-span-7" style={{ borderColor: C.line, background: C.line }}>
+        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border sm:grid-cols-3 lg:col-span-7 lg:grid-cols-2" style={{ borderColor: C.line, background: C.line }}>
           <Cell
             label="Expected move today"
             value={regime.day !== null ? `±${price(regime.day)}` : "n/a"}
@@ -126,7 +89,7 @@ export function Pulse({ signals, regime, spot }: { signals: Signal[]; regime: Re
               <div>
                 <div className="mi-label">{s.label}</div>
                 <div className="text-[0.8rem]" style={{ color: C.muted }}>
-                  {s.kind}{s.contrarian ? ", contrarian" : ""}{s.weight < 0.75 ? ", low weight" : ""}
+                  {s.kind}{s.contrarian ? ", contrarian" : ""}
                 </div>
               </div>
               <LeanChip lean={s.lean} />
@@ -139,13 +102,15 @@ export function Pulse({ signals, regime, spot }: { signals: Signal[]; regime: Re
               </span>
             </div>
             <div className="text-[0.85rem] leading-snug" style={{ color: C.ink2 }}>{s.read}</div>
+            <HorizonTags w={s.w} />
           </div>
         ))}
       </div>
       <p className="text-[0.8rem] leading-relaxed" style={{ color: C.muted }}>
         Each read is scored −100 to +100 against its normal band, so readings inside that band score zero instead of casting a
-        vote. Contrarian reads (funding, crowd positioning, sentiment, basis) count against the crowd. Flows and leverage
-        weigh more than sentiment gauges. Expected moves are 1σ from DVOL (Deribit 30-day implied vol).
+        vote. Contrarian reads (funding, crowd positioning, sentiment, basis) count against the crowd. Each read counts toward
+        the horizons it actually informs, with the weight shown under it: taker flow and OI drive intraday, ETF flows and
+        funding drive swing, trend and liquidity drive macro. Expected moves are 1σ from DVOL (Deribit 30-day implied vol).
       </p>
     </div>
   );
@@ -157,6 +122,68 @@ function Cell({ label, value, sub }: { label: string; value: string; sub?: strin
       <span className="mi-label">{label}</span>
       <span className="mi-num text-[1.3rem] font-semibold tracking-[-0.02em]">{value}</span>
       {sub && <span className="text-[0.8rem] leading-snug" style={{ color: C.muted }}>{sub}</span>}
+    </div>
+  );
+}
+
+type Comp = NonNullable<ReturnType<typeof composite>>;
+
+function HorizonRow({ label, span, c }: { label: string; span: string; c: Comp }) {
+  const color = c.net >= 8 ? C.longInk : c.net <= -8 ? C.shortInk : C.ink;
+  return (
+    <div className="flex flex-col gap-2 border-t py-3" style={{ borderColor: C.line }}>
+      <div className="flex items-baseline justify-between gap-3">
+        <div className="flex items-baseline gap-2">
+          <span className="text-[1rem] font-semibold">{label}</span>
+          <span className="text-[0.8rem]" style={{ color: C.muted }}>{span}</span>
+        </div>
+        <span className="text-[0.8rem]" style={{ color: C.muted }}>{c.count} reads</span>
+      </div>
+      <div className="flex items-baseline gap-3">
+        <span className="mi-num w-[3.6rem] shrink-0 text-[2rem] font-semibold leading-none tracking-[-0.04em]" style={{ color }}>
+          {c.net > 0 ? "+" : c.net < 0 ? "−" : ""}{Math.abs(c.net).toFixed(0)}
+        </span>
+        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+          <span className="text-[0.95rem] font-medium">{c.label}</span>
+          <Meter score={c.net / 100} h={8} color={c.net >= 8 ? C.long : c.net <= -8 ? C.short : C.neutral} />
+        </div>
+      </div>
+      <div className="text-[0.85rem] leading-snug" style={{ color: C.ink2 }}>
+        <span className="mi-num font-semibold" style={{ color: C.longInk }}>{c.bull.length}</span> bullish,{" "}
+        <span className="mi-num font-semibold" style={{ color: C.shortInk }}>{c.bear.length}</span> bearish
+        {c.agree !== null && <>, {(c.agree * 100).toFixed(0)}% agree{c.agree < 0.65 ? " (low conviction)" : ""}</>}
+        {c.drivers.length > 0 && (
+          <span style={{ color: C.muted }}>
+            . Driven by{" "}
+            {c.drivers.map((d, i) => (
+              <span key={d.key}>
+                {i > 0 && ", "}
+                <span className="font-medium" style={{ color: d.score > 0 ? C.longInk : C.shortInk }}>{d.label.split(",")[0]}</span>
+              </span>
+            ))}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const SHORT: Record<Horizon, string> = { intraday: "Intraday", swing: "Swing", macro: "Macro" };
+
+/** Which horizons a read counts toward, and how heavily. */
+function HorizonTags({ w }: { w: Signal["w"] }) {
+  return (
+    <div className="mt-auto flex flex-wrap gap-1.5 pt-1">
+      {HORIZONS.filter((h) => (w[h.key] ?? 0) > 0).map((h) => (
+        <span
+          key={h.key}
+          className="mi-num rounded px-1.5 py-0.5 text-[0.8rem]"
+          style={{ background: C.grid, color: C.ink2 }}
+          title={`Weight ${w[h.key]} in the ${SHORT[h.key].toLowerCase()} score`}
+        >
+          {SHORT[h.key]} ×{w[h.key]}
+        </span>
+      ))}
     </div>
   );
 }

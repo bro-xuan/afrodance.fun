@@ -14,6 +14,7 @@ const TAG_W = 140;
 const LEVEL_COLOR: Record<LevelKind, string> = {
   session: C.ink2,
   open: C.accent,
+  trend: C.venues.binance,
   liq: C.short,
   options: C.venues.okx,
   vol: C.neutral,
@@ -22,7 +23,7 @@ const levelColor = (l: Level) => (l.key === "liqd" ? C.long : LEVEL_COLOR[l.kind
 
 const VIEWS = {
   "1H": { label: "1H, 7 days", pick: (p: PriceData) => p.hourly },
-  "1D": { label: "1D, 120 days", pick: (p: PriceData) => p.daily },
+  "1D": { label: "1D, 120 days", pick: (p: PriceData) => p.daily.slice(-120) },
 } as const;
 
 export function PriceLevels({ px, levels, spot }: { px: PriceData | null; levels: Level[]; spot: number | null }) {

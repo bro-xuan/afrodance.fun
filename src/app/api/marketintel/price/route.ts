@@ -39,14 +39,14 @@ async function bybit(interval: string, limit: number): Promise<Candle[]> {
 export async function GET() {
   const { values: v, sources } = await settle({
     "binance-1h": () => binance("1h", 168),
-    "binance-1d": () => binance("1d", 120),
+    "binance-1d": () => binance("1d", 400), // 200D average needs 200+ closes
   });
   let hourly = v["binance-1h"];
   let daily = v["binance-1d"];
   if (!hourly || !daily) {
     const fb = await settle({
       "bybit-1h": () => bybit("60", 168),
-      "bybit-1d": () => bybit("D", 120),
+      "bybit-1d": () => bybit("D", 400),
     });
     hourly ??= fb.values["bybit-1h"];
     daily ??= fb.values["bybit-1d"];

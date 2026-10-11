@@ -34,8 +34,8 @@ export function Dashboard() {
   const now = useNow(5000);
 
   const signals = useMemo(
-    () => buildSignals({ d: der.data, l: liq.data, e: etf.data, p: poly.data, m: mac.data, v: vol.data }),
-    [der.data, liq.data, etf.data, poly.data, mac.data, vol.data],
+    () => buildSignals({ d: der.data, l: liq.data, e: etf.data, p: poly.data, m: mac.data, v: vol.data, px: px.data }),
+    [der.data, liq.data, etf.data, poly.data, mac.data, vol.data, px.data],
   );
   const spot = der.data?.price ?? liq.data?.price ?? null;
   const regime = useMemo(() => volRegime(vol.data, px.data, spot), [vol.data, px.data, spot]);
@@ -60,7 +60,7 @@ export function Dashboard() {
     <>
       <TopBar d={der.data} />
       <main className="mx-auto w-[min(96%,110rem)] pb-20 pt-10">
-        <Section n="01" title="Market pulse" kicker="One weighted read of the panels below, plus how far BTC is expected to move. Not financial advice.">
+        <Section n="01" title="Market pulse" kicker="The panels below scored into an intraday, swing and macro bias, plus how far BTC is expected to move. Not financial advice.">
           <Pulse signals={signals} regime={regime} spot={spot} />
         </Section>
 

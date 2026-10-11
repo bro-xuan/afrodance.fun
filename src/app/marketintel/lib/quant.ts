@@ -20,6 +20,12 @@ export function realizedVol(candles: Candle[], n: number, periodsPerYear = 365):
   return Math.sqrt(v * periodsPerYear) * 100;
 }
 
+/** Simple moving average of the last `n` closes, or null if there aren't enough. */
+export function sma(candles: Candle[], n: number): number | null {
+  if (candles.length < n) return null;
+  return candles.slice(-n).reduce((s, c) => s + c.c, 0) / n;
+}
+
 /** 1σ move in $ over `days`, from an annualised vol in %. */
 export const sigmaMove = (spot: number, volPct: number, days: number) => spot * (volPct / 100) * Math.sqrt(days / 365);
 
@@ -48,7 +54,7 @@ export function nearestExpiry(v: VolData | null, targetDays: number, pick: (e: E
 }
 
 // ── Key levels ─────────────────────────────────────────────────────────────
-export type LevelKind = "session" | "open" | "liq" | "options" | "vol";
+export type LevelKind = "session" | "open" | "trend" | "liq" | "options" | "vol";
 export type Level = { key: string; label: string; price: number; kind: LevelKind; note: string };
 
 const utcDay = (t: number) => Math.floor(t / DAY) * DAY;
@@ -87,6 +93,12 @@ export function keyLevels(
   if (wOpen) out.push({ key: "wo", label: "Weekly open", price: wOpen.o, kind: "open", note: "Monday 00:00 UTC. Above it, the week is green" });
   const mOpen = daily.find((c) => c.t === utcMonthStart(now));
   if (mOpen) out.push({ key: "mo", label: "Monthly open", price: mOpen.o, kind: "open", note: "1st of the month, 00:00 UTC" });
+
+  const closed = daily.filter((c) => c.t < today);
+  const ma50 = sma(closed, 50);
+  const ma200 = sma(closed, 200);
+  if (ma50) out.push({ key: "ma50", label: "50D average", price: ma50, kind: "trend", note: "Swing trend line. Bulls defend it in uptrends, bears sell it in downtrends" });
+  if (ma200) out.push({ key: "ma200", label: "200D average", price: ma200, kind: "trend", note: "The bull/bear line. Funds and allocators key off it" });
 
   if (mag?.peakAbove.v) out.push({ key: "liqu", label: "Short liq cluster", price: mag.peakAbove.price, kind: "liq", note: `Densest short liquidations within +5% (model)` });
   if (mag?.peakBelow.v) out.push({ key: "liqd", label: "Long liq cluster", price: mag.peakBelow.price, kind: "liq", note: `Densest long liquidations within −5% (model)` });

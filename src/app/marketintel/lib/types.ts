@@ -149,7 +149,7 @@ export type Candle = { t: number; o: number; h: number; l: number; c: number; v:
 
 export type PriceData = Envelope<{
   hourly: Candle[]; // last 7 days, 1h
-  daily: Candle[]; // last ~120 days, 1D (UTC), newest may be in progress
+  daily: Candle[]; // last ~400 days, 1D (UTC), newest may be in progress
 }>;
 
 // ── Volatility & term structure (Deribit) ──────────────────────────────────
