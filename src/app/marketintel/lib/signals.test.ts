@@ -13,7 +13,7 @@ function daily(days: number, f: (i: number) => number): Candle[] {
 }
 const hourly = (n: number, c: (i: number) => number, delta = 0) =>
   Array.from({ length: n }, (_, i) => candle(now - (n - 1 - i) * 3_600_000, c(i), 100, delta));
-const px = (d: Candle[], h: Candle[] = [], perp: Candle[] = []): PriceData => ({ asOf: now, daily: d, hourly: h, perpHourly: perp, sources: [] });
+const px = (d: Candle[], h: Candle[] = [], perp: Candle[] = []): PriceData => ({ asOf: now, daily: d, hourly: h, perpHourly: perp, cmeGap: null, onchain: { sth: null, realized: null, asOf: null }, sources: [] });
 const find = (s: Signal[], key: string) => s.find((x) => x.key === key);
 
 describe("trend read", () => {

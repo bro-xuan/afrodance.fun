@@ -15,6 +15,10 @@ const LEVEL_COLOR: Record<LevelKind, string> = {
   session: C.ink2,
   open: C.accent,
   trend: C.venues.binance,
+  vwap: "#b7791f",
+  profile: C.muted,
+  cme: C.ink,
+  onchain: "#a23b72",
   liq: C.short,
   options: C.venues.okx,
   vol: C.neutral,
@@ -67,7 +71,7 @@ export function PriceLevels({ px, levels, spot }: { px: PriceData | null; levels
 
       <Panel className="lg:col-span-3" title="Key levels" aside="distance from spot">
         {last && levels.length ? (
-          <ul className="text-[0.9rem]">
+          <ul className="max-h-[27rem] overflow-y-auto pr-1 text-[0.9rem]">
             {[...levels, { key: "spot", label: "Spot", price: last, kind: "session" as const, note: "" }]
               .sort((a, b) => b.price - a.price)
               .map((l) => {
@@ -94,7 +98,7 @@ export function PriceLevels({ px, levels, spot }: { px: PriceData | null; levels
           <Empty>Levels load with price data</Empty>
         )}
         <p className="mt-3 text-[0.8rem] leading-relaxed" style={{ color: C.muted }}>
-          Session levels use UTC days. Liquidation clusters are modelled. Hover a row for what it means.
+          Session levels use UTC days. Liquidation clusters are modelled; gamma levels assume dealers are long calls and short puts; the CME gap is shifted into spot terms by the CME basis; on-chain cost bases update daily. Levels more than 25% away are left out. Hover a row for what it means.
         </p>
       </Panel>
     </div>
@@ -249,9 +253,10 @@ function CandleChart({ candles, perp, levels, spot, daily }: { candles: Candle[]
           {geo.perpPath && <path d={geo.perpPath} fill="none" stroke={C.venues.bybit} strokeWidth={1.5} strokeDasharray="4 3" strokeLinejoin="round" />}
           <path d={geo.cvdPath} fill="none" stroke={C.venues.binance} strokeWidth={2} strokeLinejoin="round" />
           {geo.perpPath && (
-            <text x={4} y={geo.top + 10} style={AXIS}>
-              <tspan fill={C.venues.binance}>spot</tspan> / <tspan fill={C.venues.bybit}>perp</tspan>
-            </text>
+            <>
+              <text x={geo.plotW + 6} y={geo.top + 28} style={{ ...AXIS, fill: C.venues.binance }}>spot</text>
+              <text x={geo.plotW + 6} y={geo.top + 44} style={{ ...AXIS, fill: C.venues.bybit }}>perp</text>
+            </>
           )}
 
           {/* time axis */}

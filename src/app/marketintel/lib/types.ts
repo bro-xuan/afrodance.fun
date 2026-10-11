@@ -166,7 +166,16 @@ export type PriceData = Envelope<{
   hourly: Candle[]; // last ~31 days, 1h
   daily: Candle[]; // last ~400 days, 1D (UTC), newest may be in progress
   perpHourly: Candle[]; // Binance BTCUSDT perp, 1h, same window as `hourly`
+  cmeGap: CmeGap | null; // newest unfilled CME weekend gap, last ~60 days
+  onchain: { sth: number | null; realized: number | null; asOf: string | null }; // cost-basis prices
 }>;
+
+export type CmeGap = {
+  close: number; // CME Friday close (the level the gap "fills" to), CME terms
+  reopen: number; // CME Sunday reopen
+  t: number; // Friday close time
+  basis: number; // CME last / spot last − 1, to shift the level into spot terms
+};
 
 // ── Volatility & term structure (Deribit) ──────────────────────────────────
 export type ExpiryVol = {
@@ -186,4 +195,5 @@ export type VolData = Envelope<{
   dvol: number | null; // Deribit 30d implied vol index, now
   dvol24hAgo: number | null;
   expiries: ExpiryVol[]; // soonest first
+  gamma: { flip: number | null; callWall: number | null; putWall: number | null; netAtSpot: number } | null; // dealer gamma, expiries ≤ 60d
 }>;

@@ -1,4 +1,5 @@
 import type { ExpiryVol, VolData } from "@/app/marketintel/lib/types";
+import { gammaLevels, type OptLeg } from "@/app/marketintel/lib/gamma";
 import { normCdf } from "@/app/marketintel/lib/quant";
 import { cachedJson, getJSON, settle } from "../_lib/http";
 
@@ -111,6 +112,12 @@ export async function GET() {
     .filter((x) => Number.isFinite(x.t) && x.days > 0.5)
     .sort((a, b) => a.t - b.t);
 
+  const optLegs: OptLeg[] = [...byExp.entries()].flatMap(([code, e]) => {
+    const T = (expiryMs(code) - now) / DAY / 365;
+    return Number.isFinite(T) ? e.legs.map((l) => ({ ...l, T })) : [];
+  });
+  const gamma = index ? gammaLevels(optLegs, index) : null;
+
   const dv = v["deribit-dvol"] ?? [];
   const last = dv.at(-1);
   const dayAgo = last ? dv.find((d) => d[0] >= last[0] - 24 * 3_600_000) : undefined;
@@ -121,6 +128,7 @@ export async function GET() {
     dvol: last?.[4] ?? null,
     dvol24hAgo: dayAgo?.[4] ?? null,
     expiries,
+    gamma,
     sources,
   };
   return cachedJson(body, 60);

@@ -47,8 +47,8 @@ export function Dashboard() {
   const spot = der.data?.price ?? liq.data?.price ?? null;
   const regime = useMemo(() => volRegime(vol.data, px.data, spot), [vol.data, px.data, spot]);
   const levels = useMemo(
-    () => (px.data ? keyLevels(px.data.daily, px.data.hourly, spot, liqMagnet(liq.data), mac.data, vol.data?.dvol ?? null) : []),
-    [px.data, spot, liq.data, mac.data, vol.data],
+    () => (px.data ? keyLevels(px.data, spot, liqMagnet(liq.data), vol.data) : []),
+    [px.data, spot, liq.data, vol.data],
   );
 
   const feeds = [
