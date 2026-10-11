@@ -1,0 +1,80 @@
+/* /marketintel — white "terminal on paper" look. Scoped under .mi-root so it
+   never leaks into the pixel-art main site. Sizes are rem against the site's
+   fluid root (clamp(16px, 1.15vw, 24px)), so the dashboard scales on wide
+   high-DPI displays. */
+
+.mi-root {
+  font-family: var(--font-mi), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+.mi-root .mi-num {
+  font-family: var(--font-mi-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "zero" 0;
+}
+
+.mi-root .mi-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b6a65;
+}
+
+.mi-root .mi-panel {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.mi-root .mi-panel:hover {
+  border-color: #d6d5cf;
+  box-shadow: 0 12px 32px -24px rgba(0, 0, 0, 0.25);
+}
+
+.mi-root .mi-live-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 999px;
+  background: #ff4f00;
+  box-shadow: 0 0 0 0 rgba(255, 79, 0, 0.5);
+  animation: mi-pulse 2s infinite;
+}
+@keyframes mi-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 79, 0, 0.45); }
+  70% { box-shadow: 0 0 0 0.5rem rgba(255, 79, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 79, 0, 0); }
+}
+
+.mi-root .mi-skel {
+  background: linear-gradient(90deg, #f3f3ef 25%, #ebebe6 37%, #f3f3ef 63%);
+  background-size: 400% 100%;
+  animation: mi-shimmer 1.4s ease infinite;
+}
+@keyframes mi-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mi-root .mi-live-dot,
+  .mi-root .mi-skel {
+    animation: none;
+  }
+}
+
+.mi-root .mi-flash-up { animation: mi-flash-up 0.6s ease-out; }
+.mi-root .mi-flash-down { animation: mi-flash-down 0.6s ease-out; }
+@keyframes mi-flash-up { from { color: #06735b; } to { color: #0b0b0b; } }
+@keyframes mi-flash-down { from { color: #b8322b; } to { color: #0b0b0b; } }
+
+/* The main site's NES.css colours every link blue; links here inherit ink. */
+.mi-root a,
+.mi-root a:hover {
+  color: inherit;
+  text-decoration-color: currentColor;
+}
+
+/* nes.css sets th alignment unlayered, which beats Tailwind's utilities. */
+.mi-root th { text-align: inherit; }
+.mi-root th.text-right { text-align: right; }
+.mi-root th.text-left { text-align: left; }

@@ -1467,6 +1467,20 @@ body:has(.bottom-indicator-page) {
   display: flex;
 }
 
+/* Same treatment for the white /marketintel trading dashboard. */
+body:has(.mi-root)::after {
+  display: none;
+}
+body:has(.mi-root) {
+  background: #ffffff;
+}
+.mi-root :is(header, footer, section, main, nav).flex {
+  display: flex;
+}
+.mi-root :is(header, footer, section, main, nav).grid {
+  display: grid;
+}
+
 /* Migration map: scrubber + play-button affordances. */
 .cm-scrubber {
   -webkit-appearance: none;
