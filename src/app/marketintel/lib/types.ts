@@ -35,6 +35,8 @@ export type DerivativesData = Envelope<{
   oiHistory: OiPoint[];
   ratios: RatioPoint[];
   coinbasePremiumPct: number | null;
+  fundingHistory: { t: number; v: number }[]; // Binance BTCUSDT 8h funding prints, ~90 days, decimal
+  oiDaily: { t: number; v: number }[]; // Binance BTCUSDT OI in BTC, daily, 30 days
 }>;
 
 // ── Liquidations ───────────────────────────────────────────────────────────
@@ -46,6 +48,19 @@ export type LiquidationData = Envelope<{
   bins: LiqBin[];
   scale: number; // Binance → all-venue OI multiplier used on the map
   windowHours: number; // how far back the model's position cohorts reach
+}>;
+
+// Forced orders that actually filled (OKX BTC-USDT swap), last 24h.
+export type RealizedLiq = { t: number; side: "long" | "short"; px: number; usd: number }; // side = position liquidated
+export type LiqTotals = { long: number; short: number };
+
+export type RealizedLiqData = Envelope<{
+  h1: LiqTotals;
+  h4: LiqTotals;
+  h24: LiqTotals;
+  hourly: ({ t: number } & LiqTotals)[]; // 24 hourly buckets, oldest first
+  largest: RealizedLiq[];
+  coverageHours: number; // < 24 if OKX's history ran out or paging was capped
 }>;
 
 // ── ETF flows ──────────────────────────────────────────────────────────────
@@ -148,8 +163,9 @@ export type FedData = Envelope<{
 export type Candle = { t: number; o: number; h: number; l: number; c: number; v: number; delta: number };
 
 export type PriceData = Envelope<{
-  hourly: Candle[]; // last 7 days, 1h
+  hourly: Candle[]; // last ~31 days, 1h
   daily: Candle[]; // last ~400 days, 1D (UTC), newest may be in progress
+  perpHourly: Candle[]; // Binance BTCUSDT perp, 1h, same window as `hourly`
 }>;
 
 // ── Volatility & term structure (Deribit) ──────────────────────────────────

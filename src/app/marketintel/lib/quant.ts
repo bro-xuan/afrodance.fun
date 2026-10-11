@@ -1,4 +1,4 @@
-import type { Candle, ExpiryVol, MacroData, VolData } from "./types";
+import type { Candle, DerivativesData, ExpiryVol, MacroData, VolData } from "./types";
 import type { liqMagnet } from "./signals";
 
 /**
@@ -24,6 +24,29 @@ export function realizedVol(candles: Candle[], n: number, periodsPerYear = 365):
 export function sma(candles: Candle[], n: number): number | null {
   if (candles.length < n) return null;
   return candles.slice(-n).reduce((s, c) => s + c.c, 0) / n;
+}
+
+/** Share of `xs` at or below `v`, 0 … 1: where today sits in its own recent history. */
+export function percentileRank(xs: number[], v: number): number | null {
+  if (xs.length < 10) return null;
+  return xs.filter((x) => x <= v).length / xs.length;
+}
+
+/** "93rd", "1st", "42nd" */
+export function ordinal(p: number): string {
+  const n = Math.round(p * 100);
+  const s = n % 100 >= 11 && n % 100 <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] ?? "th";
+  return `${n}${s}`;
+}
+
+/** Binance's current funding and OI ranked against their own last 90 / 30 days. */
+export function leverageContext(d: DerivativesData | null) {
+  const fNow = d?.venues.find((v) => v.exchange === "Binance" && /USDT/.test(v.market))?.fundingRate8h ?? null;
+  const oiNow = d?.oiHistory.at(-1)?.binance ?? null;
+  return {
+    fundingPct: fNow !== null && d ? percentileRank(d.fundingHistory.map((x) => x.v), fNow) : null,
+    oiPct: oiNow !== null && d ? percentileRank(d.oiDaily.map((x) => x.v), oiNow) : null,
+  };
 }
 
 /** 1σ move in $ over `days`, from an annualised vol in %. */

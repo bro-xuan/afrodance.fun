@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildSignals, composite, type Signal } from "./signals";
-import type { Candle, DerivativesData, MacroData, MacroStat, PriceData } from "./types";
+import type { Candle, DerivativesData, MacroData, MacroStat, PriceData, RealizedLiqData } from "./types";
 
 const DAY = 86_400_000;
 const now = Date.UTC(2026, 9, 11, 20);
@@ -13,7 +13,7 @@ function daily(days: number, f: (i: number) => number): Candle[] {
 }
 const hourly = (n: number, c: (i: number) => number, delta = 0) =>
   Array.from({ length: n }, (_, i) => candle(now - (n - 1 - i) * 3_600_000, c(i), 100, delta));
-const px = (d: Candle[], h: Candle[] = []): PriceData => ({ asOf: now, daily: d, hourly: h, sources: [] });
+const px = (d: Candle[], h: Candle[] = [], perp: Candle[] = []): PriceData => ({ asOf: now, daily: d, hourly: h, perpHourly: perp, sources: [] });
 const find = (s: Signal[], key: string) => s.find((x) => x.key === key);
 
 describe("trend read", () => {
@@ -57,7 +57,7 @@ describe("tape read", () => {
 describe("open interest read", () => {
   const der = (oiNow: number, pxNow: number): DerivativesData => ({
     asOf: now, sources: [], price: pxNow, price24hAgo: 80_000, venues: [], totalOiUsd: 0, weightedFunding8h: null,
-    ratios: [], coinbasePremiumPct: null,
+    ratios: [], coinbasePremiumPct: null, fundingHistory: [], oiDaily: [],
     oiHistory: [
       { t: now - 24 * 3_600_000, price: 80_000, binance: 100, bybit: 100, okx: 100 },
       { t: now, price: pxNow, binance: oiNow, bybit: oiNow, okx: oiNow },
@@ -114,5 +114,46 @@ describe("composite", () => {
   it("labels inside ±8 as no edge", () => {
     expect(composite([sig("a", 0.07, { swing: 1 })], "swing")!.label).toMatch(/No edge/);
     expect(composite([sig("a", 0.1, { swing: 1 })], "swing")!.label).toBe("Mildly bullish");
+  });
+});
+
+describe("spot vs perp flow", () => {
+  const run = (spotDelta: number, perpDelta: number) =>
+    find(buildSignals({ d: null, l: null, e: null, p: null, m: null, v: null, px: px([], hourly(24, () => 80_000, spotDelta), hourly(24, () => 80_000, perpDelta)), now }), "spotperp");
+
+  it("is bullish when spot takers lead and bearish when only perps buy", () => {
+    expect(run(8, 0.5)!.score).toBeGreaterThan(0.4);
+    expect(run(0.5, 8)!.score).toBeLessThan(-0.4);
+    expect(run(0.5, 8)!.read).toMatch(/leverage-led/);
+  });
+  it("stays out without a taker split on either side", () => {
+    expect(run(0, 0)).toBeUndefined();
+  });
+});
+
+describe("realized liquidations read", () => {
+  const der: DerivativesData = {
+    asOf: now, sources: [], price: 80_000, price24hAgo: 80_000, totalOiUsd: 25e9, weightedFunding8h: null, ratios: [], coinbasePremiumPct: null,
+    fundingHistory: [], oiDaily: [], oiHistory: [],
+    venues: [{ exchange: "OKX", market: "BTC-USDT swap", oiUsd: 2.5e9, fundingRate8h: null }],
+  };
+  const lq = (long: number, short: number, ok = true): RealizedLiqData => ({
+    asOf: now, h1: { long: 0, short: 0 }, h4: { long, short }, h24: { long, short }, hourly: [], largest: [], coverageHours: 24,
+    sources: [{ source: "okx-liquidations", ok }],
+  });
+  const run = (long: number, short: number, ok = true) =>
+    find(buildSignals({ d: der, l: null, e: null, p: null, m: null, v: null, px: null, lq: lq(long, short, ok), now }), "flush");
+
+  it("reads a big one-sided long flush as contrarian bullish, scaled to all venues", () => {
+    const s = run(9e6, 0.5e6)!; // ×10 → $90M longs vs $5M shorts
+    expect(s.score).toBeGreaterThan(0.5);
+    expect(s.value).toContain("$90M");
+  });
+  it("reads a short squeeze as contrarian bearish", () => {
+    expect(run(0.5e6, 9e6)!.score).toBeLessThan(-0.5);
+  });
+  it("stays at zero when it's quiet, and out when the feed failed", () => {
+    expect(run(0.2e6, 0.1e6)!.score).toBe(0);
+    expect(run(9e6, 0, false)).toBeUndefined();
   });
 });
