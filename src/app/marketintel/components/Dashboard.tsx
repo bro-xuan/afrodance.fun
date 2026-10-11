@@ -6,6 +6,7 @@ import { C, ago } from "../lib/format";
 import { useApi, useNow } from "../lib/hooks";
 import { keyLevels } from "../lib/quant";
 import { buildSignals, liqMagnet, volRegime } from "../lib/signals";
+import type { PulseHistory } from "../lib/track";
 import type { DerivativesData, EtfData, EventsData, FedData, LiquidationData, MacroData, PolymarketData, PriceData, VolData } from "../lib/types";
 import { Calendar } from "./Calendar";
 import { EtfFlows } from "./EtfFlows";
@@ -16,6 +17,7 @@ import { Predictions } from "./Predictions";
 import { PriceLevels } from "./PriceLevels";
 import { Pulse } from "./Pulse";
 import { TopBar } from "./TopBar";
+import { TrackRecord } from "./TrackRecord";
 import { Volatility } from "./Volatility";
 import { Section } from "./ui";
 
@@ -31,6 +33,7 @@ export function Dashboard() {
   const mac = useApi<MacroData>(`${API}/macro`, 5 * 60_000);
   const px = useApi<PriceData>(`${API}/price`, 60_000);
   const vol = useApi<VolData>(`${API}/vol`, 60_000);
+  const hist = useApi<PulseHistory>(`${API}/pulse`, 5 * 60_000);
   const now = useNow(5000);
 
   const signals = useMemo(
@@ -54,6 +57,7 @@ export function Dashboard() {
     ["Fed watch", fed],
     ["Calendar", ev],
     ["Macro", mac],
+    ["Track record", hist],
   ] as const;
 
   return (
@@ -62,6 +66,9 @@ export function Dashboard() {
       <main className="mx-auto w-[min(96%,110rem)] pb-20 pt-10">
         <Section n="01" title="Market pulse" kicker="The panels below scored into an intraday, swing and macro bias, plus how far BTC is expected to move. Not financial advice.">
           <Pulse signals={signals} regime={regime} spot={spot} />
+          <div className="mt-4">
+            <TrackRecord hist={hist.data} now={now} />
+          </div>
         </Section>
 
         <Section n="02" title="Price & levels" kicker="Where the market is, and the levels traders are watching">
