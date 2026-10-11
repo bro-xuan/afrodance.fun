@@ -1,5 +1,15 @@
 # TODOS
 
+## Market Intel (/marketintel)
+
+- **Add tests for the Fed odds maths and the Polymarket slug matching**
+  **Priority:** P2
+  `src/app/api/marketintel/fed/route.ts` turns fed funds futures into move odds and `polymarket/route.ts` picks markets by slug regex. Both break silently if inputs shift (a new FOMC year, a renamed Polymarket slug). The repo has no test runner yet; add vitest and cover these two first.
+
+- **Add the 2027 second half FOMC dates**
+  **Priority:** P3
+  `src/app/api/marketintel/_lib/fomc.ts` lists meetings through June 2027. Append the rest when the Fed publishes them, or the Fed panel and calendar run dry.
+
 ## Portfolio (home page)
 
 - **Restore the Date Scoring project card**
