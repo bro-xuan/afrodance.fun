@@ -141,3 +141,33 @@ export type FedData = Envelope<{
   targetHi: number | null;
   meetings: FedMeeting[];
 }>;
+
+// ── Price & levels ─────────────────────────────────────────────────────────
+// Binance spot BTCUSDT candles. `delta` = taker buys − taker sells (BTC), the
+// building block of CVD.
+export type Candle = { t: number; o: number; h: number; l: number; c: number; v: number; delta: number };
+
+export type PriceData = Envelope<{
+  hourly: Candle[]; // last 7 days, 1h
+  daily: Candle[]; // last ~120 days, 1D (UTC), newest may be in progress
+}>;
+
+// ── Volatility & term structure (Deribit) ──────────────────────────────────
+export type ExpiryVol = {
+  code: string; // "27NOV26"
+  t: number; // expiry, ms epoch (08:00 UTC)
+  days: number;
+  forward: number | null; // Deribit's forward for this expiry
+  atmIv: number | null; // %, interpolated at the forward
+  rr25: number | null; // 25-delta risk reversal, call IV − put IV, vol points
+  fly25: number | null; // 25-delta butterfly, wings − ATM, vol points
+  basisAnn: number | null; // dated future vs index, annualised %
+  oiBtc: number; // options OI on this expiry
+};
+
+export type VolData = Envelope<{
+  index: number | null;
+  dvol: number | null; // Deribit 30d implied vol index, now
+  dvol24hAgo: number | null;
+  expiries: ExpiryVol[]; // soonest first
+}>;

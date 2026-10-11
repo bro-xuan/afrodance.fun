@@ -8,8 +8,10 @@ import type { DerivativesData } from "../lib/types";
 
 const NAV = [
   ["Pulse", "#market-pulse"],
+  ["Price & levels", "#price-levels"],
   ["Positioning", "#positioning"],
   ["Liquidations", "#liquidations"],
+  ["Volatility", "#volatility-term-structure"],
   ["ETF flows", "#etf-flows"],
   ["Prediction markets", "#prediction-markets"],
   ["Calendar", "#catalyst-calendar"],
@@ -55,6 +57,10 @@ export function TopBar({ d }: { d: DerivativesData | null }) {
         </div>
 
         <div className="hidden items-center gap-6 lg:flex">
+          <Mini
+            label="24h range"
+            value={live.low24h && live.high24h ? `${price(live.low24h)} – ${price(live.high24h)}` : "n/a"}
+          />
           <Mini label="Agg. OI" value={usd(d?.totalOiUsd, 2)} />
           <Mini label="Funding 8h" value={d?.weightedFunding8h != null ? pct(d.weightedFunding8h * 100, 4) : "n/a"} />
         </div>

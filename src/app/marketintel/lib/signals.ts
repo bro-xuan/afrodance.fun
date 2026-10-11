@@ -1,14 +1,34 @@
-import type { DerivativesData, EtfData, LiquidationData, MacroData, OiPoint, PolymarketData } from "./types";
-import { pct, price, usd } from "./format";
+import type { DerivativesData, EtfData, LiquidationData, MacroData, OiPoint, PolymarketData, PriceData, VolData } from "./types";
+import { localDay, pct, price, usd } from "./format";
+import { nearestExpiry, realizedVol, sigmaMove, touchProb } from "./quant";
 
 /**
- * "Market pulse": turns the raw panels into one-line reads. Every rule is a
- * simple, well-known heuristic; thresholds are deliberately round numbers so
- * they're easy to sanity-check. Context, not signals to trade blindly.
+ * "Market pulse": turns the raw panels into one-line reads, each scored on a
+ * continuous −1 (bearish) … +1 (bullish) scale with a dead zone around
+ * "normal", so noise like −0.0004% funding scores 0 instead of flipping a
+ * bullish vote. Scores are weighted (flows and leverage count more than
+ * sentiment gauges) into one net bias. Every threshold is a round, well-known
+ * desk heuristic so it's easy to sanity-check. Context, not trade signals.
  */
 
 export type Lean = "bull" | "bear" | "neutral";
-export type Signal = { key: string; label: string; value: string; read: string; lean: Lean };
+export type SignalKind = "Flow" | "Leverage" | "Options" | "Crowd" | "Odds";
+export type Signal = {
+  key: string;
+  label: string;
+  kind: SignalKind;
+  contrarian: boolean; // reads against the crowd: extremes fade
+  value: string;
+  read: string;
+  score: number; // −1 … +1
+  weight: number;
+  lean: Lean;
+};
+
+const clamp = (x: number, lo = -1, hi = 1) => Math.max(lo, Math.min(hi, x));
+/** Shrink toward zero by `zone`: values inside the zone are just noise. */
+const dz = (x: number, zone: number) => Math.sign(x) * Math.max(0, Math.abs(x) - zone);
+const leanOf = (score: number): Lean => (score >= 0.2 ? "bull" : score <= -0.2 ? "bear" : "neutral");
 
 export const OI_VENUES = ["binance", "bybit", "okx"] as const;
 export type OiVenue = (typeof OI_VENUES)[number];
@@ -75,84 +95,44 @@ export function touchSkew(p: PolymarketData | null, spot: number | null, horizon
   const downAt = spot * (1 - move);
   const up = at("up", upAt);
   const down = at("down", downAt);
-  return up !== null && down !== null ? { up, down, upAt, downAt } : null;
+  return up !== null && down !== null ? { up, down, upAt, downAt, endDate: m.endDate } : null;
 }
 
-export function buildSignals(
-  d: DerivativesData | null,
-  l: LiquidationData | null,
-  e: EtfData | null,
-  p: PolymarketData | null,
-  m: MacroData | null,
-): Signal[] {
-  const out: Signal[] = [];
+export type PulseInputs = {
+  d: DerivativesData | null;
+  l: LiquidationData | null;
+  e: EtfData | null;
+  p: PolymarketData | null;
+  m: MacroData | null;
+  v: VolData | null;
+  now?: number;
+};
 
-  if (d?.weightedFunding8h != null) {
-    const f = d.weightedFunding8h * 100;
-    const ann = d.weightedFunding8h * 3 * 365 * 100;
-    out.push({
-      key: "funding",
-      label: "Funding, OI weighted",
-      value: `${pct(f, 4)} per 8h`,
-      read:
-        f > 0.03 ? `Longs paying up (${ann.toFixed(0)}% APR). Crowded, risk of a flush lower`
-        : f < 0 ? `Shorts paying longs (${ann.toFixed(1)}% APR). Fuel for a short squeeze`
-        : `Neutral carry (${ann.toFixed(1)}% APR), no crowding`,
-      lean: f > 0.03 ? "bear" : f < 0 ? "bull" : "neutral",
-    });
-  }
+type Draft = Omit<Signal, "lean">;
 
-  const r = d ? oiChange(d.oiHistory, 24) : null;
-  if (r) {
-    const up = r.price >= 0;
-    const oiUp = r.total >= 0;
-    const flat = Math.abs(r.total) < 0.5;
-    out.push({
-      key: "oi-regime",
-      label: "Open interest 24h",
-      value: `${pct(r.total, 2)} in BTC`,
-      read: `Price ${pct(r.price, 2)}. ${
-        flat ? "Leverage flat, the move is spot driven"
-        : up && oiUp ? "Rising OI with price: new longs, trend has fuel"
-        : up ? "Falling OI into strength: short covering, weaker rally"
-        : oiUp ? "Rising OI into weakness: shorts pressing"
-        : "Both falling: longs capitulating, deleveraging"
-      }`,
-      lean: flat || !oiUp ? "neutral" : up ? "bull" : "bear",
-    });
-  }
+export function buildSignals({ d, l, e, p, m, v, now = Date.now() }: PulseInputs): Signal[] {
+  const out: Draft[] = [];
+  const spot = d?.price ?? v?.index ?? null;
+  const dow = new Date(now).getUTCDay();
+  const weekend = dow === 0 || dow === 6;
 
-  const last = d?.ratios.at(-1);
-  if (last?.binanceAccounts != null) {
-    const a = last.binanceAccounts;
-    const top = last.binanceTop;
-    const share = (x: number) => `${((x / (1 + x)) * 100).toFixed(0)}%`;
-    out.push({
-      key: "ls",
-      label: "Binance traders long",
-      value: `${share(a)} of accounts`,
-      read: `${top != null ? `Top traders ${share(top)} long by size. ` : ""}${
-        a > 2 ? "Retail heavily long, contrarian bearish"
-        : a < 0.9 ? "Retail net short, contrarian bullish"
-        : top != null && top > a + 0.15 ? "Big accounts more long than the crowd"
-        : "Normal skew, no extreme"
-      }`,
-      lean: a > 2 ? "bear" : a < 0.9 ? "bull" : top != null && top > a + 0.15 ? "bull" : "neutral",
-    });
-  }
-
+  // ── Flow ────────────────────────────────────────────────────────────────
   if (e?.days.length) {
     const days = e.days.filter((x) => x.total !== null);
-    const last5 = days.slice(-5).reduce((s, x) => s + (x.total ?? 0), 0);
+    const sum = (n: number) => days.slice(-n).reduce((s, x) => s + (x.total ?? 0), 0);
+    const last5 = sum(5);
     const inflowDays = days.slice(-5).filter((x) => (x.total ?? 0) > 0).length;
     out.push({
       key: "etf",
-      label: "Spot ETF flows, 5 days",
+      label: "ETF flows, 5 days",
+      kind: "Flow",
+      contrarian: false,
       value: `${last5 >= 0 ? "+" : "−"}$${Math.abs(last5).toFixed(0)}M`,
-      read: `${inflowDays} of 5 days inflow. ${
+      read: `${inflowDays} of 5 days inflow, 20 days ${sum(20) >= 0 ? "+" : "−"}$${(Math.abs(sum(20)) / 1000).toFixed(2)}B. ${
         last5 > 500 ? "Steady institutional bid" : last5 < -500 ? "Institutions de-risking" : "Flows mixed"
       }`,
-      lean: last5 > 500 ? "bull" : last5 < -500 ? "bear" : "neutral",
+      score: clamp(dz(last5, 150) / 1000),
+      weight: 1,
     });
   }
 
@@ -161,49 +141,243 @@ export function buildSignals(
     out.push({
       key: "cbp",
       label: "Coinbase premium",
+      kind: "Flow",
+      contrarian: false,
       value: pct(c, 3),
-      read:
+      read: `${
         c > 0.05 ? "Coinbase above Binance: US buyers paying up"
         : c < -0.05 ? "Coinbase below Binance: US spot selling"
-        : "Coinbase and Binance in line",
-      lean: c > 0.05 ? "bull" : c < -0.05 ? "bear" : "neutral",
+        : "Coinbase and Binance in line"
+      }${weekend ? ". Weekend: thin US flow, half weight" : ""}`,
+      score: clamp(dz(c, 0.02) / 0.12),
+      weight: weekend ? 0.4 : 0.75,
     });
   }
 
-  const mag = liqMagnet(l);
-  if (mag && (mag.above || mag.below)) {
-    const bigger = mag.above >= mag.below ? "above" : "below";
-    const peak = bigger === "above" ? mag.peakAbove : mag.peakBelow;
+  // ── Leverage ────────────────────────────────────────────────────────────
+  if (d?.weightedFunding8h != null) {
+    const f = d.weightedFunding8h * 100; // % per 8h
+    const ann = d.weightedFunding8h * 3 * 365 * 100;
+    const rated = d.venues.filter((x) => x.fundingRate8h !== null);
+    const lo = rated.reduce((a, b) => (b.fundingRate8h! < a.fundingRate8h! ? b : a), rated[0]);
+    const hi = rated.reduce((a, b) => (b.fundingRate8h! > a.fundingRate8h! ? b : a), rated[0]);
+    // 0.01%/8h is the exchanges' default (the interest leg), so "normal" is
+    // a small positive number. Only distance beyond the band carries signal.
+    const score = f > 0.01 ? -clamp((f - 0.01) / 0.04) : f < -0.003 ? clamp((-f - 0.003) / 0.02) : 0;
+    const outlier = lo && hi && hi.fundingRate8h! - lo.fundingRate8h! > 0.0001
+      ? `. Range ${lo.exchange} ${pct(lo.fundingRate8h! * 100, 3)} to ${hi.exchange} ${pct(hi.fundingRate8h! * 100, 3)}`
+      : "";
     out.push({
-      key: "magnet",
-      label: "Liquidations within 5%",
-      value: `${usd(mag.above, 1)} up, ${usd(mag.below, 1)} down`,
-      read: `Bigger pool ${bigger}, densest near ${price(peak.price)}. Price often hunts it`,
-      lean: mag.above > mag.below * 1.3 ? "bull" : mag.below > mag.above * 1.3 ? "bear" : "neutral",
+      key: "funding",
+      label: "Funding",
+      kind: "Leverage",
+      contrarian: true,
+      value: `${pct(f, 4)} / 8h`,
+      read: `${
+        f > 0.03 ? `Longs paying up (${ann.toFixed(0)}% APR). Crowded, flush risk`
+        : f > 0.01 ? `Longs paying above baseline (${ann.toFixed(1)}% APR). Mild crowding`
+        : f < -0.003 ? `Shorts paying longs (${ann.toFixed(1)}% APR). Squeeze fuel`
+        : `Near zero (${ann.toFixed(1)}% APR). Nobody paying to lean`
+      }${outlier}`,
+      score,
+      weight: 1,
     });
   }
 
-  const skew = touchSkew(p, d?.price ?? null);
-  if (skew) {
+  const r = d ? oiChange(d.oiHistory, 24) : null;
+  if (r) {
+    const flat = Math.abs(r.total) < 0.5;
+    const drift = Math.abs(r.price) < 0.5;
+    const up = r.price >= 0;
+    const oiUp = r.total >= 0;
     out.push({
-      key: "poly",
-      label: "Polymarket, this month",
-      value: `${(skew.up * 100).toFixed(0)}% up, ${(skew.down * 100).toFixed(0)}% down`,
-      read: `Odds BTC touches +5% (${price(skew.upAt)}) vs −5% (${price(skew.downAt)}) before month end`,
-      lean: skew.up > skew.down * 1.3 ? "bull" : skew.down > skew.up * 1.3 ? "bear" : "neutral",
+      key: "oi-regime",
+      label: "Open interest, 24h",
+      kind: "Leverage",
+      contrarian: false,
+      value: `${pct(r.total, 2)} in BTC`,
+      read: `Price ${pct(r.price, 2)}. ${
+        flat ? "Leverage flat, the move is spot driven"
+        : drift && oiUp ? "Leverage building while price sits still: a breakout is loading"
+        : drift ? "Leverage leaving while price sits still: quieter tape ahead"
+        : up && oiUp ? "Rising OI with price: new longs, trend has fuel"
+        : up ? "Falling OI into strength: short covering, weaker rally"
+        : oiUp ? "Rising OI into weakness: shorts pressing"
+        : "Both falling: longs capitulating, deleveraging"
+      }`,
+      score: flat || drift || !oiUp ? 0 : (up ? 1 : -1) * clamp(r.total / 4, 0, 1),
+      weight: 0.75,
+    });
+  }
+
+  const basis = nearestExpiry(v, 90, (x) => x.basisAnn);
+  if (basis?.basisAnn != null) {
+    const b = basis.basisAnn;
+    out.push({
+      key: "basis",
+      label: "Basis, 3 months",
+      kind: "Leverage",
+      contrarian: true,
+      value: `${pct(b, 1)} a year`,
+      read: `Deribit ${basis.code} vs index. ${
+        b > 12 ? "Rich carry: leveraged longs paying up"
+        : b >= 5 ? "Normal contango"
+        : b >= 0 ? "Thin carry: little appetite for leverage"
+        : "Backwardation: hedgers paying, capitulation style"
+      }`,
+      score: b > 12 ? -clamp((b - 12) / 12) : b < 0 ? clamp(-b / 5) : 0,
+      weight: 0.5,
+    });
+  }
+
+  // ── Options ─────────────────────────────────────────────────────────────
+  const skew = nearestExpiry(v, 30, (x) => x.rr25);
+  if (skew?.rr25 != null) {
+    const rr = skew.rr25;
+    out.push({
+      key: "rr25",
+      label: "Skew, 25Δ RR",
+      kind: "Options",
+      contrarian: false,
+      value: `${rr >= 0 ? "+" : "−"}${Math.abs(rr).toFixed(1)} vol pts`,
+      read: `${skew.code}, ${Math.round(skew.days)}d. ${
+        rr > 2 ? "Calls well bid over puts: desks chasing upside"
+        : rr > 0.5 ? "Calls slightly over puts: mild upside demand"
+        : rr < -2 ? "Puts well bid over calls: paying for crash protection"
+        : rr < -0.5 ? "Puts slightly over calls: hedging demand"
+        : "Flat skew: no directional premium"
+      }`,
+      score: clamp(dz(rr, 0.5) / 5),
+      weight: 0.75,
+    });
+  }
+
+  // ── Crowd ───────────────────────────────────────────────────────────────
+  const last = d?.ratios.at(-1);
+  if (last?.binanceAccounts != null) {
+    const a = last.binanceAccounts;
+    const top = last.binanceTop;
+    const shareOf = (x: number) => x / (1 + x);
+    const share = shareOf(a);
+    const topShare = top != null ? shareOf(top) : null;
+    // Retail sits ~58% long most of the time; 67% is crowded, 49% unusual.
+    const crowd = -clamp(dz(share - 0.58, 0.03) / 0.08);
+    const smart = topShare !== null ? clamp(dz(topShare - share, 0.05) / 0.1) * 0.4 : 0;
+    out.push({
+      key: "ls",
+      label: "Traders long",
+      kind: "Crowd",
+      contrarian: true,
+      value: `${(share * 100).toFixed(0)}% of accounts`,
+      read: `Binance. ${topShare !== null ? `Top traders ${(topShare * 100).toFixed(0)}% long by size. ` : ""}${
+        a > 2 ? "Retail heavily long, contrarian bearish"
+        : a < 0.9 ? "Retail net short, contrarian bullish"
+        : smart > 0 ? "Big accounts more long than the crowd"
+        : smart < 0 ? "Big accounts less long than the crowd"
+        : "Normal skew, no extreme"
+      }`,
+      score: clamp(crowd + smart),
+      weight: 0.75,
     });
   }
 
   if (m?.fearGreed) {
-    const v = m.fearGreed.value;
+    const fg = m.fearGreed.value;
     out.push({
       key: "fng",
       label: "Fear and Greed",
-      value: `${v}, ${m.fearGreed.label}`,
-      read: v >= 75 ? "Euphoria, tops form here" : v <= 25 ? "Capitulation zone, bottoms form here" : "Sentiment mid range",
-      lean: v >= 75 ? "bear" : v <= 25 ? "bull" : "neutral",
+      kind: "Crowd",
+      contrarian: true,
+      value: `${fg}, ${m.fearGreed.label}`,
+      read: fg >= 75 ? "Euphoria, tops form here" : fg <= 25 ? "Capitulation zone, bottoms form here" : fg > 60 ? "Leaning greedy, not extreme" : fg < 40 ? "Leaning fearful, not extreme" : "Sentiment mid range",
+      score: -clamp(dz(fg - 50, 10) / 30),
+      weight: 0.5,
     });
   }
 
-  return out;
+  // ── Odds & liquidity ────────────────────────────────────────────────────
+  const mag = liqMagnet(l);
+  if (mag && (mag.above || mag.below)) {
+    const bigger = mag.above >= mag.below ? "above" : "below";
+    const peak = bigger === "above" ? mag.peakAbove : mag.peakBelow;
+    const imb = (mag.above - mag.below) / (mag.above + mag.below);
+    out.push({
+      key: "magnet",
+      label: "Liq pools, ±5%",
+      kind: "Odds",
+      contrarian: false,
+      value: `${usd(mag.above, 1)} ↑ / ${usd(mag.below, 1)} ↓`,
+      read: Math.abs(imb) < 0.1
+        ? `Balanced pools. Densest ${bigger}, near ${price(peak.price)}`
+        : `Bigger pool ${bigger}, densest near ${price(peak.price)}. Price often hunts it`,
+      score: clamp(dz(imb, 0.1) / 0.4),
+      weight: 0.5,
+    });
+  }
+
+  const t = touchSkew(p, spot);
+  if (t) {
+    const days = Math.max(0.1, (t.endDate - now) / 86_400_000);
+    const dvol = v?.dvol ?? null;
+    const fair = dvol && spot ? (touchProb(spot, t.upAt, dvol, days) + touchProb(spot, t.downAt, dvol, days)) / 2 : null;
+    const avg = (t.up + t.down) / 2;
+    const volNote = fair === null ? ""
+      : Math.abs(avg - fair) < 0.05 ? ` Options agree (${(fair * 100).toFixed(0)}% fair).`
+      : avg < fair ? ` Options imply ${(fair * 100).toFixed(0)}%: the crowd prices less movement.`
+      : ` Options imply ${(fair * 100).toFixed(0)}%: the crowd prices more movement.`;
+    out.push({
+      key: "poly",
+      label: "Polymarket, ±5%",
+      kind: "Odds",
+      contrarian: false,
+      value: `↑${(t.up * 100).toFixed(0)}% / ↓${(t.down * 100).toFixed(0)}%`,
+      read: `Odds of ${price(t.upAt)} vs ${price(t.downAt)} by ${localDay(t.endDate)}.${volNote}`,
+      score: clamp(dz(t.up - t.down, 0.03) / 0.2),
+      weight: 0.5,
+    });
+  }
+
+  return out.map((x) => ({ ...x, score: Number.isFinite(x.score) ? x.score : 0, lean: leanOf(x.score) }));
+}
+
+/** Weighted net bias, −100 … +100, plus how much the reads agree. */
+export function composite(signals: Signal[]) {
+  const w = signals.reduce((s, x) => s + x.weight, 0);
+  if (!w) return null;
+  const net = (signals.reduce((s, x) => s + x.weight * x.score, 0) / w) * 100;
+  const bullW = signals.filter((x) => x.lean === "bull").reduce((s, x) => s + x.weight, 0);
+  const bearW = signals.filter((x) => x.lean === "bear").reduce((s, x) => s + x.weight, 0);
+  // Agreement: the share of directional weight on the winning side.
+  const agree = bullW + bearW > 0 ? Math.max(bullW, bearW) / (bullW + bearW) : null;
+  const a = Math.abs(net);
+  const side = net > 0 ? "bullish" : "bearish";
+  const label = a < 8 ? "No edge, reads cancel out" : a < 20 ? `Mildly ${side}` : a < 40 ? `Moderately ${side}` : `Strongly ${side}`;
+  return {
+    net,
+    label,
+    agree,
+    bull: signals.filter((x) => x.lean === "bull"),
+    bear: signals.filter((x) => x.lean === "bear"),
+    neutral: signals.filter((x) => x.lean === "neutral"),
+  };
+}
+
+/** Non-directional context: how much BTC is expected to move, and is vol cheap or rich. */
+export function volRegime(v: VolData | null, px: PriceData | null, spot: number | null) {
+  const dvol = v?.dvol ?? null;
+  const rv7 = px ? realizedVol(px.daily.slice(0, -1), 7) : null; // completed days only
+  const rv30 = px ? realizedVol(px.daily.slice(0, -1), 30) : null;
+  const near = nearestExpiry(v, 7, (x) => x.atmIv);
+  const far = nearestExpiry(v, 90, (x) => x.atmIv);
+  return {
+    dvol,
+    dvolChg: dvol !== null && v?.dvol24hAgo != null ? dvol - v.dvol24hAgo : null,
+    rv7,
+    rv30,
+    premium: dvol !== null && rv30 !== null ? dvol - rv30 : null, // IV − RV, vol points
+    day: spot && dvol ? sigmaMove(spot, dvol, 1) : null,
+    week: spot && dvol ? sigmaMove(spot, dvol, 7) : null,
+    // Short-dated IV above long-dated = the market expects an event soon.
+    inverted: near?.atmIv != null && far?.atmIv != null && near !== far ? near.atmIv > far.atmIv + 1 : null,
+  };
 }

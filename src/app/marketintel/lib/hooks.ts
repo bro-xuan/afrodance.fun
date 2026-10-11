@@ -75,13 +75,15 @@ export function useWidth<T extends HTMLElement>() {
 }
 
 /**
- * Live BTC spot + 24h change from Binance's public miniTicker stream, with
+ * Live BTC spot + 24h change and range from Binance's public miniTicker stream, with
  * Coinbase as fallback when Binance is unreachable (e.g. US visitors).
  */
 export function useLivePrice() {
-  const [state, setState] = useState<{ price: number | null; open24h: number | null; src: string | null }>({
+  const [state, setState] = useState<{ price: number | null; open24h: number | null; high24h: number | null; low24h: number | null; src: string | null }>({
     price: null,
     open24h: null,
+    high24h: null,
+    low24h: null,
     src: null,
   });
   useEffect(() => {
@@ -96,7 +98,7 @@ export function useLivePrice() {
         fallback?.send(JSON.stringify({ type: "subscribe", product_ids: ["BTC-USD"], channels: ["ticker"] }));
       fallback.onmessage = (m) => {
         const d = JSON.parse(m.data);
-        if (d.type === "ticker") setState({ price: Number(d.price), open24h: Number(d.open_24h), src: "Coinbase" });
+        if (d.type === "ticker") setState({ price: Number(d.price), open24h: Number(d.open_24h), high24h: Number(d.high_24h), low24h: Number(d.low_24h), src: "Coinbase" });
       };
     };
 
@@ -104,7 +106,7 @@ export function useLivePrice() {
       ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@miniTicker");
       ws.onmessage = (m) => {
         const d = JSON.parse(m.data);
-        setState({ price: Number(d.c), open24h: Number(d.o), src: "Binance" });
+        setState({ price: Number(d.c), open24h: Number(d.o), high24h: Number(d.h), low24h: Number(d.l), src: "Binance" });
       };
       ws.onerror = startCoinbase;
       ws.onclose = () => !closed && startCoinbase();

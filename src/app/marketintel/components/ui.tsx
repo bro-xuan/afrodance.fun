@@ -6,7 +6,7 @@ import type { Lean } from "../lib/signals";
 
 export function Section({ n, title, kicker, children }: { n: string; title: string; kicker?: ReactNode; children: ReactNode }) {
   return (
-    <section className="mt-12 first:mt-0" id={title.toLowerCase().replace(/[^a-z]+/g, "-")}>
+    <section className="mt-12 scroll-mt-28 first:mt-0" id={title.toLowerCase().replace(/[^a-z]+/g, "-")}>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-x-6 gap-y-1 border-b pb-3" style={{ borderColor: C.ink }}>
         <h2 className="flex items-baseline gap-3 text-[1.5rem] font-semibold tracking-[-0.02em]">
           <span className="mi-num text-[0.9rem] font-medium" style={{ color: C.accent }}>{n}</span>
