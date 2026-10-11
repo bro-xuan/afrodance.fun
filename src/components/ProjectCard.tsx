@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 import { Project, ProjectVisual } from "@/types";
 import BtcCycleVisual from "./visuals/BtcCycleVisual";
+import MarketIntelVisual from "./visuals/MarketIntelVisual";
 import WhaleTrackerVisual from "./visuals/WhaleTrackerVisual";
 import ReferenceCallVisual from "./visuals/ReferenceCallVisual";
 import AnalogCameraVisual from "./visuals/AnalogCameraVisual";
@@ -15,6 +16,7 @@ import MicWaveformVisual from "./visuals/MicWaveformVisual";
 // Animated pixel-art scenes; projects without one fall back to the emoji tile.
 const visuals: Record<ProjectVisual, ComponentType> = {
   "btc-cycle": BtcCycleVisual,
+  "market-intel": MarketIntelVisual,
   "whale-tracker": WhaleTrackerVisual,
   "reference-call": ReferenceCallVisual,
   "analog-camera": AnalogCameraVisual,
