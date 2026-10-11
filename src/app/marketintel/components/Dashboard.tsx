@@ -7,7 +7,8 @@ import { useApi, useNow } from "../lib/hooks";
 import { keyLevels } from "../lib/quant";
 import { buildSignals, liqMagnet, volRegime } from "../lib/signals";
 import type { PulseHistory } from "../lib/track";
-import type { DerivativesData, EtfData, EventsData, FedData, LiquidationData, MacroData, PolymarketData, PriceData, VolData } from "../lib/types";
+import type { DerivativesData, EtfData, EventsData, MarketEvent, FedData, LiquidationData, MacroData, PolymarketData, PriceData, VolData } from "../lib/types";
+import { BiasCheck } from "./BiasCheck";
 import { Calendar } from "./Calendar";
 import { EtfFlows } from "./EtfFlows";
 import { Liquidations } from "./Liquidations";
@@ -22,6 +23,7 @@ import { Volatility } from "./Volatility";
 import { Section } from "./ui";
 
 const API = "/api/marketintel";
+const NO_EVENTS: MarketEvent[] = [];
 
 export function Dashboard() {
   const der = useApi<DerivativesData>(`${API}/derivatives`, 30_000);
@@ -71,35 +73,39 @@ export function Dashboard() {
           </div>
         </Section>
 
-        <Section n="02" title="Price & levels" kicker="Where the market is, and the levels traders are watching">
+        <Section n="02" title="Check a trade" kicker="Pick a side and a horizon: the evidence for and against, a stop, targets and what's coming up">
+          <BiasCheck signals={signals} levels={levels} spot={spot} dvol={vol.data?.dvol ?? null} events={ev.data?.events ?? NO_EVENTS} now={now} />
+        </Section>
+
+        <Section n="03" title="Price & levels" kicker="Where the market is, and the levels traders are watching">
           <PriceLevels px={px.data} levels={levels} spot={spot} />
         </Section>
 
-        <Section n="03" title="Positioning" kicker="Binance, Bybit, OKX, Hyperliquid, Bitget, Deribit">
+        <Section n="04" title="Positioning" kicker="Binance, Bybit, OKX, Hyperliquid, Bitget, Deribit">
           <Positioning d={der.data} />
         </Section>
 
-        <Section n="04" title="Liquidations" kicker="Where leveraged positions get force closed">
+        <Section n="05" title="Liquidations" kicker="Where leveraged positions get force closed">
           <Liquidations l={liq.data} spot={spot} />
         </Section>
 
-        <Section n="05" title="Volatility & term structure" kicker="Deribit options and futures: what vol costs, skew, and carry">
+        <Section n="06" title="Volatility & term structure" kicker="Deribit options and futures: what vol costs, skew, and carry">
           <Volatility v={vol.data} regime={regime} />
         </Section>
 
-        <Section n="06" title="ETF flows" kicker="US spot bitcoin ETFs, daily">
+        <Section n="07" title="ETF flows" kicker="US spot bitcoin ETFs, daily">
           <EtfFlows e={etf.data} />
         </Section>
 
-        <Section n="07" title="Prediction markets" kicker="Polymarket. Picks up each new market automatically as old ones settle">
+        <Section n="08" title="Prediction markets" kicker="Polymarket. Picks up each new market automatically as old ones settle">
           <Predictions p={poly.data} spot={spot} fed={fed.data} />
         </Section>
 
-        <Section n="08" title="Catalyst calendar" kicker="Fed, CPI, jobs, earnings, expiries">
+        <Section n="09" title="Catalyst calendar" kicker="Fed, CPI, jobs, earnings, expiries">
           <Calendar ev={ev.data} />
         </Section>
 
-        <Section n="09" title="Macro & sentiment" kicker="Liquidity, rates, dollar, risk, volatility">
+        <Section n="10" title="Macro & sentiment" kicker="Liquidity, rates, dollar, risk, volatility">
           <Macro m={mac.data} />
         </Section>
 

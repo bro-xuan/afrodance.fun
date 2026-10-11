@@ -3,6 +3,11 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## 2026-10-11, Market Intel: check a trade
+
+- **New "Check a trade" section.** Pick long or short and a horizon (and optionally your entry), and the page answers with: whether the pulse agrees, the reads for and against your trade, a stop just beyond the nearest chart level against you, the next two levels as targets, reward to risk and the breakeven win rate, options-implied odds of touching the target and the stop within the horizon, and the high-impact events landing before it ends.
+- Warnings for the usual mistakes: a stop inside half a normal day's move, a stop more likely than not to be tagged, reward under risk, a liquidation pool between entry and stop, trading against the pulse, and an event inside an intraday window.
+
 ## 2026-10-11, Market Intel: bias by horizon, with a track record
 
 - **The pulse now gives three biases, Intraday, Swing and Macro, instead of one blended number.** Each read counts only toward the horizons it informs, with its weight shown on its card, so a bullish intraday tape no longer cancels out bearish multi-week ETF flows.
