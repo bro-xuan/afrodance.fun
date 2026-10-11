@@ -87,7 +87,10 @@ export async function GET() {
     sources.push({ source: "forexfactory", ok: false, error: e instanceof Error ? e.message : String(e) });
   }
 
-  const liveDays = new Set(live.filter((e) => KEY_RELEASE.test(e.title)).map((e) => new Date(e.t).toISOString().slice(0, 10)));
+  // A live row replaces the curated one for the same kind of release that day
+  // (a CPI print never knocks out an FOMC row).
+  const dayKey = (e: { t: number; category: string }) => `${e.category}:${new Date(e.t).toISOString().slice(0, 10)}`;
+  const liveDays = new Set(live.filter((e) => KEY_RELEASE.test(e.title)).map(dayKey));
 
   const fomc: Curated[] = FOMC.map((f) => ({
     date: f.date,
@@ -107,7 +110,7 @@ export async function GET() {
     note: c.note,
     estimated: c.estimated,
     source: c.source,
-  })).filter((e) => !(e.category !== "earnings" && liveDays.has(new Date(e.t).toISOString().slice(0, 10))));
+  })).filter((e) => !(e.category !== "earnings" && liveDays.has(dayKey(e))));
 
   const expiries: MarketEvent[] = lastFridays(new Date(now), 3).map((d) => {
     const quarterly = [2, 5, 8, 11].includes(d.getUTCMonth());

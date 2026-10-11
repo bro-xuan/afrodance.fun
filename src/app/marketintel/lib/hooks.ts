@@ -14,7 +14,7 @@ export function useApi<T>(url: string, intervalMs: number) {
     const ctrl = new AbortController();
     const run = async () => {
       try {
-        const r = await fetch(url, { signal: ctrl.signal });
+        const r = await fetch(url, { signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(20_000)]) });
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         const j = (await r.json()) as T;
         if (alive) {
@@ -22,7 +22,7 @@ export function useApi<T>(url: string, intervalMs: number) {
           setError(null);
         }
       } catch (e) {
-        if (alive && !(e instanceof DOMException && e.name === "AbortError")) setError(e instanceof Error ? e.message : String(e));
+        if (alive && !ctrl.signal.aborted) setError(e instanceof Error ? e.message : String(e));
       } finally {
         if (alive) {
           setLoading(false);

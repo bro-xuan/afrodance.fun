@@ -40,8 +40,8 @@ type PEvent = { slug: string; endDate?: string; markets?: PMarket[] };
 function polyMove(s: string): FedMove | null {
   const t = s.toLowerCase();
   if (t.includes("no change")) return "hold";
-  if (t.includes("decrease")) return t.includes("50") ? "cut50" : "cut25";
-  if (t.includes("increase")) return t.includes("50") ? "hike50" : "hike25";
+  if (t.includes("decrease")) return /\b(50|75|100)\b/.test(t) ? "cut50" : "cut25";
+  if (t.includes("increase")) return /\b(50|75|100)\b/.test(t) ? "hike50" : "hike25";
   return null;
 }
 
@@ -51,7 +51,12 @@ const mid = (bid: number | null, ask: number | null, last: number | null) =>
 async function fredLatest(id: string) {
   const since = new Date(Date.now() - 30 * 86_400_000).toISOString().slice(0, 10);
   const rows = (await getText(`https://fred.stlouisfed.org/graph/fredgraph.csv?id=${id}&cosd=${since}`)).trim().split("\n");
-  return num(rows.at(-1)?.split(",")[1]);
+  // FRED writes "." for days with no print; take the latest real value.
+  for (let i = rows.length - 1; i > 0; i--) {
+    const v = num(rows[i].split(",")[1]);
+    if (v !== null) return v;
+  }
+  return null;
 }
 
 // ── Fed funds futures ──────────────────────────────────────────────────────
@@ -116,6 +121,11 @@ export async function GET() {
   });
 
   const implied = values["cme-futures"] ?? new Map<string, number | null>();
+  const missing = [...implied.values()].filter((r) => r === null).length;
+  if (missing) {
+    const s = sources.find((x) => x.source === "cme-futures");
+    if (s) Object.assign(s, { ok: false, error: `${missing} of ${implied.size} contract months missing` });
+  }
   const rate = (y: number, m: number) => implied.get(monthKey(y, m)) ?? null;
   const meetingMonths = new Set(upcoming.map((f) => {
     const [y, m] = f.date.split("-").map(Number);
@@ -146,7 +156,10 @@ export async function GET() {
     const avg = rate(y, m);
     const nextRate = meetingMonths.has(monthKey(next.y, next.m)) ? null : rate(next.y, next.m);
     // New rate takes effect the day after the decision: d days at the old rate.
-    let end: number | null = nextRate ?? (avg !== null && start !== null ? (avg - (d / N) * start) / ((N - d) / N) : null);
+    // Solving from the meeting month alone amplifies noise by N / (N − d), so
+    // only do it with enough days left after the meeting.
+    let end: number | null =
+      nextRate ?? (avg !== null && start !== null && N - d >= 7 ? (avg - (d / N) * start) / ((N - d) / N) : null);
     if (start === null || end === null) start = end = null;
     prevEnd = end;
 

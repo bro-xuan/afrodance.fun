@@ -16,9 +16,12 @@ export type OiVenue = (typeof OI_VENUES)[number];
 /** % change in OI (BTC terms) over the last `hours`, per venue and combined. */
 export function oiChange(h: OiPoint[], hours: number) {
   const full = h.filter((p) => OI_VENUES.every((v) => p[v] !== null) && p.price !== null);
-  if (full.length <= hours) return null;
+  if (full.length < 2) return null;
   const now = full[full.length - 1];
-  const then = full[full.length - 1 - hours];
+  // Look up by time, not row count, so a missing hour can't stretch the window.
+  const target = now.t - hours * 3_600_000;
+  const then = full.find((p) => Math.abs(p.t - target) <= 30 * 60_000);
+  if (!then) return null;
   const sum = (p: OiPoint) => OI_VENUES.reduce((s, v) => s + p[v]!, 0);
   const venues = Object.fromEntries(OI_VENUES.map((v) => [v, (now[v]! / then[v]! - 1) * 100])) as Record<OiVenue, number>;
   return {

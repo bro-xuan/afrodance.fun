@@ -8,9 +8,18 @@ import { FedWatch } from "./FedWatch";
 import { Empty, Panel, Skeleton } from "./ui";
 
 export function Predictions({ p, spot, fed }: { p: PolymarketData | null; spot: number | null; fed: FedData | null }) {
+  // The Fed panel has its own futures source, so it renders even when Polymarket is down.
+  return (
+    <div className="space-y-6">
+      <PolyMarkets p={p} spot={spot} fed={<FedWatch f={fed} />} />
+    </div>
+  );
+}
+
+function PolyMarkets({ p, spot, fed }: { p: PolymarketData | null; spot: number | null; fed: React.ReactNode }) {
   const now = useNow(1000);
-  if (!p) return <Skeleton h="22rem" />;
-  if (!p.markets.length) return <Panel sources={p.sources}><Empty>No live Polymarket markets found right now.</Empty></Panel>;
+  if (!p) return <><Skeleton h="22rem" />{fed}</>;
+  if (!p.markets.length) return <><Panel sources={p.sources}><Empty>No live Polymarket markets found right now.</Empty></Panel>{fed}</>;
 
   const btc = p.markets.filter((m) => m.group === "btc");
   const macro = p.markets.filter((m) => m.group === "macro");
@@ -27,7 +36,7 @@ export function Predictions({ p, spot, fed }: { p: PolymarketData | null; spot: 
         ))}
       </div>
 
-      <FedWatch f={fed} />
+      {fed}
 
       {macro.length > 0 && (
         <div>

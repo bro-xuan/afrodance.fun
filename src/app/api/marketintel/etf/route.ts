@@ -59,12 +59,15 @@ function parseFarside(html: string): Omit<Stored, "savedAt"> {
   const header = rows.find((r) => r.includes("IBIT"));
   if (!header) throw new Error("ETF header row not found");
   const tickers = header.slice(1).filter((x) => x && x !== "Total");
+  // Values are read by position, so a layout change would shift flows onto the
+  // wrong fund. Refuse to parse rather than store bad numbers.
+  if (header.length !== tickers.length + 2) throw new Error("ETF header layout changed");
 
   const days: EtfDay[] = [];
   let cumulative: number | null = null;
   for (const r of rows) {
     const m = r[0]?.match(/^(\d{2}) (\w{3}) (\d{4})$/);
-    if (m && MONTHS[m[2]]) {
+    if (m && MONTHS[m[2]] && r.length === header.length) {
       const funds: Record<string, number | null> = {};
       tickers.forEach((tk, i) => (funds[tk] = flow(r[i + 1] ?? "")));
       days.push({ date: `${m[3]}-${MONTHS[m[2]]}-${m[1]}`, total: flow(r[tickers.length + 1] ?? ""), funds });
@@ -101,7 +104,10 @@ export async function GET() {
 
   try {
     const needSeed = !stored || stored.days.length < 30;
-    const html = await getText(needSeed ? ALL_URL : RECENT_URL, needSeed ? 25000 : 12000);
+    // If the big seed page keeps failing, still take the recent page.
+    const html = needSeed
+      ? await getText(ALL_URL, 25000).catch(() => getText(RECENT_URL, 12000))
+      : await getText(RECENT_URL, 12000);
     const merged = merge(stored, parseFarside(html));
     if (redis) await redis.set(KEY, merged).catch(() => {});
     const px = await pricesP;

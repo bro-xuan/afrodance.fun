@@ -24,9 +24,7 @@ export const maxDuration = 25;
  *      aggregate-OI / Binance-OI ratio.
  *
  * Nobody outside an exchange knows true per-position leverage, so this is a
- * model, labelled as such on the page. Actual exchange-reported liquidations
- * are served alongside (OKX REST backfill here; live Binance/Bybit/OKX
- * websockets in the browser).
+ * model, labelled as such on the page.
  */
 
 const BF = "https://fapi.binance.com";

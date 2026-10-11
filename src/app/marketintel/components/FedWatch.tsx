@@ -58,6 +58,7 @@ export function FedWatch({ f }: { f: FedData | null }) {
           const rows = m.moves.filter((x) => (x.fedwatch ?? 0) >= 0.01 || (x.polymarket ?? 0) >= 0.01);
           const score = (x: (typeof m.moves)[number]) => x.fedwatch ?? x.polymarket ?? 0;
           const top = m.moves.reduce((a, b) => (score(b) > score(a) ? b : a));
+          const noData = m.moves.every((x) => x.fedwatch === null && x.polymarket === null);
           return (
             <div key={m.t} className="flex flex-col">
               <div className="flex items-baseline justify-between gap-2">
@@ -68,7 +69,7 @@ export function FedWatch({ f }: { f: FedData | null }) {
                 Decision {localTime(m.t)} {tzLabel(m.t)}
               </div>
 
-              <div className="mt-3 text-[0.9rem]" style={{ color: C.ink2 }}>Most likely: <span className="font-semibold" style={{ color: C.ink }}>{top.label.toLowerCase()}</span></div>
+              <div className="mt-3 text-[0.9rem]" style={{ color: C.ink2 }}>Most likely: <span className="font-semibold" style={{ color: C.ink }}>{noData ? "n/a" : top.label.toLowerCase()}</span></div>
               <div className="mt-1 grid grid-cols-2 gap-3">
                 {(["fedwatch", "polymarket"] as const).map((k) => (
                   <div key={k}>
