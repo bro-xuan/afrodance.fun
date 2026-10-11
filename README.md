@@ -84,6 +84,7 @@ public/
 | `npm run build` | Production build |
 | `npm run start` | Start production server |
 | `npm run lint` | Run ESLint |
+| `npm test` | Run the vitest suite |
 | `npm run fetch:indicators` | Refresh the BTC Bottom Indicator data snapshot |
 
 ## Easter Egg
