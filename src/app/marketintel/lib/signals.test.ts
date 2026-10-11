@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildSignals, composite, type Signal } from "./signals";
-import type { Candle, DerivativesData, MacroData, MacroStat, PriceData, RealizedLiqData } from "./types";
+import type { Candle, CrossData, DerivativesData, MacroData, MacroStat, PriceData, RealizedLiqData } from "./types";
 
 const DAY = 86_400_000;
 const now = Date.UTC(2026, 9, 11, 20);
@@ -155,5 +155,39 @@ describe("realized liquidations read", () => {
   it("stays at zero when it's quiet, and out when the feed failed", () => {
     expect(run(0.2e6, 0.1e6)!.score).toBe(0);
     expect(run(9e6, 0, false)).toBeUndefined();
+  });
+});
+
+describe("risk tape read", () => {
+  const cross = (nqChange: number, nqCorr: number, stale = false): CrossData => ({
+    asOf: now, sources: [],
+    quotes: [{ key: "nq", label: "NQ", unit: "index", last: 30_000, t: now, change: nqChange, stale }],
+    correlations: [{ key: "nq", label: "", corr30: nqCorr, corr90: null, beta30: null }],
+  });
+  const run = (c: CrossData) => find(buildSignals({ d: null, l: null, e: null, p: null, m: null, v: null, px: null, x: c, now }), "risktape");
+
+  it("turns an equity rally into a BTC tailwind only when they're correlated", () => {
+    expect(run(cross(1.5, 0.6))!.score).toBeGreaterThan(0.5);
+    expect(run(cross(1.5, 0.05))!.score).toBe(0);
+    expect(run(cross(-1.5, 0.6))!.score).toBeLessThan(-0.5);
+  });
+  it("ignores closed markets", () => {
+    expect(run(cross(1.5, 0.6, true))).toBeUndefined();
+  });
+});
+
+describe("correlation helpers", () => {
+  it("pairs returns by date and skips dates the other market didn't trade", async () => {
+    const { corr, pairedReturns } = await import("./quant");
+    const a = [{ date: "d1", c: 100 }, { date: "d2", c: 110 }, { date: "d3", c: 99 }, { date: "d4", c: 108.9 }];
+    const b = [{ date: "d1", c: 10 }, { date: "d3", c: 9.9 }, { date: "d4", c: 10.89 }];
+    const [ra, rb] = pairedReturns(a, b);
+    expect(ra).toHaveLength(2);
+    expect(ra[0]).toBeCloseTo(Math.log(0.99)); // d1 → d3, BTC's d2 move folded in
+    expect(rb[1]).toBeCloseTo(Math.log(1.1));
+    const xs = Array.from({ length: 20 }, (_, i) => Math.sin(i));
+    expect(corr(xs, xs)).toBeCloseTo(1);
+    expect(corr(xs, xs.map((y) => -y))).toBeCloseTo(-1);
+    expect(corr(xs.slice(0, 5), xs.slice(0, 5))).toBeNull();
   });
 });

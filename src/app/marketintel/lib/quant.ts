@@ -170,3 +170,38 @@ export function keyLevels(
   const ref = spot ?? hourly.at(-1)?.c;
   return out.filter((l) => !ref || Math.abs(l.price / ref - 1) <= 0.25).sort((a, b) => b.price - a.price);
 }
+
+/** Pearson correlation of two equal-length series, or null under 10 points. */
+export function corr(a: number[], b: number[]): number | null {
+  const n = Math.min(a.length, b.length);
+  if (n < 10) return null;
+  const ma = a.slice(0, n).reduce((s, x) => s + x, 0) / n;
+  const mb = b.slice(0, n).reduce((s, x) => s + x, 0) / n;
+  let sab = 0;
+  let saa = 0;
+  let sbb = 0;
+  for (let i = 0; i < n; i++) {
+    sab += (a[i] - ma) * (b[i] - mb);
+    saa += (a[i] - ma) ** 2;
+    sbb += (b[i] - mb) ** 2;
+  }
+  return saa && sbb ? sab / Math.sqrt(saa * sbb) : null;
+}
+
+/**
+ * Daily log returns of two close series matched by calendar date, so BTC's
+ * weekend days drop out against a market that only trades weekdays. Each
+ * return spans from the previous shared date, so a Monday BTC return
+ * includes its weekend like the other market's Monday gap does.
+ */
+export function pairedReturns(a: { date: string; c: number }[], b: { date: string; c: number }[]): [number[], number[]] {
+  const bm = new Map(b.map((x) => [x.date, x.c]));
+  const shared = a.filter((x) => bm.has(x.date));
+  const ra: number[] = [];
+  const rb: number[] = [];
+  for (let i = 1; i < shared.length; i++) {
+    ra.push(Math.log(shared[i].c / shared[i - 1].c));
+    rb.push(Math.log(bm.get(shared[i].date)! / bm.get(shared[i - 1].date)!));
+  }
+  return [ra, rb];
+}

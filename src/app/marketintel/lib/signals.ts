@@ -1,4 +1,4 @@
-import type { DerivativesData, EtfData, LiquidationData, MacroData, OiPoint, PolymarketData, PriceData, RealizedLiqData, VolData } from "./types";
+import type { CrossData, DerivativesData, EtfData, LiquidationData, MacroData, OiPoint, PolymarketData, PriceData, RealizedLiqData, VolData } from "./types";
 import { localDay, pct, price, usd } from "./format";
 import { leverageContext, nearestExpiry, ordinal, realizedVol, sigmaMove, sma, touchProb } from "./quant";
 
@@ -124,6 +124,7 @@ export type PulseInputs = {
   v: VolData | null;
   px: PriceData | null;
   lq?: RealizedLiqData | null;
+  x?: CrossData | null;
   now?: number;
 };
 
@@ -135,7 +136,7 @@ export function liqScale(d: DerivativesData | null): number | null {
 
 type Draft = Omit<Signal, "lean">;
 
-export function buildSignals({ d, l, e, p, m, v, px, lq = null, now = Date.now() }: PulseInputs): Signal[] {
+export function buildSignals({ d, l, e, p, m, v, px, lq = null, x = null, now = Date.now() }: PulseInputs): Signal[] {
   const out: Draft[] = [];
   const spot = d?.price ?? v?.index ?? null;
   const dow = new Date(now).getUTCDay();
@@ -490,6 +491,34 @@ export function buildSignals({ d, l, e, p, m, v, px, lq = null, now = Date.now()
     });
   }
 
+  // Risk tape: today's equity and dollar moves, each weighted by how tightly
+  // BTC has actually traded with that market over the last 30 sessions. A
+  // 1% Nasdaq rally means little for BTC at a 0.1 correlation, a lot at 0.6.
+  const legsX = (["nq", "dxy"] as const).flatMap((k) => {
+    const q = x?.quotes.find((y) => y.key === k);
+    const c = x?.correlations.find((y) => y.key === k)?.corr30;
+    return q && !q.stale && q.change !== null && c != null ? [{ k, change: q.change, c, push: q.change * c }] : [];
+  });
+  if (legsX.length) {
+    const push = legsX.reduce((s, y) => s + y.push, 0);
+    const nq = legsX.find((y) => y.k === "nq");
+    const dx = legsX.find((y) => y.k === "dxy");
+    out.push({
+      key: "risktape",
+      label: "Risk tape, today",
+      kind: "Macro",
+      contrarian: false,
+      value: [nq && `NQ ${pct(nq.change, 1)}`, dx && `DXY ${pct(dx.change, 1)}`].filter(Boolean).join(", "),
+      read: `30d correlation to BTC: ${[nq && `Nasdaq ${nq.c.toFixed(2)}`, dx && `dollar ${dx.c.toFixed(2)}`].filter(Boolean).join(", ")}. ${
+        Math.abs(push) < 0.15 ? "No meaningful push from macro today"
+        : push > 0 ? "Cross-asset tape is a tailwind for BTC today"
+        : "Cross-asset tape is a headwind for BTC today"
+      }`,
+      score: clamp(dz(push, 0.15) / 0.8),
+      w: { intraday: 0.5, swing: 0.25 },
+    });
+  }
+
   // ── Macro ───────────────────────────────────────────────────────────────
   // The slow tide: more liquidity and stablecoins lift BTC, a rising dollar
   // and rising yields drain it. FRED prints daily or weekly, so this only
@@ -500,7 +529,9 @@ export function buildSignals({ d, l, e, p, m, v, px, lq = null, now = Date.now()
   };
   const liq = stat("netliq");
   const dxy = stat("dxy");
-  const y10 = stat("us10y");
+  // Real yields are the cleaner headwind gauge; fall back to nominal.
+  const real = stat("real10y");
+  const y10 = real ?? stat("us10y");
   const stb = stat("stables");
   const legs = [
     liq && { w: 0.3, s: clamp(dz(liq.pct, 0.5) / 3) },
@@ -520,7 +551,7 @@ export function buildSignals({ d, l, e, p, m, v, px, lq = null, now = Date.now()
       contrarian: false,
       value: [
         dxy && `$ ${pct(dxy.pct, 1)}`,
-        y10 && `10Y ${y10.change >= 0 ? "+" : "−"}${Math.abs(y10.change * 100).toFixed(0)}bp`,
+        y10 && `${real ? "real 10Y" : "10Y"} ${y10.change >= 0 ? "+" : "−"}${Math.abs(y10.change * 100).toFixed(0)}bp`,
       ].filter(Boolean).join(", "),
       read: `Over 30 days: net liquidity ${liq ? pct(liq.pct, 1) : "n/a"}, stablecoins ${stb ? pct(stb.pct, 1) : "n/a"}. ${
         tight && !easy ? "Dollar or yields rising: tightening, a headwind"

@@ -2,6 +2,7 @@ import indicators from "@/app/bottom_indicator/data/indicators.json";
 import { cmeGap, type Bar } from "@/app/marketintel/lib/levels";
 import type { Candle, PriceData } from "@/app/marketintel/lib/types";
 import { cachedJson, getJSON, num, settle } from "../_lib/http";
+import { yahooChart } from "../_lib/yahoo";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -41,22 +42,8 @@ async function bybit(interval: string, limit: number): Promise<Candle[]> {
     .reverse(); // Bybit lists newest first
 }
 
-/** CME Bitcoin futures (front month), hourly, ~60 days, from Yahoo's chart API. */
-async function cme(): Promise<Bar[]> {
-  type Chart = { chart: { result: { timestamp: number[]; indicators: { quote: { open: (number | null)[]; high: (number | null)[]; low: (number | null)[]; close: (number | null)[] }[] } }[] } };
-  for (const host of ["query1", "query2"]) {
-    try {
-      const r = await getJSON<Chart>(`https://${host}.finance.yahoo.com/v8/finance/chart/BTC=F?range=60d&interval=1h`);
-      const res = r.chart.result[0];
-      const q = res.indicators.quote[0];
-      return res.timestamp.flatMap((t, i) => {
-        const [o, h, l, c] = [q.open[i], q.high[i], q.low[i], q.close[i]];
-        return o && h && l && c ? [{ t: t * 1000, o, h, l, c }] : [];
-      });
-    } catch {}
-  }
-  throw new Error("Yahoo unreachable");
-}
+/** CME Bitcoin futures (front month), hourly, ~60 days. */
+const cme = async (): Promise<Bar[]> => (await yahooChart("BTC=F", "60d", "1h")).bars;
 
 /**
  * Cost-basis levels from the bottom-indicator snapshot (refreshed daily):

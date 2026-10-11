@@ -120,7 +120,7 @@ export type MacroStat = {
   key: string;
   label: string;
   value: number | null;
-  unit: "pct" | "usd" | "index" | "usdT" | "usdB" | "ratio";
+  unit: "pct" | "usd" | "index" | "usdT" | "usdB" | "ratio" | "bp";
   change?: number | null; // absolute change over `changeLabel`
   changeLabel?: string;
   series: Series;
@@ -139,6 +139,22 @@ export type MacroData = Envelope<{
   stats: MacroStat[];
   fearGreed: { value: number; label: string; series: Series } | null;
   options: OptionsSnapshot;
+}>;
+
+// ── Cross-asset (live) ─────────────────────────────────────────────────────
+export type CrossQuote = {
+  key: string; // "dxy", "us10y", "nq", "es", "gold"
+  label: string;
+  unit: "index" | "pct" | "usd";
+  last: number;
+  t: number; // quote time
+  change: number | null; // vs previous session: % for prices, percentage points for yields
+  stale: boolean; // older than 6h: that market is closed
+};
+
+export type CrossData = Envelope<{
+  quotes: CrossQuote[];
+  correlations: { key: string; label: string; corr30: number | null; corr90: number | null; beta30: number | null }[];
 }>;
 
 // ── Fed watch ──────────────────────────────────────────────────────────────
