@@ -3,6 +3,15 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## 2026-10-11, Market Intel upgrade
+
+- **Market pulse now gives one weighted net bias (−100 to +100)** instead of counting votes. Each read is scored against its normal range, so noise like near-zero funding no longer shows up as "bullish". Cards say whether a read is a flow, leverage, options, crowd or odds signal and whether it's contrarian.
+- **New pulse reads:** options skew (25-delta risk reversal), 3-month futures basis, and Polymarket touch odds compared with what options imply.
+- **Expected move:** 1-day and 7-day expected range from implied vol, implied vs realized vol, and term-structure shape.
+- **New Price & levels section:** 1H and 1D candles with spot CVD, plus previous day high/low, 7-day range, weekly and monthly open, liquidation clusters, max pain and ±1σ lines, with a distance-from-spot ladder.
+- **New Volatility & term structure section:** ATM implied vol, skew, butterfly, futures basis and options OI for every Deribit expiry.
+- 24h high/low in the top bar; nav jumps no longer hide section titles under the header.
+
 ## [0.4.0.0] - 2026-10-11
 
 ### Added
