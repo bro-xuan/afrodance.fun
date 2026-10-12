@@ -1,4 +1,4 @@
-import { Redis } from "@upstash/redis";
+import { redis } from "@/lib/redis";
 import { after, NextResponse, type NextRequest } from "next/server";
 import { buildSignals, composite, HORIZONS, MODEL, type Horizon } from "@/app/marketintel/lib/signals";
 import { GRADE_DAYS, HOUR, horizonStats, MIN_READS, type PulseHistory, type PulseSample } from "@/app/marketintel/lib/track";
@@ -33,8 +33,6 @@ const DAY = 24 * HOUR;
 const KEEP = 3 * 365 * DAY;
 const CHUNK = 30 * DAY; // ~720 samples per Redis read
 
-const redis =
-  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN ? Redis.fromEnv() : null;
 
 const bucketOf = (t: number) => Math.floor(t / HOUR) * HOUR;
 
@@ -108,10 +106,11 @@ async function record(): Promise<Recorded> {
 
 /** Samples since `from`, read in month-sized chunks so no single response grows with history. */
 async function readSince(from: number, to: number): Promise<PulseSample[]> {
-  if (!redis) return [];
+  const db = redis;
+  if (!db) return [];
   const ranges: [number, number][] = [];
   for (let a = from; a <= to; a += CHUNK) ranges.push([a, Math.min(to, a + CHUNK - 1)]);
-  const parts = await Promise.all(ranges.map(([a, b]) => redis.zrange<PulseSample[]>(KEY, a, b, { byScore: true })));
+  const parts = await Promise.all(ranges.map(([a, b]) => db.zrange<PulseSample[]>(KEY, a, b, { byScore: true })));
   return parts.flat().filter((s) => typeof s?.at === "number" && typeof s.px === "number");
 }
 
