@@ -1,6 +1,7 @@
 "use client";
 
 import { C, fixed, pct, price, usd } from "../lib/format";
+import { leverageContext, ordinal } from "../lib/quant";
 import { OI_VENUES, oiChange } from "../lib/signals";
 import type { DerivativesData, RatioPoint } from "../lib/types";
 import { LineChart } from "./charts";
@@ -25,6 +26,7 @@ export function Positioning({ d }: { d: DerivativesData | null }) {
     );
   }
 
+  const ctx = leverageContext(d);
   const windows = ([1, 4, 24] as const).map((h) => ({ h, c: oiChange(d.oiHistory, h) }));
   const day = windows[2].c;
   const maxOi = Math.max(...d.venues.map((v) => v.oiUsd), 1);
@@ -52,6 +54,11 @@ export function Positioning({ d }: { d: DerivativesData | null }) {
             value={pct(day?.total, 2)}
             valueColor={day ? (day.total >= 0 ? C.longInk : C.shortInk) : undefined}
             sub={day ? `${day.btc >= 0 ? "+" : "−"}${Math.abs(day.btc).toLocaleString("en-US", { maximumFractionDigits: 0 })} BTC on Binance, Bybit, OKX` : undefined}
+          />
+          <Stat
+            label="OI vs last 30 days"
+            value={ctx.oiPct === null ? "n/a" : `${ordinal(ctx.oiPct)} pct.`}
+            sub={ctx.oiPct === null ? "Binance, in BTC" : ctx.oiPct >= 0.9 ? "Binance, in BTC. Near the month's high: crowded" : ctx.oiPct <= 0.1 ? "Binance, in BTC. Near the month's low: flushed" : "Binance, in BTC"}
           />
         </div>
         <ul className="space-y-2.5">
@@ -128,6 +135,11 @@ export function Positioning({ d }: { d: DerivativesData | null }) {
             value={d.weightedFunding8h != null ? pct(d.weightedFunding8h * 100, 4) : "n/a"}
             sub={d.weightedFunding8h != null ? `${pct(d.weightedFunding8h * 3 * 365 * 100, 2)} annualised` : undefined}
           />
+          {ctx.fundingPct !== null && (
+            <div className="mt-1 text-[0.85rem]" style={{ color: C.ink2 }}>
+              Binance funding is at the <span className="mi-num font-semibold">{ordinal(ctx.fundingPct)}</span> percentile of the last 90 days.
+            </div>
+          )}
         </div>
         <table className="w-full text-[0.9rem]">
           <thead>

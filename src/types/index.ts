@@ -1,6 +1,7 @@
 /** Registered animated pixel-art scenes a project card can render instead of its emoji tile. */
 export type ProjectVisual =
   | "btc-cycle"
+  | "market-intel"
   | "whale-tracker"
   | "reference-call"
   | "analog-camera"

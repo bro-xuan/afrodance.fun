@@ -2078,3 +2078,54 @@ body:has(.mi-root) {
     transition: none !important;
   }
 }
+
+/* === Market Intel (MarketIntelVisual) ===
+   One 8s timeline. Candles print one by one (0.35s apart, via inline
+   animation-delay; fill-mode backwards keeps them hidden while they wait),
+   then the three bias meters grow out from their centre ticks (45–58%),
+   then LONG blinks (62–90%). Everything clears at 92% and the loop restarts.
+   Base (animation-less) state = finished frame, for prefers-reduced-motion. */
+.miv-candle {
+  animation: miv-candle 8s steps(1) infinite backwards;
+}
+@keyframes miv-candle {
+  0% { opacity: 0; }
+  4%, 91% { opacity: 1; }
+  92%, 100% { opacity: 0; }
+}
+
+.miv-bar {
+  transform-box: fill-box;
+  animation: miv-bar 8s steps(4) infinite;
+}
+.miv-bar-pos {
+  transform-origin: left center;
+}
+.miv-bar-neg {
+  transform-origin: right center;
+}
+@keyframes miv-bar {
+  0%, 45% { transform: scaleX(0); }
+  58%, 91% { transform: scaleX(1); }
+  92%, 100% { transform: scaleX(0); }
+}
+
+.miv-verdict {
+  animation: miv-verdict 8s infinite;
+}
+@keyframes miv-verdict {
+  0%, 61.9% { opacity: 0; }
+  62%, 69.9% { opacity: 1; }
+  70%, 72.9% { opacity: 0; }
+  73%, 90.9% { opacity: 1; }
+  91%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .miv-candle,
+  .miv-bar,
+  .miv-verdict {
+    /* miv-*: freezes on the finished frame: all candles, meters filled, LONG shown */
+    animation: none !important;
+  }
+}

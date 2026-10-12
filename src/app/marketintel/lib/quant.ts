@@ -1,4 +1,5 @@
-import type { Candle, ExpiryVol, MacroData, VolData } from "./types";
+import { prevWeek, volumeProfile, vwapSince } from "./levels";
+import type { Candle, DerivativesData, ExpiryVol, PriceData, VolData } from "./types";
 import type { liqMagnet } from "./signals";
 
 /**
@@ -24,6 +25,29 @@ export function realizedVol(candles: Candle[], n: number, periodsPerYear = 365):
 export function sma(candles: Candle[], n: number): number | null {
   if (candles.length < n) return null;
   return candles.slice(-n).reduce((s, c) => s + c.c, 0) / n;
+}
+
+/** Share of `xs` at or below `v`, 0 … 1: where today sits in its own recent history. */
+export function percentileRank(xs: number[], v: number): number | null {
+  if (xs.length < 10) return null;
+  return xs.filter((x) => x <= v).length / xs.length;
+}
+
+/** "93rd", "1st", "42nd" */
+export function ordinal(p: number): string {
+  const n = Math.round(p * 100);
+  const s = n % 100 >= 11 && n % 100 <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] ?? "th";
+  return `${n}${s}`;
+}
+
+/** Binance's current funding and OI ranked against their own last 90 / 30 days. */
+export function leverageContext(d: DerivativesData | null) {
+  const fNow = d?.venues.find((v) => v.exchange === "Binance" && /USDT/.test(v.market))?.fundingRate8h ?? null;
+  const oiNow = d?.oiHistory.at(-1)?.binance ?? null;
+  return {
+    fundingPct: fNow !== null && d ? percentileRank(d.fundingHistory.map((x) => x.v), fNow) : null,
+    oiPct: oiNow !== null && d ? percentileRank(d.oiDaily.map((x) => x.v), oiNow) : null,
+  };
 }
 
 /** 1σ move in $ over `days`, from an annualised vol in %. */
@@ -54,7 +78,7 @@ export function nearestExpiry(v: VolData | null, targetDays: number, pick: (e: E
 }
 
 // ── Key levels ─────────────────────────────────────────────────────────────
-export type LevelKind = "session" | "open" | "trend" | "liq" | "options" | "vol";
+export type LevelKind = "session" | "open" | "trend" | "vwap" | "profile" | "cme" | "onchain" | "liq" | "options" | "vol";
 export type Level = { key: string; label: string; price: number; kind: LevelKind; note: string };
 
 const utcDay = (t: number) => Math.floor(t / DAY) * DAY;
@@ -68,14 +92,14 @@ const utcMonthStart = (t: number) => {
 };
 
 export function keyLevels(
-  daily: Candle[],
-  hourly: Candle[],
+  px: PriceData,
   spot: number | null,
   mag: ReturnType<typeof liqMagnet>,
-  macro: MacroData | null,
-  dvol: number | null,
+  vol: VolData | null,
   now = Date.now(),
 ): Level[] {
+  const { daily, hourly } = px;
+  const dvol = vol?.dvol ?? null;
   const out: Level[] = [];
   const today = utcDay(now);
   const prev = daily.filter((c) => c.t < today).at(-1);
@@ -93,6 +117,35 @@ export function keyLevels(
   if (wOpen) out.push({ key: "wo", label: "Weekly open", price: wOpen.o, kind: "open", note: "Monday 00:00 UTC. Above it, the week is green" });
   const mOpen = daily.find((c) => c.t === utcMonthStart(now));
   if (mOpen) out.push({ key: "mo", label: "Monthly open", price: mOpen.o, kind: "open", note: "1st of the month, 00:00 UTC" });
+  const pw = prevWeek(daily, utcWeekStart(now));
+  if (pw) {
+    out.push({ key: "pwh", label: "Prev. week high", price: pw.h, kind: "session", note: "Last week's UTC high. A weekly breakout level" });
+    out.push({ key: "pwl", label: "Prev. week low", price: pw.l, kind: "session", note: "Last week's UTC low. A weekly breakdown level" });
+  }
+
+  // Anchored VWAPs: the average price paid since the week / month opened.
+  // Above it, the period's buyers are in profit and tend to defend it.
+  const wv = vwapSince(hourly, utcWeekStart(now));
+  if (wv) out.push({ key: "wvwap", label: "Weekly VWAP", price: wv, kind: "vwap", note: "Volume-weighted average price since Monday 00:00 UTC" });
+  const mv = vwapSince(hourly, utcMonthStart(now));
+  if (mv) out.push({ key: "mvwap", label: "Monthly VWAP", price: mv, kind: "vwap", note: "Volume-weighted average price since the 1st" });
+
+  const vp = volumeProfile(hourly, 250);
+  if (vp) {
+    out.push({ key: "poc", label: "Volume POC, 30d", price: vp.poc, kind: "profile", note: "Most traded price of the month. Price gravitates back to it" });
+    out.push({ key: "vah", label: "Value area high", price: vp.vah, kind: "profile", note: "Top of the range holding 70% of the month's volume. Acceptance above = trend" });
+    out.push({ key: "val", label: "Value area low", price: vp.val, kind: "profile", note: "Bottom of the 70% value area. Acceptance below = trend down" });
+  }
+
+  if (px.cmeGap) {
+    const g = px.cmeGap;
+    out.push({
+      key: "cme", label: "CME gap", price: g.close / (1 + g.basis), kind: "cme",
+      note: `Unfilled weekend gap: CME closed at $${Math.round(g.close).toLocaleString("en-US")} and reopened at $${Math.round(g.reopen).toLocaleString("en-US")}. Shown in spot terms. Gaps tend to get filled`,
+    });
+  }
+  if (px.onchain.sth) out.push({ key: "sth", label: "STH cost basis", price: px.onchain.sth, kind: "onchain", note: `Average cost of coins moved in the last 155 days (as of ${px.onchain.asOf}). The bull/bear pivot: recent buyers defend it in bull markets, sell into it in bear markets` });
+  if (px.onchain.realized) out.push({ key: "rp", label: "Realized price", price: px.onchain.realized, kind: "onchain", note: `Average cost of every coin (as of ${px.onchain.asOf}). Bear market floor` });
 
   const closed = daily.filter((c) => c.t < today);
   const ma50 = sma(closed, 50);
@@ -103,13 +156,52 @@ export function keyLevels(
   if (mag?.peakAbove.v) out.push({ key: "liqu", label: "Short liq cluster", price: mag.peakAbove.price, kind: "liq", note: `Densest short liquidations within +5% (model)` });
   if (mag?.peakBelow.v) out.push({ key: "liqd", label: "Long liq cluster", price: mag.peakBelow.price, kind: "liq", note: `Densest long liquidations within −5% (model)` });
 
-  const mp = macro?.options.nextExpiryMaxPain;
-  if (mp) out.push({ key: "mp", label: "Max pain", price: mp, kind: "options", note: "Next Friday Deribit expiry. Spot tends to pin toward it" });
+  const g = vol?.gamma;
+  if (g?.flip) out.push({ key: "gflip", label: "Gamma flip", price: g.flip, kind: "options", note: "Dealer gamma changes sign here (Deribit, assumed positioning). Above: dealers dampen moves. Below: they amplify them" });
+  if (g?.callWall) out.push({ key: "cwall", label: "Call wall", price: g.callWall, kind: "options", note: "Strike with the most call gamma. Dealer hedging sells into it: resistance" });
+  if (g?.putWall) out.push({ key: "pwall", label: "Put wall", price: g.putWall, kind: "options", note: "Strike with the most put gamma. Dealer hedging buys into it: support" });
 
   if (spot && dvol) {
     const m = sigmaMove(spot, dvol, 1);
     out.push({ key: "s1u", label: "+1σ today", price: spot + m, kind: "vol", note: `1-day expected move from DVOL ${dvol.toFixed(0)}` });
     out.push({ key: "s1d", label: "−1σ today", price: spot - m, kind: "vol", note: `About 68% of days close inside ±1σ` });
   }
-  return out.sort((a, b) => b.price - a.price);
+  // Keep the list to levels a trade could plausibly reach.
+  const ref = spot ?? hourly.at(-1)?.c;
+  return out.filter((l) => !ref || Math.abs(l.price / ref - 1) <= 0.25).sort((a, b) => b.price - a.price);
+}
+
+/** Pearson correlation of two equal-length series, or null under 10 points. */
+export function corr(a: number[], b: number[]): number | null {
+  const n = Math.min(a.length, b.length);
+  if (n < 10) return null;
+  const ma = a.slice(0, n).reduce((s, x) => s + x, 0) / n;
+  const mb = b.slice(0, n).reduce((s, x) => s + x, 0) / n;
+  let sab = 0;
+  let saa = 0;
+  let sbb = 0;
+  for (let i = 0; i < n; i++) {
+    sab += (a[i] - ma) * (b[i] - mb);
+    saa += (a[i] - ma) ** 2;
+    sbb += (b[i] - mb) ** 2;
+  }
+  return saa && sbb ? sab / Math.sqrt(saa * sbb) : null;
+}
+
+/**
+ * Daily log returns of two close series matched by calendar date, so BTC's
+ * weekend days drop out against a market that only trades weekdays. Each
+ * return spans from the previous shared date, so a Monday BTC return
+ * includes its weekend like the other market's Monday gap does.
+ */
+export function pairedReturns(a: { date: string; c: number }[], b: { date: string; c: number }[]): [number[], number[]] {
+  const bm = new Map(b.map((x) => [x.date, x.c]));
+  const shared = a.filter((x) => bm.has(x.date));
+  const ra: number[] = [];
+  const rb: number[] = [];
+  for (let i = 1; i < shared.length; i++) {
+    ra.push(Math.log(shared[i].c / shared[i - 1].c));
+    rb.push(Math.log(bm.get(shared[i].date)! / bm.get(shared[i - 1].date)!));
+  }
+  return [ra, rb];
 }
