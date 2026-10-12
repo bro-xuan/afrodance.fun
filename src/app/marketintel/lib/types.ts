@@ -35,6 +35,8 @@ export type DerivativesData = Envelope<{
   oiHistory: OiPoint[];
   ratios: RatioPoint[];
   coinbasePremiumPct: number | null;
+  fundingHistory: { t: number; v: number }[]; // Binance BTCUSDT 8h funding prints, ~90 days, decimal
+  oiDaily: { t: number; v: number }[]; // Binance BTCUSDT OI in BTC, daily, 30 days
 }>;
 
 // ── Liquidations ───────────────────────────────────────────────────────────
@@ -46,6 +48,19 @@ export type LiquidationData = Envelope<{
   bins: LiqBin[];
   scale: number; // Binance → all-venue OI multiplier used on the map
   windowHours: number; // how far back the model's position cohorts reach
+}>;
+
+// Forced orders that actually filled (OKX BTC-USDT swap), last 24h.
+export type RealizedLiq = { t: number; side: "long" | "short"; px: number; usd: number }; // side = position liquidated
+export type LiqTotals = { long: number; short: number };
+
+export type RealizedLiqData = Envelope<{
+  h1: LiqTotals;
+  h4: LiqTotals;
+  h24: LiqTotals;
+  hourly: ({ t: number } & LiqTotals)[]; // 24 hourly buckets, oldest first
+  largest: RealizedLiq[];
+  coverageHours: number; // < 24 if OKX's history ran out or paging was capped
 }>;
 
 // ── ETF flows ──────────────────────────────────────────────────────────────
@@ -105,7 +120,7 @@ export type MacroStat = {
   key: string;
   label: string;
   value: number | null;
-  unit: "pct" | "usd" | "index" | "usdT" | "usdB" | "ratio";
+  unit: "pct" | "usd" | "index" | "usdT" | "usdB" | "ratio" | "bp";
   change?: number | null; // absolute change over `changeLabel`
   changeLabel?: string;
   series: Series;
@@ -124,6 +139,22 @@ export type MacroData = Envelope<{
   stats: MacroStat[];
   fearGreed: { value: number; label: string; series: Series } | null;
   options: OptionsSnapshot;
+}>;
+
+// ── Cross-asset (live) ─────────────────────────────────────────────────────
+export type CrossQuote = {
+  key: string; // "dxy", "us10y", "nq", "es", "gold"
+  label: string;
+  unit: "index" | "pct" | "usd";
+  last: number;
+  t: number; // quote time
+  change: number | null; // vs previous session: % for prices, percentage points for yields
+  stale: boolean; // older than 6h: that market is closed
+};
+
+export type CrossData = Envelope<{
+  quotes: CrossQuote[];
+  correlations: { key: string; label: string; corr30: number | null; corr90: number | null; beta30: number | null }[];
 }>;
 
 // ── Fed watch ──────────────────────────────────────────────────────────────
@@ -148,9 +179,19 @@ export type FedData = Envelope<{
 export type Candle = { t: number; o: number; h: number; l: number; c: number; v: number; delta: number };
 
 export type PriceData = Envelope<{
-  hourly: Candle[]; // last 7 days, 1h
+  hourly: Candle[]; // last ~31 days, 1h
   daily: Candle[]; // last ~400 days, 1D (UTC), newest may be in progress
+  perpHourly: Candle[]; // Binance BTCUSDT perp, 1h, same window as `hourly`
+  cmeGap: CmeGap | null; // newest unfilled CME weekend gap, last ~60 days
+  onchain: { sth: number | null; realized: number | null; asOf: string | null }; // cost-basis prices
 }>;
+
+export type CmeGap = {
+  close: number; // CME Friday close (the level the gap "fills" to), CME terms
+  reopen: number; // CME Sunday reopen
+  t: number; // Friday close time
+  basis: number; // CME last / spot last − 1, to shift the level into spot terms
+};
 
 // ── Volatility & term structure (Deribit) ──────────────────────────────────
 export type ExpiryVol = {
@@ -170,4 +211,5 @@ export type VolData = Envelope<{
   dvol: number | null; // Deribit 30d implied vol index, now
   dvol24hAgo: number | null;
   expiries: ExpiryVol[]; // soonest first
+  gamma: { flip: number | null; callWall: number | null; putWall: number | null; netAtSpot: number } | null; // dealer gamma, expiries ≤ 60d
 }>;

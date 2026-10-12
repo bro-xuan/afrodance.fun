@@ -120,6 +120,10 @@ export async function GET() {
     "fred-WALCL": () => fred("WALCL"),
     "fred-WTREGEN": () => fred("WTREGEN"),
     "fred-RRPONTSYD": () => fred("RRPONTSYD"),
+    "fred-DFII10": () => fred("DFII10"),
+    "fred-DGS2": () => fred("DGS2"),
+    "fred-SOFR": () => fred("SOFR"),
+    "fred-IORB": () => fred("IORB"),
     "defillama-stables": async () => {
       const r = await getJSON<{ date: string; totalCirculatingUSD: { peggedUSD: number } }[]>("https://stablecoins.llama.fi/stablecoincharts/all");
       return r.slice(-120).map((x) => ({ t: Number(x.date) * 1000, v: x.totalCirculatingUSD.peggedUSD / 1e9 }));
@@ -153,6 +157,18 @@ export async function GET() {
     });
   }
 
+  // SOFR − IORB: when overnight repo prints above the rate the Fed pays on
+  // reserves, cash is scarce. Persistent positive prints preceded 2019's
+  // repo blow-up; liquidity stress hits risk assets first.
+  const sofr = v["fred-SOFR"];
+  const iorb = v["fred-IORB"];
+  const spread: Series | null = sofr && iorb
+    ? sofr.flatMap((p) => {
+        const r = asOf(iorb, p.t);
+        return r !== null ? [{ t: p.t, v: (p.v - r) * 100 }] : []; // basis points
+      })
+    : null;
+
   const dom = v["coingecko-global"];
   const fng = v["alternative-fng"];
 
@@ -160,7 +176,12 @@ export async function GET() {
     stat("netliq", "Fed net liquidity", "usdT", netLiq, 28, "Fed balance sheet minus the Treasury account and reverse repo. Rising liquidity has tracked BTC rallies.", "FRED"),
     stat("stables", "Stablecoin supply", "usdB", v["defillama-stables"], 30, "Total USD stablecoins: dry powder that can rotate into BTC.", "DefiLlama"),
     stat("dxy", "US dollar (broad)", "index", v["fred-DTWEXBGS"], 30, "Fed trade-weighted dollar. A strong dollar is usually a BTC headwind.", "FRED"),
-    stat("us10y", "US 10Y yield", "pct", v["fred-DGS10"], 30, "Higher real rates raise the opportunity cost of holding BTC.", "FRED"),
+    stat("us10y", "US 10Y yield", "pct", v["fred-DGS10"], 30, "Higher yields raise the opportunity cost of holding BTC.", "FRED"),
+    stat("real10y", "US 10Y real yield", "pct", v["fred-DFII10"], 30, "TIPS yield: rates after inflation. The cleaner BTC headwind gauge: rising real yields tighten.", "FRED"),
+    stat("us2y", "US 2Y yield", "pct", v["fred-DGS2"], 30, "Tracks where the market thinks the Fed is heading over the next two years.", "FRED"),
+    stat("sofriorb", "SOFR − IORB", "bp", spread, 30, "Overnight funding vs the Fed's reserve rate. Above zero = cash is scarce, an early stress signal.", "FRED"),
+    stat("tga", "Treasury account (TGA)", "usdB", v["fred-WTREGEN"]?.map((p) => ({ t: p.t, v: p.v / 1000 })) ?? null, 28, "Cash the Treasury holds at the Fed. A rising TGA drains liquidity from markets.", "FRED"),
+    stat("rrp", "Reverse repo (RRP)", "usdB", v["fred-RRPONTSYD"], 30, "Cash parked at the Fed overnight. Draining RRP has released liquidity; near zero, that buffer is gone.", "FRED"),
     stat("spx", "S&P 500", "index", v["fred-SP500"], 30, "BTC trades as a high-beta risk asset; watch for divergences.", "FRED"),
     stat("ndx", "Nasdaq Composite", "index", v["fred-NASDAQCOM"], 30, "Tech and AI risk appetite, the tightest equity correlation to BTC.", "FRED"),
     stat("vix", "VIX", "index", v["fred-VIXCLS"], 30, "Equity fear gauge. VIX spikes tend to drag BTC with them.", "FRED"),

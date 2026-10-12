@@ -2,11 +2,13 @@ import { Redis } from "@upstash/redis";
 import { after, NextResponse, type NextRequest } from "next/server";
 import { buildSignals, composite, HORIZONS, MODEL, type Horizon } from "@/app/marketintel/lib/signals";
 import { GRADE_DAYS, HOUR, horizonStats, MIN_READS, type PulseHistory, type PulseSample } from "@/app/marketintel/lib/track";
-import type { DerivativesData, EtfData, LiquidationData, MacroData, PolymarketData, PriceData, SourceStatus, VolData } from "@/app/marketintel/lib/types";
+import type { CrossData, DerivativesData, EtfData, LiquidationData, MacroData, PolymarketData, PriceData, RealizedLiqData, SourceStatus, VolData } from "@/app/marketintel/lib/types";
 import { cachedJson } from "../_lib/http";
+import { GET as cross } from "../cross/route";
 import { GET as derivatives } from "../derivatives/route";
 import { GET as etf } from "../etf/route";
 import { GET as liquidations } from "../liquidations/route";
+import { GET as liqs } from "../liqs/route";
 import { GET as macro } from "../macro/route";
 import { GET as polymarket } from "../polymarket/route";
 import { GET as price } from "../price/route";
@@ -47,7 +49,7 @@ async function body<T>(handler: () => Promise<Response>): Promise<T | null> {
 
 /** The same scores the dashboard shows, computed from the same routes. */
 async function snapshot(): Promise<PulseSample | null> {
-  const [d, l, e, p, m, v, px] = await Promise.all([
+  const [d, l, e, p, m, v, px, lq, x] = await Promise.all([
     body<DerivativesData>(derivatives),
     body<LiquidationData>(liquidations),
     body<EtfData>(etf),
@@ -55,13 +57,15 @@ async function snapshot(): Promise<PulseSample | null> {
     body<MacroData>(macro),
     body<VolData>(vol),
     body<PriceData>(price),
+    body<RealizedLiqData>(liqs),
+    body<CrossData>(cross),
   ]);
   // Always grade on the spot close, never a perp or index fallback: mixing
   // sources would put the basis into every graded return.
   const spot = px?.hourly.at(-1)?.c ?? null;
   if (!spot) return null;
   const at = Date.now();
-  const signals = buildSignals({ d, l, e, p, m, v, px, now: at });
+  const signals = buildSignals({ d, l, e, p, m, v, px, lq, x, now: at });
   const h = {} as Record<Horizon, number | null>;
   const n = {} as Record<Horizon, number>;
   for (const { key } of HORIZONS) {

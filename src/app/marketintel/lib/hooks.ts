@@ -122,3 +122,70 @@ export function useLivePrice() {
   return state;
 }
 
+
+export type LiveLiq = { t: number; venue: "Binance" | "Bybit"; side: "long" | "short"; px: number; usd: number };
+
+/**
+ * Live BTCUSDT liquidations from the page's own websockets: Bybit's
+ * allLiquidation stream (every fill) and Binance's forceOrder stream (Binance
+ * only pushes the largest order per second, so it undercounts). Totals run
+ * from when the page opened. US visitors may not reach Binance.
+ */
+export function useLiveLiquidations(keep = 25) {
+  const [state, setState] = useState<{ events: LiveLiq[]; long: number; short: number; since: number; venues: string[] }>(() => ({
+    events: [],
+    long: 0,
+    short: 0,
+    since: Date.now(),
+    venues: [],
+  }));
+  useEffect(() => {
+    const add = (e: LiveLiq) =>
+      setState((s) => ({
+        ...s,
+        events: [e, ...s.events].slice(0, keep),
+        long: s.long + (e.side === "long" ? e.usd : 0),
+        short: s.short + (e.side === "short" ? e.usd : 0),
+      }));
+    const live = (venue: string) => setState((s) => (s.venues.includes(venue) ? s : { ...s, venues: [...s.venues, venue] }));
+
+    const sockets: WebSocket[] = [];
+    let ping: ReturnType<typeof setInterval> | undefined;
+    try {
+      const by = new WebSocket("wss://stream.bybit.com/v5/public/linear");
+      by.onopen = () => {
+        by.send(JSON.stringify({ op: "subscribe", args: ["allLiquidation.BTCUSDT"] }));
+        live("Bybit");
+        ping = setInterval(() => by.readyState === WebSocket.OPEN && by.send(JSON.stringify({ op: "ping" })), 20_000);
+      };
+      by.onmessage = (m) => {
+        const d = JSON.parse(m.data);
+        if (!d.topic?.startsWith("allLiquidation") || !Array.isArray(d.data)) return;
+        for (const x of d.data) {
+          const px = Number(x.p);
+          const qty = Number(x.v);
+          // Bybit: S = "Buy" means a long position was liquidated.
+          if (px > 0 && qty > 0) add({ t: Number(x.T), venue: "Bybit", side: x.S === "Buy" ? "long" : "short", px, usd: px * qty });
+        }
+      };
+      sockets.push(by);
+    } catch {}
+    try {
+      const bn = new WebSocket("wss://fstream.binance.com/ws/btcusdt@forceOrder");
+      bn.onopen = () => live("Binance");
+      bn.onmessage = (m) => {
+        const o = JSON.parse(m.data)?.o;
+        const px = Number(o?.ap || o?.p);
+        const qty = Number(o?.z || o?.q);
+        // Binance: the forced order SELLs when a long is liquidated.
+        if (px > 0 && qty > 0) add({ t: Number(o.T), venue: "Binance", side: o.S === "SELL" ? "long" : "short", px, usd: px * qty });
+      };
+      sockets.push(bn);
+    } catch {}
+    return () => {
+      clearInterval(ping);
+      sockets.forEach((s) => s.close());
+    };
+  }, [keep]);
+  return state;
+}

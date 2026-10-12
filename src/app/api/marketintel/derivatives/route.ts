@@ -62,6 +62,16 @@ export async function GET() {
         const r = await getJSON<{ data: string[][] }>("https://www.okx.com/api/v5/rubik/stat/contracts/long-short-account-ratio?ccy=BTC&period=1H");
         return series(r.data.slice(0, HOURS), (x) => x[0], (x) => x[1]);
       },
+      // Context for "is this funding / OI level unusual?": 90 days of Binance
+      // 8h funding prints and 30 days of daily OI (BTC).
+      "binance-funding-hist": async () =>
+        series(await getJSON<{ fundingTime: number; fundingRate: string }[]>(`${BF}/fapi/v1/fundingRate?symbol=BTCUSDT&limit=270`), (r) => r.fundingTime, (r) => r.fundingRate),
+      "binance-oi-daily": async () =>
+        series(
+          await getJSON<Record<string, string>[]>(`${BF}/futures/data/openInterestHist?symbol=BTCUSDT&period=1d&limit=30`),
+          (r) => r.timestamp,
+          (r) => r.sumOpenInterest,
+        ),
       "coinbase-spot": async () => num((await getJSON<{ price: string }>("https://api.exchange.coinbase.com/products/BTC-USD/ticker")).price),
       "binance-spot": async () => num((await getJSON<{ price: string }>("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT")).price),
     }),
@@ -114,6 +124,8 @@ export async function GET() {
     oiHistory,
     ratios,
     coinbasePremiumPct: cb && bn ? ((cb - bn) / bn) * 100 : null,
+    fundingHistory: v["binance-funding-hist"] ?? [],
+    oiDaily: v["binance-oi-daily"] ?? [],
     sources: [...venueSources, ...hist.sources],
   };
   return cachedJson(body, 30);

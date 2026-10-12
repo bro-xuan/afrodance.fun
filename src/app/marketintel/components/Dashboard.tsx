@@ -5,16 +5,18 @@ import { useMemo } from "react";
 import { C, ago } from "../lib/format";
 import { useApi, useNow } from "../lib/hooks";
 import { keyLevels } from "../lib/quant";
-import { buildSignals, liqMagnet, volRegime } from "../lib/signals";
+import { buildSignals, liqMagnet, liqScale, volRegime } from "../lib/signals";
 import type { PulseHistory } from "../lib/track";
-import type { DerivativesData, EtfData, EventsData, MarketEvent, FedData, LiquidationData, MacroData, PolymarketData, PriceData, VolData } from "../lib/types";
+import type { CrossData, DerivativesData, EtfData, EventsData, MarketEvent, FedData, LiquidationData, MacroData, PolymarketData, PriceData, RealizedLiqData, VolData } from "../lib/types";
 import { BiasCheck } from "./BiasCheck";
 import { Calendar } from "./Calendar";
+import { CrossAsset } from "./CrossAsset";
 import { EtfFlows } from "./EtfFlows";
 import { Liquidations } from "./Liquidations";
 import { Macro } from "./Macro";
 import { Positioning } from "./Positioning";
 import { Predictions } from "./Predictions";
+import { RealizedLiqs } from "./RealizedLiqs";
 import { PriceLevels } from "./PriceLevels";
 import { Pulse } from "./Pulse";
 import { TopBar } from "./TopBar";
@@ -36,17 +38,19 @@ export function Dashboard() {
   const px = useApi<PriceData>(`${API}/price`, 60_000);
   const vol = useApi<VolData>(`${API}/vol`, 60_000);
   const hist = useApi<PulseHistory>(`${API}/pulse`, 5 * 60_000);
+  const lq = useApi<RealizedLiqData>(`${API}/liqs`, 60_000);
+  const cross = useApi<CrossData>(`${API}/cross`, 60_000);
   const now = useNow(5000);
 
   const signals = useMemo(
-    () => buildSignals({ d: der.data, l: liq.data, e: etf.data, p: poly.data, m: mac.data, v: vol.data, px: px.data }),
-    [der.data, liq.data, etf.data, poly.data, mac.data, vol.data, px.data],
+    () => buildSignals({ d: der.data, l: liq.data, e: etf.data, p: poly.data, m: mac.data, v: vol.data, px: px.data, lq: lq.data, x: cross.data }),
+    [der.data, liq.data, etf.data, poly.data, mac.data, vol.data, px.data, lq.data, cross.data],
   );
   const spot = der.data?.price ?? liq.data?.price ?? null;
   const regime = useMemo(() => volRegime(vol.data, px.data, spot), [vol.data, px.data, spot]);
   const levels = useMemo(
-    () => (px.data ? keyLevels(px.data.daily, px.data.hourly, spot, liqMagnet(liq.data), mac.data, vol.data?.dvol ?? null) : []),
-    [px.data, spot, liq.data, mac.data, vol.data],
+    () => (px.data ? keyLevels(px.data, spot, liqMagnet(liq.data), vol.data) : []),
+    [px.data, spot, liq.data, vol.data],
   );
 
   const feeds = [
@@ -54,11 +58,13 @@ export function Dashboard() {
     ["Derivatives", der],
     ["Options", vol],
     ["Liquidations", liq],
+    ["Liq. fills", lq],
     ["ETF", etf],
     ["Polymarket", poly],
     ["Fed watch", fed],
     ["Calendar", ev],
     ["Macro", mac],
+    ["Cross-asset", cross],
     ["Track record", hist],
   ] as const;
 
@@ -87,6 +93,9 @@ export function Dashboard() {
 
         <Section n="05" title="Liquidations" kicker="Where leveraged positions get force closed">
           <Liquidations l={liq.data} spot={spot} />
+          <div className="mt-4">
+            <RealizedLiqs lq={lq.data} scale={liqScale(der.data)} now={now} />
+          </div>
         </Section>
 
         <Section n="06" title="Volatility & term structure" kicker="Deribit options and futures: what vol costs, skew, and carry">
@@ -106,7 +115,10 @@ export function Dashboard() {
         </Section>
 
         <Section n="10" title="Macro & sentiment" kicker="Liquidity, rates, dollar, risk, volatility">
-          <Macro m={mac.data} />
+          <CrossAsset x={cross.data} now={now} />
+          <div className="mt-4">
+            <Macro m={mac.data} />
+          </div>
         </Section>
 
         <footer className="mt-16 border-t pt-6 text-[0.85rem] leading-relaxed" style={{ borderColor: C.line, color: C.muted }}>
@@ -130,7 +142,7 @@ export function Dashboard() {
               })}
             </ul>
           Data: Binance, Bybit, OKX, Hyperliquid, Bitget, Deribit (options, futures, DVOL), Coinbase (public APIs). Farside Investors (ETF flows).
-          Polymarket. ForexFactory, Federal Reserve, BLS, BEA (calendar). FRED, DefiLlama, CoinGecko, alternative.me (macro).
+          Polymarket. ForexFactory, Federal Reserve, BLS, BEA (calendar). FRED, DefiLlama, CoinGecko, alternative.me (macro). Yahoo Finance (cross-asset, CME futures).
           The liquidation map is a model. Nothing here is financial advice.{" "}
           <Link href="/" className="underline underline-offset-4">afrodance.fun</Link>
         </footer>

@@ -190,6 +190,15 @@ export const projects: Project[] = [
     visual: "migration-flow",
   },
   {
+    title: "Market Intel",
+    description: "BTC trading desk on one page: positioning, liquidations, options, flows and macro scored into an intraday, swing and macro bias. Check a trade before you take it.",
+    url: "/marketintel",
+    emoji: "📊",
+    color: "success",
+    stack: ["Next.js", "Binance / Deribit / OKX APIs", "Upstash"],
+    visual: "market-intel",
+  },
+  {
     title: "BTC Bottom & Top Indicator",
     description: "On-chain cycle dashboard — MVRV, NUPL, Pi Cycle & friends scored 0–100 to gauge how close Bitcoin is to a cycle bottom or top.",
     url: "/bottom_indicator",

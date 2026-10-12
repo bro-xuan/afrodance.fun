@@ -9,6 +9,7 @@ function fmtValue(s: MacroStat, v: number | null | undefined): string {
   if (v === null || v === undefined || !Number.isFinite(v)) return "n/a";
   switch (s.unit) {
     case "pct": return `${v.toFixed(2)}%`;
+    case "bp": return `${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v).toFixed(0)}bp`;
     case "usdT": return `$${v.toFixed(2)}T`;
     case "usdB": return `$${v.toFixed(1)}B`;
     default: return v >= 1000 ? v.toLocaleString("en-US", { maximumFractionDigits: 0 }) : v.toFixed(2);
@@ -22,6 +23,7 @@ function fmtChange(s: MacroStat): string | null {
   const a = Math.abs(c);
   const base = s.value !== null && s.value - c !== 0 ? (c / (s.value - c)) * 100 : null;
   if (s.unit === "pct") return `${sign}${(a * 100).toFixed(0)}bp`;
+  if (s.unit === "bp") return `${sign}${a.toFixed(0)}bp`;
   if (s.unit === "usdT") return `${sign}$${(a * 1000).toFixed(0)}B`;
   if (s.unit === "usdB") return `${sign}$${a.toFixed(1)}B`;
   return base !== null ? `${sign}${Math.abs(base).toFixed(1)}%` : null;
