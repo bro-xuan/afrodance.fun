@@ -3,6 +3,29 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## 2026-10-11, Market Intel: real flows, desk levels, live macro
+
+- **Liquidations that actually happened:** last 1h/4h/24h longs vs shorts liquidated (OKX fills scaled to all venues), hourly bars, the largest fills, and a live tape streaming Bybit and Binance liquidations into the page.
+- **Perp CVD next to spot CVD** on the 1H chart, and a new read comparing spot and perp taker flow: spot-led moves are organic, perp-led ones tend to fade.
+- **Funding and OI in context:** where funding sits among the last 90 days of prints and OI among the last 30 days.
+- **Desk levels:** weekly and monthly VWAPs, 30-day volume profile (POC, value area), previous week high/low, the newest open CME gap, short-term-holder cost basis and realized price, and the Deribit gamma flip with call and put walls (replacing max pain).
+- **Live cross-asset tape:** dollar, 10Y, Nasdaq and S&P futures and gold, plus how tightly BTC is trading with Nasdaq, the dollar and gold right now. A new pulse read turns today's equity and dollar moves into a BTC tailwind or headwind, weighted by that correlation.
+- **More macro:** 10Y real yield, 2Y yield, SOFR − IORB funding stress, and the Treasury account and reverse repo on their own.
+
+## 2026-10-11, Market Intel: check a trade
+
+- **New "Check a trade" section.** Pick long or short and a horizon (and optionally your entry), and the page answers with: whether the pulse agrees, the reads for and against your trade, a stop just beyond the nearest chart level against you, the next two levels as targets, reward to risk and the breakeven win rate, options-implied odds of touching the target and the stop within the horizon, and the high-impact events landing before it ends.
+- Warnings for the usual mistakes: a stop inside half a normal day's move, a stop more likely than not to be tagged, reward under risk, a liquidation pool between entry and stop, trading against the pulse, and an event inside an intraday window.
+
+## 2026-10-11, Market Intel: bias by horizon, with a track record
+
+- **The pulse now gives three biases, Intraday, Swing and Macro, instead of one blended number.** Each read counts only toward the horizons it informs, with its weight shown on its card, so a bullish intraday tape no longer cancels out bearish multi-week ETF flows.
+- **New reads:** daily trend (vs the 200D and 50D, 20-day momentum in vol units), 24h tape (spot vs VWAP plus net taker buying, flags rallies without buyers), and liquidity/dollar/rates (net liquidity, stablecoins, dollar, 10Y).
+- **Track record:** every hour the three scores are logged with BTC's price and later graded against the next 24h, 7 days and 30 days. Shows hit rate next to how often always-long would have been right, average return after bullish vs bearish calls, and the honest sample size. Hours with too few live reads are left out.
+- **Key levels** now include the 50D and 200D averages.
+- Falling open interest into a move now counts against it (short covering, capitulation) instead of being ignored.
+- Polymarket ladders drop stale quotes that break the odds ordering (e.g. a $74K "above" at 53% under a $78K at 94%).
+
 ## 2026-10-11, Market Intel upgrade
 
 - **Market pulse now gives one weighted net bias (−100 to +100)** instead of counting votes. Each read is scored against its normal range, so noise like near-zero funding no longer shows up as "bullish". Cards say whether a read is a flow, leverage, options, crowd or odds signal and whether it's contrarian.

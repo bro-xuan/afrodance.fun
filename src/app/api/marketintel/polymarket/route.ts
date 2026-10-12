@@ -1,5 +1,6 @@
 import type { PolyKind, PolyMarket, PolymarketData, PolyRung } from "@/app/marketintel/lib/types";
 import { cachedJson, getJSON, num } from "../_lib/http";
+import { dropStale } from "../_lib/ladder";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -43,36 +44,40 @@ const RX = {
   cuts: /^how-many-fed-rate-cuts-in-\d{4}$/,
 };
 
-function prob(m: GMarket): number | null {
+/** Mid of a tight book (firm), else the last trade or listed price (may be stale). */
+function quote(m: GMarket): { p: number; firm: boolean } | null {
   const bid = num(m.bestBid);
   const ask = num(m.bestAsk);
-  if (bid !== null && ask !== null && ask - bid <= 0.1) return (bid + ask) / 2;
+  if (bid !== null && ask !== null && ask - bid <= 0.1) return { p: (bid + ask) / 2, firm: true };
   const last = num(m.lastTradePrice);
-  if (last !== null) return last;
+  if (last !== null) return { p: last, firm: false };
   try {
-    return num(JSON.parse(m.outcomePrices ?? "[]")[0]);
+    const p = num(JSON.parse(m.outcomePrices ?? "[]")[0]);
+    return p === null ? null : { p, firm: false };
   } catch {
     return null;
   }
 }
 
+const prob = (m: GMarket) => quote(m)?.p ?? null;
+
 const open = (e: GEvent) => (e.markets ?? []).filter((m) => !m.closed && m.active !== false);
 
 function rungs(e: GEvent, kind: PolyKind): PolyRung[] {
   const seen = new Set<string>();
-  const out: PolyRung[] = [];
+  const out: (PolyRung & { firm: boolean })[] = [];
   for (const m of open(e)) {
-    const p = prob(m);
+    const q = quote(m);
     const strike = num((m.groupItemTitle ?? "").replace(/[^\d.]/g, ""));
-    if (p === null || strike === null) continue;
+    if (q === null || strike === null) continue;
     const dir: PolyRung["dir"] =
       kind === "above" ? "above" : /dip|below|↓/i.test(m.question + (m.groupItemTitle ?? "")) ? "down" : "up";
     const k = `${dir}:${strike}`;
     if (seen.has(k)) continue;
     seen.add(k);
-    out.push({ strike, dir, p, question: m.question });
+    out.push({ strike, dir, p: q.p, firm: q.firm, question: m.question });
   }
-  return out.sort((a, b) => a.strike - b.strike);
+  return dropStale(out.sort((a, b) => a.strike - b.strike));
 }
 
 function outcomes(e: GEvent) {

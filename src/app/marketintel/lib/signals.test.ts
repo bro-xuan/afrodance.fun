@@ -1,0 +1,193 @@
+import { describe, expect, it } from "vitest";
+import { buildSignals, composite, type Signal } from "./signals";
+import type { Candle, CrossData, DerivativesData, MacroData, MacroStat, PriceData, RealizedLiqData } from "./types";
+
+const DAY = 86_400_000;
+const now = Date.UTC(2026, 9, 11, 20);
+const today = Math.floor(now / DAY) * DAY;
+
+const candle = (t: number, c: number, v = 100, delta = 0): Candle => ({ t, o: c, h: c * 1.002, l: c * 0.998, c, v, delta });
+/** `days` completed daily candles following `f`, plus today's in-progress one. */
+function daily(days: number, f: (i: number) => number): Candle[] {
+  return Array.from({ length: days + 1 }, (_, i) => candle(today - (days - i) * DAY, f(i)));
+}
+const hourly = (n: number, c: (i: number) => number, delta = 0) =>
+  Array.from({ length: n }, (_, i) => candle(now - (n - 1 - i) * 3_600_000, c(i), 100, delta));
+const px = (d: Candle[], h: Candle[] = [], perp: Candle[] = []): PriceData => ({ asOf: now, daily: d, hourly: h, perpHourly: perp, cmeGap: null, onchain: { sth: null, realized: null, asOf: null }, sources: [] });
+const find = (s: Signal[], key: string) => s.find((x) => x.key === key);
+
+describe("trend read", () => {
+  it("is bullish above a rising 200D and bearish below a falling one", () => {
+    const up = daily(260, (i) => 50_000 * Math.exp(0.003 * i));
+    const down = daily(260, (i) => 100_000 * Math.exp(-0.003 * i));
+    const bull = find(buildSignals({ d: null, l: null, e: null, p: null, m: null, v: null, px: px(up), now }), "trend")!;
+    const bear = find(buildSignals({ d: null, l: null, e: null, p: null, m: null, v: null, px: px(down), now }), "trend")!;
+    expect(bull.score).toBeGreaterThan(0.4);
+    expect(bull.read).toMatch(/uptrend/);
+    expect(bear.score).toBeLessThan(-0.4);
+    expect(bear.read).toMatch(/downtrend/);
+  });
+
+  it("stays out until there are 200 completed days, rather than switching formula", () => {
+    const short = daily(150, (i) => 50_000 + i * 100);
+    const s = buildSignals({ d: null, l: null, e: null, p: null, m: null, v: null, px: px(short), now });
+    expect(find(s, "trend")).toBeUndefined();
+  });
+});
+
+describe("tape read", () => {
+  it("is bullish when spot closes over VWAP on net taker buying", () => {
+    const h = hourly(24, (i) => 80_000 + i * 40, 10); // +10% net taker share
+    const t = find(buildSignals({ d: null, l: null, e: null, p: null, m: null, v: null, px: px([], h), now }), "tape")!;
+    expect(t.score).toBeGreaterThan(0.3);
+  });
+
+  it("ignores taker flow on the Bybit fallback, which has no taker split", () => {
+    const t = find(buildSignals({ d: null, l: null, e: null, p: null, m: null, v: null, px: px([], hourly(24, () => 80_000)), now }), "tape")!;
+    expect(t.read).toMatch(/No taker split/);
+    expect(t.score).toBe(0);
+  });
+
+  it("skips a zero-volume window instead of printing NaN", () => {
+    const h = hourly(24, () => 80_000).map((c) => ({ ...c, v: 0 }));
+    expect(find(buildSignals({ d: null, l: null, e: null, p: null, m: null, v: null, px: px([], h), now }), "tape")).toBeUndefined();
+  });
+});
+
+describe("open interest read", () => {
+  const der = (oiNow: number, pxNow: number): DerivativesData => ({
+    asOf: now, sources: [], price: pxNow, price24hAgo: 80_000, venues: [], totalOiUsd: 0, weightedFunding8h: null,
+    ratios: [], coinbasePremiumPct: null, fundingHistory: [], oiDaily: [],
+    oiHistory: [
+      { t: now - 24 * 3_600_000, price: 80_000, binance: 100, bybit: 100, okx: 100 },
+      { t: now, price: pxNow, binance: oiNow, bybit: oiNow, okx: oiNow },
+    ],
+  });
+  const oi = (oiNow: number, pxNow: number) =>
+    find(buildSignals({ d: der(oiNow, pxNow), l: null, e: null, p: null, m: null, v: null, px: null, now }), "oi-regime")!.score;
+
+  it("backs a rally on rising OI and half-fades one on falling OI", () => {
+    expect(oi(104, 82_000)).toBeCloseTo(1);
+    expect(oi(96, 82_000)).toBeCloseTo(-0.5);
+  });
+  it("reads long capitulation (both falling) as mildly bullish", () => {
+    expect(oi(96, 78_000)).toBeCloseTo(0.5);
+  });
+  it("stays neutral when OI barely moves", () => {
+    expect(oi(100.2, 82_000)).toBe(0);
+  });
+});
+
+describe("macro read", () => {
+  const stat = (key: string, value: number, change: number): MacroStat => ({ key, label: key, value, unit: "index", change, series: [], note: "", source: "" });
+  const mac = (stats: MacroStat[]): MacroData => ({ asOf: now, sources: [], stats, fearGreed: null, options: { putCallOi: null, nextExpiry: null, nextExpiryMaxPain: null, nextExpiryOiBtc: null } });
+  const run = (stats: MacroStat[]) => find(buildSignals({ d: null, l: null, e: null, p: null, m: mac(stats), v: null, px: null, now }), "macro");
+
+  it("is bearish when the dollar and yields rise", () => {
+    expect(run([stat("dxy", 121, 2.8), stat("us10y", 5.2, 0.42)])!.score).toBeLessThan(-0.3);
+  });
+  it("is bullish when liquidity and stablecoins grow and the dollar falls", () => {
+    expect(run([stat("netliq", 6, 0.2), stat("stables", 311, 9), stat("dxy", 118, -3)])!.score).toBeGreaterThan(0.3);
+  });
+  it("needs at least two legs", () => {
+    expect(run([stat("dxy", 121, 2.8)])).toBeUndefined();
+  });
+});
+
+describe("composite", () => {
+  const sig = (key: string, score: number, w: Signal["w"]): Signal => ({
+    key, label: key, kind: "Flow", contrarian: false, value: "", read: "", score, w, lean: score >= 0.2 ? "bull" : score <= -0.2 ? "bear" : "neutral",
+  });
+
+  it("weights each read only in the horizons it belongs to", () => {
+    const s = [sig("a", 1, { intraday: 1 }), sig("b", -1, { swing: 1, macro: 3 }), sig("c", 0.5, { macro: 1 })];
+    expect(composite(s, "intraday")!.net).toBeCloseTo(100);
+    expect(composite(s, "swing")!.net).toBeCloseTo(-100);
+    expect(composite(s, "macro")!.net).toBeCloseTo(((-3 + 0.5) / 4) * 100);
+    expect(composite(s, "macro")!.count).toBe(2);
+  });
+
+  it("returns null for a horizon with no reads", () => {
+    expect(composite([sig("a", 1, { intraday: 1 })], "macro")).toBeNull();
+  });
+
+  it("labels inside ±8 as no edge", () => {
+    expect(composite([sig("a", 0.07, { swing: 1 })], "swing")!.label).toMatch(/No edge/);
+    expect(composite([sig("a", 0.1, { swing: 1 })], "swing")!.label).toBe("Mildly bullish");
+  });
+});
+
+describe("spot vs perp flow", () => {
+  const run = (spotDelta: number, perpDelta: number) =>
+    find(buildSignals({ d: null, l: null, e: null, p: null, m: null, v: null, px: px([], hourly(24, () => 80_000, spotDelta), hourly(24, () => 80_000, perpDelta)), now }), "spotperp");
+
+  it("is bullish when spot takers lead and bearish when only perps buy", () => {
+    expect(run(8, 0.5)!.score).toBeGreaterThan(0.4);
+    expect(run(0.5, 8)!.score).toBeLessThan(-0.4);
+    expect(run(0.5, 8)!.read).toMatch(/leverage-led/);
+  });
+  it("stays out without a taker split on either side", () => {
+    expect(run(0, 0)).toBeUndefined();
+  });
+});
+
+describe("realized liquidations read", () => {
+  const der: DerivativesData = {
+    asOf: now, sources: [], price: 80_000, price24hAgo: 80_000, totalOiUsd: 25e9, weightedFunding8h: null, ratios: [], coinbasePremiumPct: null,
+    fundingHistory: [], oiDaily: [], oiHistory: [],
+    venues: [{ exchange: "OKX", market: "BTC-USDT swap", oiUsd: 2.5e9, fundingRate8h: null }],
+  };
+  const lq = (long: number, short: number, ok = true): RealizedLiqData => ({
+    asOf: now, h1: { long: 0, short: 0 }, h4: { long, short }, h24: { long, short }, hourly: [], largest: [], coverageHours: 24,
+    sources: [{ source: "okx-liquidations", ok }],
+  });
+  const run = (long: number, short: number, ok = true) =>
+    find(buildSignals({ d: der, l: null, e: null, p: null, m: null, v: null, px: null, lq: lq(long, short, ok), now }), "flush");
+
+  it("reads a big one-sided long flush as contrarian bullish, scaled to all venues", () => {
+    const s = run(9e6, 0.5e6)!; // ×10 → $90M longs vs $5M shorts
+    expect(s.score).toBeGreaterThan(0.5);
+    expect(s.value).toContain("$90M");
+  });
+  it("reads a short squeeze as contrarian bearish", () => {
+    expect(run(0.5e6, 9e6)!.score).toBeLessThan(-0.5);
+  });
+  it("stays at zero when it's quiet, and out when the feed failed", () => {
+    expect(run(0.2e6, 0.1e6)!.score).toBe(0);
+    expect(run(9e6, 0, false)).toBeUndefined();
+  });
+});
+
+describe("risk tape read", () => {
+  const cross = (nqChange: number, nqCorr: number, stale = false): CrossData => ({
+    asOf: now, sources: [],
+    quotes: [{ key: "nq", label: "NQ", unit: "index", last: 30_000, t: now, change: nqChange, stale }],
+    correlations: [{ key: "nq", label: "", corr30: nqCorr, corr90: null, beta30: null }],
+  });
+  const run = (c: CrossData) => find(buildSignals({ d: null, l: null, e: null, p: null, m: null, v: null, px: null, x: c, now }), "risktape");
+
+  it("turns an equity rally into a BTC tailwind only when they're correlated", () => {
+    expect(run(cross(1.5, 0.6))!.score).toBeGreaterThan(0.5);
+    expect(run(cross(1.5, 0.05))!.score).toBe(0);
+    expect(run(cross(-1.5, 0.6))!.score).toBeLessThan(-0.5);
+  });
+  it("ignores closed markets", () => {
+    expect(run(cross(1.5, 0.6, true))).toBeUndefined();
+  });
+});
+
+describe("correlation helpers", () => {
+  it("pairs returns by date and skips dates the other market didn't trade", async () => {
+    const { corr, pairedReturns } = await import("./quant");
+    const a = [{ date: "d1", c: 100 }, { date: "d2", c: 110 }, { date: "d3", c: 99 }, { date: "d4", c: 108.9 }];
+    const b = [{ date: "d1", c: 10 }, { date: "d3", c: 9.9 }, { date: "d4", c: 10.89 }];
+    const [ra, rb] = pairedReturns(a, b);
+    expect(ra).toHaveLength(2);
+    expect(ra[0]).toBeCloseTo(Math.log(0.99)); // d1 → d3, BTC's d2 move folded in
+    expect(rb[1]).toBeCloseTo(Math.log(1.1));
+    const xs = Array.from({ length: 20 }, (_, i) => Math.sin(i));
+    expect(corr(xs, xs)).toBeCloseTo(1);
+    expect(corr(xs, xs.map((y) => -y))).toBeCloseTo(-1);
+    expect(corr(xs.slice(0, 5), xs.slice(0, 5))).toBeNull();
+  });
+});

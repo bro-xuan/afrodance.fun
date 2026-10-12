@@ -8,6 +8,7 @@ import type { DerivativesData } from "../lib/types";
 
 const NAV = [
   ["Pulse", "#market-pulse"],
+  ["Check a trade", "#check-a-trade"],
   ["Price & levels", "#price-levels"],
   ["Positioning", "#positioning"],
   ["Liquidations", "#liquidations"],

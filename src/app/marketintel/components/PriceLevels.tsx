@@ -14,15 +14,22 @@ const TAG_W = 140;
 const LEVEL_COLOR: Record<LevelKind, string> = {
   session: C.ink2,
   open: C.accent,
+  trend: C.venues.binance,
+  vwap: "#b7791f",
+  profile: C.muted,
+  cme: C.ink,
+  onchain: "#a23b72",
   liq: C.short,
   options: C.venues.okx,
   vol: C.neutral,
 };
 const levelColor = (l: Level) => (l.key === "liqd" ? C.long : LEVEL_COLOR[l.kind]);
 
+const NO_CANDLES: Candle[] = [];
+
 const VIEWS = {
-  "1H": { label: "1H, 7 days", pick: (p: PriceData) => p.hourly },
-  "1D": { label: "1D, 120 days", pick: (p: PriceData) => p.daily },
+  "1H": { label: "1H, 7 days", pick: (p: PriceData) => p.hourly.slice(-168) },
+  "1D": { label: "1D, 120 days", pick: (p: PriceData) => p.daily.slice(-120) },
 } as const;
 
 export function PriceLevels({ px, levels, spot }: { px: PriceData | null; levels: Level[]; spot: number | null }) {
@@ -53,14 +60,18 @@ export function PriceLevels({ px, levels, spot }: { px: PriceData | null; levels
           </div>
         }
         sources={px.sources}
-        footnote="Binance spot candles. Lower pane is spot CVD: running total of market buys minus market sells in BTC. Price up with CVD flat or falling means the rally isn't backed by aggressive buyers."
+        footnote="Binance spot candles. Lower pane is CVD, the running total of market buys minus market sells: spot in blue, Binance perp in orange (1H view, each on its own scale so the shapes compare). Price up with spot CVD flat or falling means the rally isn't backed by spot buyers; perp CVD leading while spot lags is leverage-driven and tends to fade."
       >
-        {candles.length > 2 ? <CandleChart candles={candles} levels={levels} spot={last} daily={view === "1D"} /> : <Empty>Price history unavailable</Empty>}
+        {candles.length > 2 ? (
+          <CandleChart candles={candles} perp={view === "1H" ? px.perpHourly : NO_CANDLES} levels={levels} spot={last} daily={view === "1D"} />
+        ) : (
+          <Empty>Price history unavailable</Empty>
+        )}
       </Panel>
 
       <Panel className="lg:col-span-3" title="Key levels" aside="distance from spot">
         {last && levels.length ? (
-          <ul className="text-[0.9rem]">
+          <ul className="max-h-[27rem] overflow-y-auto pr-1 text-[0.9rem]">
             {[...levels, { key: "spot", label: "Spot", price: last, kind: "session" as const, note: "" }]
               .sort((a, b) => b.price - a.price)
               .map((l) => {
@@ -87,14 +98,14 @@ export function PriceLevels({ px, levels, spot }: { px: PriceData | null; levels
           <Empty>Levels load with price data</Empty>
         )}
         <p className="mt-3 text-[0.8rem] leading-relaxed" style={{ color: C.muted }}>
-          Session levels use UTC days. Liquidation clusters are modelled. Hover a row for what it means.
+          Session levels use UTC days. Liquidation clusters are modelled; gamma levels assume dealers are long calls and short puts; the CME gap is shifted into spot terms by the CME basis; on-chain cost bases update daily. Levels more than 25% away are left out. Hover a row for what it means.
         </p>
       </Panel>
     </div>
   );
 }
 
-function CandleChart({ candles, levels, spot, daily }: { candles: Candle[]; levels: Level[]; spot: number | null; daily: boolean }) {
+function CandleChart({ candles, perp, levels, spot, daily }: { candles: Candle[]; perp: Candle[]; levels: Level[]; spot: number | null; daily: boolean }) {
   const [ref, w] = useWidth<HTMLDivElement>();
   const [hover, setHover] = useState<number | null>(null);
   const priceH = 380;
@@ -130,6 +141,15 @@ function CandleChart({ candles, levels, spot, daily }: { candles: Candle[]; leve
     const cy = (v: number) => (chi === clo ? top + cvdH / 2 : top + ((chi - v) / (chi - clo)) * cvdH);
     const cx = (i: number) => (i + 0.5) * slot;
     const cvdPath = cvd.map((v, i) => `${i ? "L" : "M"}${cx(i).toFixed(1)},${cy(v).toFixed(1)}`).join("");
+    // Perp CVD on the same bars, scaled to its own range: perp volume dwarfs
+    // spot, so a shared scale would flatten the spot line.
+    const pd = new Map(perp.map((c) => [c.t, c.delta]));
+    let prun = 0;
+    const pcvd = perp.length ? candles.map((c) => (prun += pd.get(c.t) ?? 0)) : [];
+    const plo = Math.min(0, ...pcvd);
+    const phi = Math.max(0, ...pcvd);
+    const py = (v: number) => (phi === plo ? top + cvdH / 2 : top + ((phi - v) / (phi - plo)) * cvdH);
+    const perpPath = pcvd.map((v, i) => `${i ? "L" : "M"}${cx(i).toFixed(1)},${py(v).toFixed(1)}`).join("");
 
     // Level tags: stack so labels never overlap.
     const tags = levels
@@ -144,8 +164,8 @@ function CandleChart({ candles, levels, spot, daily }: { candles: Candle[]; leve
     const ticks: number[] = [];
     for (let v = Math.ceil(lo / nice) * nice; v <= hi; v += nice) ticks.push(v);
 
-    return { plotW, slot, y, cx, cy, cvd, cvdPath, top, tags, ticks, lo, hi };
-  }, [w, candles, levels, spot, pad.r, pad.t]);
+    return { plotW, slot, y, cx, cy, cvd, cvdPath, pcvd, perpPath, top, tags, ticks, lo, hi };
+  }, [w, candles, perp, levels, spot, pad.r, pad.t]);
 
   const fmtT = (t: number) =>
     daily
@@ -230,7 +250,14 @@ function CandleChart({ candles, levels, spot, daily }: { candles: Candle[]; leve
           <text x={geo.plotW + 6} y={geo.top + cvdH} style={AXIS}>
             {`${geo.cvd.at(-1)! >= 0 ? "+" : "−"}${Math.abs(geo.cvd.at(-1)!).toLocaleString("en-US", { maximumFractionDigits: 0 })}`}
           </text>
+          {geo.perpPath && <path d={geo.perpPath} fill="none" stroke={C.venues.bybit} strokeWidth={1.5} strokeDasharray="4 3" strokeLinejoin="round" />}
           <path d={geo.cvdPath} fill="none" stroke={C.venues.binance} strokeWidth={2} strokeLinejoin="round" />
+          {geo.perpPath && (
+            <>
+              <text x={geo.plotW + 6} y={geo.top + 28} style={{ ...AXIS, fill: C.venues.binance }}>spot</text>
+              <text x={geo.plotW + 6} y={geo.top + 44} style={{ ...AXIS, fill: C.venues.bybit }}>perp</text>
+            </>
+          )}
 
           {/* time axis */}
           {[0, 0.25, 0.5, 0.75, 1].map((f) => {

@@ -1,18 +1,35 @@
-import type { DerivativesData, EtfData, LiquidationData, MacroData, OiPoint, PolymarketData, PriceData, VolData } from "./types";
+import type { CrossData, DerivativesData, EtfData, LiquidationData, MacroData, OiPoint, PolymarketData, PriceData, RealizedLiqData, VolData } from "./types";
 import { localDay, pct, price, usd } from "./format";
-import { nearestExpiry, realizedVol, sigmaMove, touchProb } from "./quant";
+import { leverageContext, nearestExpiry, ordinal, realizedVol, sigmaMove, sma, touchProb } from "./quant";
 
 /**
  * "Market pulse": turns the raw panels into one-line reads, each scored on a
  * continuous −1 (bearish) … +1 (bullish) scale with a dead zone around
  * "normal", so noise like −0.0004% funding scores 0 instead of flipping a
- * bullish vote. Scores are weighted (flows and leverage count more than
- * sentiment gauges) into one net bias. Every threshold is a round, well-known
- * desk heuristic so it's easy to sanity-check. Context, not trade signals.
+ * bullish vote. Each read carries a weight per trading horizon (taker flow
+ * matters for today, ETF flows for the next weeks, liquidity for the next
+ * months), so the pulse is three net biases rather than one blurred average.
+ * Every threshold is a round, well-known desk heuristic so it's easy to
+ * sanity-check. Context, not trade signals.
  */
 
 export type Lean = "bull" | "bear" | "neutral";
-export type SignalKind = "Flow" | "Leverage" | "Options" | "Crowd" | "Odds";
+export type SignalKind = "Trend" | "Flow" | "Leverage" | "Options" | "Crowd" | "Odds" | "Macro";
+export type Horizon = "intraday" | "swing" | "macro";
+export const HORIZONS: { key: Horizon; label: string; span: string }[] = [
+  { key: "intraday", label: "Intraday", span: "hours to 2 days" },
+  { key: "swing", label: "Swing", span: "1 to 3 weeks" },
+  { key: "macro", label: "Macro", span: "1 to 3 months" },
+];
+export type Weights = Partial<Record<Horizon, number>>;
+
+/** |net| below this, the pulse says "no edge"; at or above it, it's a call (and gets graded). */
+export const NO_EDGE = 8;
+/**
+ * Bump whenever reads, weights or thresholds change, so the track record
+ * never grades two different scoring models as one.
+ */
+export const MODEL = 3;
 export type Signal = {
   key: string;
   label: string;
@@ -21,7 +38,7 @@ export type Signal = {
   value: string;
   read: string;
   score: number; // −1 … +1
-  weight: number;
+  w: Weights; // weight per horizon; missing = doesn't count there
   lean: Lean;
 };
 
@@ -105,16 +122,94 @@ export type PulseInputs = {
   p: PolymarketData | null;
   m: MacroData | null;
   v: VolData | null;
+  px: PriceData | null;
+  lq?: RealizedLiqData | null;
+  x?: CrossData | null;
   now?: number;
 };
 
+/** OKX's realized liquidations scaled to all venues by its share of open interest. */
+export function liqScale(d: DerivativesData | null): number | null {
+  const okx = d?.venues.find((v) => v.exchange === "OKX" && /USDT/.test(v.market))?.oiUsd;
+  return okx && d?.totalOiUsd ? d.totalOiUsd / okx : null;
+}
+
 type Draft = Omit<Signal, "lean">;
 
-export function buildSignals({ d, l, e, p, m, v, now = Date.now() }: PulseInputs): Signal[] {
+export function buildSignals({ d, l, e, p, m, v, px, lq = null, x = null, now = Date.now() }: PulseInputs): Signal[] {
   const out: Draft[] = [];
   const spot = d?.price ?? v?.index ?? null;
   const dow = new Date(now).getUTCDay();
   const weekend = dow === 0 || dow === 6;
+
+  // ── Trend ───────────────────────────────────────────────────────────────
+  // Positioning reads mean different things above and below the 200D: a
+  // flush in an uptrend is a dip to buy, in a downtrend it's the trend.
+  const closed = px?.daily.filter((c) => c.t < Math.floor(now / 86_400_000) * 86_400_000) ?? [];
+  const ma50 = sma(closed, 50);
+  const ma200 = sma(closed, 200);
+  // Needs the full 200 days: a shorter feed would silently switch formulas
+  // and make the logged score jump with no change in the market.
+  // Spot close from the same feed as the averages, so a derivatives outage
+  // doesn't take the trend read down with it.
+  const close = px?.daily.at(-1)?.c ?? null;
+  if (close && ma50 && ma200) {
+    const d200 = close / ma200 - 1;
+    const cross = ma50 / ma200 - 1;
+    // 20-day return in σ units of daily vol, so a quiet grind and a volatile
+    // spike of the same size don't score the same.
+    const rv = realizedVol(closed, 30);
+    const r20 = Math.log(close / closed.at(-20)!.c);
+    const z = rv ? r20 / ((rv / 100) * Math.sqrt(20 / 365)) : 0;
+    const parts = 0.4 * clamp(d200 / 0.1) + 0.3 * clamp(cross / 0.05) + 0.3 * clamp(z / 2);
+    const above200 = d200 >= 0;
+    const golden = cross >= 0;
+    out.push({
+      key: "trend",
+      label: "Trend, daily",
+      kind: "Trend",
+      contrarian: false,
+      value: `${pct(d200 * 100, 1)} vs 200D`,
+      read: `${
+        above200 && golden ? "Above the 200D, 50D over 200D: uptrend, dips get bought"
+        : !above200 && !golden ? "Below the 200D, 50D under 200D: downtrend, rallies get sold"
+        : above200 ? "Back above the 200D but 50D still under it: recovery, unconfirmed"
+        : "Lost the 200D with 50D still over it: trend breaking down"
+      }. 20 day move ${z >= 0 ? "+" : "−"}${Math.abs(z).toFixed(1)}σ`,
+      score: clamp(parts),
+      w: { intraday: 0.5, swing: 1.25, macro: 1.5 },
+    });
+  }
+
+  // Intraday tape: where price sits against today's volume-weighted average,
+  // and whether aggressive spot buyers or sellers are behind it.
+  const day = px?.hourly.slice(-24) ?? [];
+  const vol = day.reduce((s, c) => s + c.v, 0);
+  if (day.length >= 12 && vol > 0) {
+    // Spot close vs spot VWAP: the perp price would bake the basis into it.
+    const vwap = day.reduce((s, c) => s + ((c.h + c.l + c.c) / 3) * c.v, 0) / vol;
+    const dv = day[day.length - 1].c / vwap - 1;
+    const taker = day.reduce((s, c) => s + c.delta, 0) / vol; // net taker share, −1 … +1
+    const hasDelta = day.some((c) => c.delta !== 0); // Bybit fallback has no taker split
+    const flow = hasDelta ? clamp(dz(taker, 0.01) / 0.05) : 0;
+    const diverge = hasDelta && Math.sign(dv) !== Math.sign(taker) && Math.abs(dv) > 0.003 && Math.abs(taker) > 0.01;
+    out.push({
+      key: "tape",
+      label: "Tape, 24h",
+      kind: "Flow",
+      contrarian: false,
+      value: `${pct(dv * 100, 2)} vs VWAP`,
+      read: `24h VWAP ${price(vwap)}. ${
+        !hasDelta ? "No taker split from the fallback feed"
+        : `Spot takers net ${taker >= 0 ? "buying" : "selling"} ${Math.abs(taker * 100).toFixed(1)}% of volume`
+      }${
+        diverge ? (dv > 0 ? ". Price up without aggressive buyers: fade risk" : ". Price down while takers buy: absorption")
+        : ""
+      }`,
+      score: clamp(0.5 * clamp(dv / 0.015) + 0.5 * flow),
+      w: { intraday: 1.25, swing: 0.25 },
+    });
+  }
 
   // ── Flow ────────────────────────────────────────────────────────────────
   if (e?.days.length) {
@@ -132,7 +227,7 @@ export function buildSignals({ d, l, e, p, m, v, now = Date.now() }: PulseInputs
         last5 > 500 ? "Steady institutional bid" : last5 < -500 ? "Institutions de-risking" : "Flows mixed"
       }`,
       score: clamp(dz(last5, 150) / 1000),
-      weight: 1,
+      w: { swing: 1, macro: 0.75 },
     });
   }
 
@@ -150,7 +245,36 @@ export function buildSignals({ d, l, e, p, m, v, now = Date.now() }: PulseInputs
         : "Coinbase and Binance in line"
       }${weekend ? ". Weekend: thin US flow, half weight" : ""}`,
       score: clamp(dz(c, 0.02) / 0.12),
-      weight: weekend ? 0.4 : 0.75,
+      w: weekend ? { intraday: 0.4, swing: 0.25 } : { intraday: 0.75, swing: 0.5 },
+    });
+  }
+
+  // Spot vs perp taker flow: who's doing the buying. Spot-led moves are
+  // organic; perp-led moves are leverage and tend to give back.
+  const sp = px?.hourly.slice(-24) ?? [];
+  const pp = px?.perpHourly.slice(-24) ?? [];
+  const share = (cs: typeof sp) => {
+    const vol = cs.reduce((s, c) => s + c.v, 0);
+    return vol > 0 && cs.some((c) => c.delta !== 0) ? cs.reduce((s, c) => s + c.delta, 0) / vol : null;
+  };
+  const ss = share(sp);
+  const ps = share(pp);
+  if (ss !== null && ps !== null) {
+    const diff = ss - ps;
+    const f = (x: number) => `${x >= 0 ? "+" : "−"}${Math.abs(x * 100).toFixed(1)}%`;
+    out.push({
+      key: "spotperp",
+      label: "Spot vs perp flow, 24h",
+      kind: "Flow",
+      contrarian: false,
+      value: `${f(ss)} / ${f(ps)}`,
+      read: `Net taker share, spot / perp (Binance). ${
+        Math.abs(diff) < 0.01 ? "Spot and perp in step"
+        : diff > 0 ? (ss > 0 ? "Spot buyers leading: organic demand" : "Perps selling harder than spot: leverage leaving")
+        : ps > 0 ? "Perps buying, spot isn't: leverage-led, tends to fade" : "Spot selling harder than perps: real supply"
+      }`,
+      score: clamp(dz(diff, 0.01) / 0.08),
+      w: { intraday: 0.75, swing: 0.5 },
     });
   }
 
@@ -164,6 +288,7 @@ export function buildSignals({ d, l, e, p, m, v, now = Date.now() }: PulseInputs
     // 0.01%/8h is the exchanges' default (the interest leg), so "normal" is
     // a small positive number. Only distance beyond the band carries signal.
     const score = f > 0.01 ? -clamp((f - 0.01) / 0.04) : f < -0.003 ? clamp((-f - 0.003) / 0.02) : 0;
+    const rank = leverageContext(d).fundingPct;
     const outlier = lo && hi && hi.fundingRate8h! - lo.fundingRate8h! > 0.0001
       ? `. Range ${lo.exchange} ${pct(lo.fundingRate8h! * 100, 3)} to ${hi.exchange} ${pct(hi.fundingRate8h! * 100, 3)}`
       : "";
@@ -178,9 +303,9 @@ export function buildSignals({ d, l, e, p, m, v, now = Date.now() }: PulseInputs
         : f > 0.01 ? `Longs paying above baseline (${ann.toFixed(1)}% APR). Mild crowding`
         : f < -0.003 ? `Shorts paying longs (${ann.toFixed(1)}% APR). Squeeze fuel`
         : `Near zero (${ann.toFixed(1)}% APR). Nobody paying to lean`
-      }${outlier}`,
+      }${rank !== null ? `. ${ordinal(rank)} percentile of 90 days` : ""}${outlier}`,
       score,
-      weight: 1,
+      w: { intraday: 0.75, swing: 1 },
     });
   }
 
@@ -205,8 +330,37 @@ export function buildSignals({ d, l, e, p, m, v, now = Date.now() }: PulseInputs
         : oiUp ? "Rising OI into weakness: shorts pressing"
         : "Both falling: longs capitulating, deleveraging"
       }`,
-      score: flat || drift || !oiUp ? 0 : (up ? 1 : -1) * clamp(r.total / 4, 0, 1),
-      weight: 0.75,
+      // New leverage behind a move backs it. Leverage leaving a move half
+      // counts against it: short covering fades, long capitulation exhausts.
+      score: flat || drift ? 0 : (up ? 1 : -1) * (oiUp ? 1 : -0.5) * clamp(Math.abs(r.total) / 4, 0, 1),
+      w: { intraday: 1, swing: 0.5 },
+    });
+  }
+
+  // Liquidations that actually happened. A one-sided flush is contrarian:
+  // the forced sellers (or buyers) are done, and the move often reverses.
+  const scale = liqScale(d);
+  if (lq && scale && lq.sources.every((s) => s.ok)) {
+    const L = lq.h4.long * scale;
+    const S = lq.h4.short * scale;
+    const total = L + S;
+    const imb = total > 0 ? (L - S) / total : 0;
+    const big = clamp(total / 50e6, 0, 1); // $50M+ in 4h across venues is a real flush
+    out.push({
+      key: "flush",
+      label: "Liquidations, 4h",
+      kind: "Leverage",
+      contrarian: true,
+      value: `${usd(L, 0)} L / ${usd(S, 0)} S`,
+      read: `Estimated all venues from OKX fills (×${scale.toFixed(1)}). ${
+        total < 5e6 ? "Quiet: no forced flow"
+        : total < 25e6 ? `Light: mostly ${imb > 0.3 ? "longs" : imb < -0.3 ? "shorts" : "both sides"} liquidated, nothing that marks a flush`
+        : imb > 0.3 ? "Longs flushed: forced selling done, bounce risk"
+        : imb < -0.3 ? "Shorts squeezed: forced buying done, pullback risk"
+        : "Both sides liquidated: chop"
+      }`,
+      score: total < 5e6 ? 0 : clamp(dz(imb, 0.3) / 0.5) * big,
+      w: { intraday: 0.75, swing: 0.25 },
     });
   }
 
@@ -226,7 +380,7 @@ export function buildSignals({ d, l, e, p, m, v, now = Date.now() }: PulseInputs
         : "Backwardation: hedgers paying, capitulation style"
       }`,
       score: b > 12 ? -clamp((b - 12) / 12) : b < 0 ? clamp(-b / 5) : 0,
-      weight: 0.5,
+      w: { swing: 0.5, macro: 0.75 },
     });
   }
 
@@ -248,7 +402,7 @@ export function buildSignals({ d, l, e, p, m, v, now = Date.now() }: PulseInputs
         : "Flat skew: no directional premium"
       }`,
       score: clamp(dz(rr, 0.5) / 5),
-      weight: 0.75,
+      w: { intraday: 0.25, swing: 0.75 },
     });
   }
 
@@ -277,7 +431,7 @@ export function buildSignals({ d, l, e, p, m, v, now = Date.now() }: PulseInputs
         : "Normal skew, no extreme"
       }`,
       score: clamp(crowd + smart),
-      weight: 0.75,
+      w: { intraday: 0.5, swing: 0.75 },
     });
   }
 
@@ -291,7 +445,7 @@ export function buildSignals({ d, l, e, p, m, v, now = Date.now() }: PulseInputs
       value: `${fg}, ${m.fearGreed.label}`,
       read: fg >= 75 ? "Euphoria, tops form here" : fg <= 25 ? "Capitulation zone, bottoms form here" : fg > 60 ? "Leaning greedy, not extreme" : fg < 40 ? "Leaning fearful, not extreme" : "Sentiment mid range",
       score: -clamp(dz(fg - 50, 10) / 30),
-      weight: 0.5,
+      w: { swing: 0.5, macro: 0.5 },
     });
   }
 
@@ -311,7 +465,7 @@ export function buildSignals({ d, l, e, p, m, v, now = Date.now() }: PulseInputs
         ? `Balanced pools. Densest ${bigger}, near ${price(peak.price)}`
         : `Bigger pool ${bigger}, densest near ${price(peak.price)}. Price often hunts it`,
       score: clamp(dz(imb, 0.1) / 0.4),
-      weight: 0.5,
+      w: { intraday: 0.75, swing: 0.25 },
     });
   }
 
@@ -333,29 +487,110 @@ export function buildSignals({ d, l, e, p, m, v, now = Date.now() }: PulseInputs
       value: `↑${(t.up * 100).toFixed(0)}% / ↓${(t.down * 100).toFixed(0)}%`,
       read: `Odds of ${price(t.upAt)} vs ${price(t.downAt)} by ${localDay(t.endDate)}.${volNote}`,
       score: clamp(dz(t.up - t.down, 0.03) / 0.2),
-      weight: 0.5,
+      w: { swing: 0.5 },
+    });
+  }
+
+  // Risk tape: today's equity and dollar moves, each weighted by how tightly
+  // BTC has actually traded with that market over the last 30 sessions. A
+  // 1% Nasdaq rally means little for BTC at a 0.1 correlation, a lot at 0.6.
+  const legsX = (["nq", "dxy"] as const).flatMap((k) => {
+    const q = x?.quotes.find((y) => y.key === k);
+    const c = x?.correlations.find((y) => y.key === k)?.corr30;
+    return q && !q.stale && q.change !== null && c != null ? [{ k, change: q.change, c, push: q.change * c }] : [];
+  });
+  if (legsX.length) {
+    const push = legsX.reduce((s, y) => s + y.push, 0);
+    const nq = legsX.find((y) => y.k === "nq");
+    const dx = legsX.find((y) => y.k === "dxy");
+    out.push({
+      key: "risktape",
+      label: "Risk tape, today",
+      kind: "Macro",
+      contrarian: false,
+      value: [nq && `NQ ${pct(nq.change, 1)}`, dx && `DXY ${pct(dx.change, 1)}`].filter(Boolean).join(", "),
+      read: `30d correlation to BTC: ${[nq && `Nasdaq ${nq.c.toFixed(2)}`, dx && `dollar ${dx.c.toFixed(2)}`].filter(Boolean).join(", ")}. ${
+        Math.abs(push) < 0.15 ? "No meaningful push from macro today"
+        : push > 0 ? "Cross-asset tape is a tailwind for BTC today"
+        : "Cross-asset tape is a headwind for BTC today"
+      }`,
+      score: clamp(dz(push, 0.15) / 0.8),
+      w: { intraday: 0.5, swing: 0.25 },
+    });
+  }
+
+  // ── Macro ───────────────────────────────────────────────────────────────
+  // The slow tide: more liquidity and stablecoins lift BTC, a rising dollar
+  // and rising yields drain it. FRED prints daily or weekly, so this only
+  // counts at swing and macro horizons.
+  const stat = (k: string) => {
+    const x = m?.stats.find((s) => s.key === k);
+    return x?.value != null && x.change != null ? { value: x.value, change: x.change, pct: (x.change / (x.value - x.change)) * 100 } : null;
+  };
+  const liq = stat("netliq");
+  const dxy = stat("dxy");
+  // Real yields are the cleaner headwind gauge; fall back to nominal.
+  const real = stat("real10y");
+  const y10 = real ?? stat("us10y");
+  const stb = stat("stables");
+  const legs = [
+    liq && { w: 0.3, s: clamp(dz(liq.pct, 0.5) / 3) },
+    stb && { w: 0.2, s: clamp(dz(stb.pct, 0.5) / 3) },
+    dxy && { w: 0.3, s: -clamp(dz(dxy.pct, 0.5) / 3) },
+    y10 && { w: 0.2, s: -clamp(dz(y10.change, 0.1) / 0.4) }, // percentage points
+  ].filter((x): x is { w: number; s: number } => !!x);
+  if (legs.length >= 2) {
+    const sw = legs.reduce((s, x) => s + x.w, 0);
+    const score = legs.reduce((s, x) => s + x.w * x.s, 0) / sw;
+    const tight = (dxy?.pct ?? 0) > 1 || (y10?.change ?? 0) > 0.2;
+    const easy = (liq?.pct ?? 0) > 1 || (dxy?.pct ?? 0) < -1;
+    out.push({
+      key: "macro",
+      label: "Liquidity, dollar, rates",
+      kind: "Macro",
+      contrarian: false,
+      value: [
+        dxy && `$ ${pct(dxy.pct, 1)}`,
+        y10 && `${real ? "real 10Y" : "10Y"} ${y10.change >= 0 ? "+" : "−"}${Math.abs(y10.change * 100).toFixed(0)}bp`,
+      ].filter(Boolean).join(", "),
+      read: `Over 30 days: net liquidity ${liq ? pct(liq.pct, 1) : "n/a"}, stablecoins ${stb ? pct(stb.pct, 1) : "n/a"}. ${
+        tight && !easy ? "Dollar or yields rising: tightening, a headwind"
+        : easy && !tight ? "Liquidity expanding, dollar soft: a tailwind"
+        : tight && easy ? "Mixed: liquidity up but the dollar or yields too"
+        : "No strong macro push either way"
+      }`,
+      score: clamp(score),
+      w: { swing: 0.5, macro: 1.5 },
     });
   }
 
   return out.map((x) => ({ ...x, score: Number.isFinite(x.score) ? x.score : 0, lean: leanOf(x.score) }));
 }
 
-/** Weighted net bias, −100 … +100, plus how much the reads agree. */
-export function composite(signals: Signal[]) {
-  const w = signals.reduce((s, x) => s + x.weight, 0);
+/** Weighted net bias for one horizon, −100 … +100, plus how much the reads agree. */
+export function composite(all: Signal[], h: Horizon) {
+  const signals = all.filter((x) => (x.w[h] ?? 0) > 0);
+  const wt = (x: Signal) => x.w[h] ?? 0;
+  const w = signals.reduce((s, x) => s + wt(x), 0);
   if (!w) return null;
-  const net = (signals.reduce((s, x) => s + x.weight * x.score, 0) / w) * 100;
-  const bullW = signals.filter((x) => x.lean === "bull").reduce((s, x) => s + x.weight, 0);
-  const bearW = signals.filter((x) => x.lean === "bear").reduce((s, x) => s + x.weight, 0);
+  const net = (signals.reduce((s, x) => s + wt(x) * x.score, 0) / w) * 100;
+  const bullW = signals.filter((x) => x.lean === "bull").reduce((s, x) => s + wt(x), 0);
+  const bearW = signals.filter((x) => x.lean === "bear").reduce((s, x) => s + wt(x), 0);
   // Agreement: the share of directional weight on the winning side.
   const agree = bullW + bearW > 0 ? Math.max(bullW, bearW) / (bullW + bearW) : null;
   const a = Math.abs(net);
   const side = net > 0 ? "bullish" : "bearish";
-  const label = a < 8 ? "No edge, reads cancel out" : a < 20 ? `Mildly ${side}` : a < 40 ? `Moderately ${side}` : `Strongly ${side}`;
+  const label = a < NO_EDGE ? "No edge, reads cancel out" : a < 20 ? `Mildly ${side}` : a < 40 ? `Moderately ${side}` : `Strongly ${side}`;
+  const drivers = signals
+    .filter((x) => x.lean !== "neutral")
+    .sort((a, b) => Math.abs(b.score * wt(b)) - Math.abs(a.score * wt(a)))
+    .slice(0, 3);
   return {
     net,
     label,
     agree,
+    drivers,
+    count: signals.length,
     bull: signals.filter((x) => x.lean === "bull"),
     bear: signals.filter((x) => x.lean === "bear"),
     neutral: signals.filter((x) => x.lean === "neutral"),
