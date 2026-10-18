@@ -3,6 +3,11 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.1.0] - 2026-10-18
+
+### Added
+- **3D of Everything on the homepage.** A new project card with its own pixel scene: a pocket watch takes itself apart into case, mainspring, wheels, balance and dial, the wheels turn while a red line follows the power from the crown, then it closes up and ticks. It holds still on the exploded view under reduced motion.
+
 ## [0.5.0.1] - 2026-10-18
 
 ### Fixed
