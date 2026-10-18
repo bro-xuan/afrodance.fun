@@ -3,6 +3,11 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.0.1] - 2026-10-18
+
+### Fixed
+- **`/3d-of-everything` shows the skill's page again, not the gallery.** Vercel answers a folder with its `index.html` before any rewrite, and the gallery was that file; now the skill's page is the folder's `index.html` and the gallery `objects/index.html`.
+
 ## [0.5.0.0] - 2026-10-18
 
 ### Added
