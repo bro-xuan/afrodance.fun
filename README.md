@@ -72,6 +72,7 @@ src/
 └── types/
     └── index.ts            # TypeScript type definitions
 public/
+├── 3d-of-everything/       # 3D of Things, baked in by `npm run export` in bro-xuan/3d-of-things (don't edit by hand)
 ├── adhd_saver/             # ADHD Saver source code & sounds
 └── date-scoring/           # Date Scoring app assets
 ```
