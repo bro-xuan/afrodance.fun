@@ -3,6 +3,15 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.0.0] - 2026-10-18
+
+### Added
+- **3D of Everything at `/3d-of-everything`.** Real machines you can turn over, look inside and take apart in 3D, made with 3D of Things, a Claude Code skill:
+  - **The skill's page** at `/3d-of-everything`, with the pocket watch running live at the top: hold W to wind it, S slows time to a twentieth, E takes it apart.
+  - **Thirteen machines** at `/3d-of-everything/objects`, from a pocket watch, a Leica M3 and a Hasselblad-style SLR to the 2026 Roadster, a family car and a washing machine, each with a step-by-step "How it works" tour, live charts and experiments.
+  - **Install the skill** with `npx skills add bro-xuan/3d-of-things` and name a machine; the source is on GitHub under MIT.
+  - Baked in as static files by `npm run export` in bro-xuan/3d-of-things; two rewrites in `next.config.ts` give the clean URLs.
+
 ## 2026-10-11, Market Intel: real flows, desk levels, live macro
 
 - **Liquidations that actually happened:** last 1h/4h/24h longs vs shorts liquidated (OKX fills scaled to all venues), hourly bars, the largest fills, and a live tape streaming Bybit and Binance liquidations into the page.
