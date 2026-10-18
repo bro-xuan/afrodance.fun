@@ -148,6 +148,15 @@ export const projects: Project[] = [
     visual: "analog-camera",
   },
   {
+    title: "3D of Everything",
+    description: "Real machines to turn over, look inside and take apart in 3D, from a pocket watch to the 2026 Roadster. Built by a Claude Code skill you can install in one line.",
+    url: "/3d-of-everything",
+    emoji: "⚙️",
+    color: "warning",
+    stack: ["three.js", "Claude Code skill"],
+    visual: "machine-teardown",
+  },
+  {
     title: "Corporate Translator",
     description: "Decodes corporate jargon into plain English. Live BS score included.",
     url: "/corperate_translator",

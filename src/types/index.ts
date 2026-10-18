@@ -11,7 +11,8 @@ export type ProjectVisual =
   | "house-build"
   | "migration-flow"
   | "focus-tracker"
-  | "mic-waveform";
+  | "mic-waveform"
+  | "machine-teardown";
 
 export interface Project {
   title: string;

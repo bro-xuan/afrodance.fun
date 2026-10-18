@@ -12,6 +12,7 @@ import HouseBuildVisual from "./visuals/HouseBuildVisual";
 import MigrationFlowVisual from "./visuals/MigrationFlowVisual";
 import FocusTrackerVisual from "./visuals/FocusTrackerVisual";
 import MicWaveformVisual from "./visuals/MicWaveformVisual";
+import TeardownVisual from "./visuals/TeardownVisual";
 
 // Animated pixel-art scenes; projects without one fall back to the emoji tile.
 const visuals: Record<ProjectVisual, ComponentType> = {
@@ -27,6 +28,7 @@ const visuals: Record<ProjectVisual, ComponentType> = {
   "migration-flow": MigrationFlowVisual,
   "focus-tracker": FocusTrackerVisual,
   "mic-waveform": MicWaveformVisual,
+  "machine-teardown": TeardownVisual,
 };
 
 const buttonClass: Record<string, string> = {
