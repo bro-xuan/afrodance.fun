@@ -2129,3 +2129,80 @@ body:has(.mi-root) {
     animation: none !important;
   }
 }
+
+/* === 3D of Everything (TeardownVisual) ===
+   One 8s timeline. Every part is drawn in its place in the exploded row, and
+   carries the way back to the closed watch as --tdv-dx / --tdv-dy: closed
+   0–12%, sliding apart 12–28%, apart 28–78% (the train turns, the balance
+   swings, the power line marches), sliding home 78–92%, closed to 100%.
+   Wheels and balance turn by swapping two frames of teeth and spokes; the
+   seconds hand ticks round in eight steps, once a loop. Base (animation-less)
+   state = the exploded row with the power line, for prefers-reduced-motion. */
+.tdv-part {
+  animation: tdv-part 8s steps(4) infinite;
+}
+@keyframes tdv-part {
+  0%, 12% { transform: translate(var(--tdv-dx), var(--tdv-dy)); }
+  28%, 78% { transform: translate(0, 0); }
+  92%, 100% { transform: translate(var(--tdv-dx), var(--tdv-dy)); }
+}
+
+.tdv-spin-a {
+  animation: tdv-frame-a 0.5s steps(1) infinite;
+}
+.tdv-spin-b {
+  opacity: 0;
+  animation: tdv-frame-b 0.5s steps(1) infinite;
+}
+.tdv-swing-a {
+  animation: tdv-frame-a 0.34s steps(1) infinite;
+}
+.tdv-swing-b {
+  opacity: 0;
+  animation: tdv-frame-b 0.34s steps(1) infinite;
+}
+@keyframes tdv-frame-a {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+}
+@keyframes tdv-frame-b {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.tdv-seconds {
+  transform-box: view-box;
+  animation: tdv-seconds 8s steps(8) infinite;
+}
+@keyframes tdv-seconds {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.tdv-power {
+  animation:
+    tdv-power 8s steps(1) infinite,
+    tdv-march 0.6s steps(2) infinite;
+}
+@keyframes tdv-power {
+  0%, 29.9% { opacity: 0; }
+  30%, 77.9% { opacity: 1; }
+  78%, 100% { opacity: 0; }
+}
+@keyframes tdv-march {
+  from { stroke-dashoffset: 4; }
+  to { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tdv-part,
+  .tdv-spin-a,
+  .tdv-spin-b,
+  .tdv-swing-a,
+  .tdv-swing-b,
+  .tdv-seconds,
+  .tdv-power {
+    /* tdv-*: freezes on the exploded row: every part apart, the power line drawn */
+    animation: none !important;
+  }
+}
