@@ -149,11 +149,11 @@ export const projects: Project[] = [
   },
   {
     title: "3D of Everything",
-    description: "Real machines to turn over, look inside and take apart in 3D, from a pocket watch to the 2026 Roadster. Built by a Claude Code skill you can install in one line.",
+    description: "Real machines to turn over, look inside and take apart in 3D, from a pocket watch to the 2026 Roadster. Built by a skill for coding agents, installed in one line.",
     url: "/3d-of-everything",
     emoji: "⚙️",
     color: "warning",
-    stack: ["three.js", "Claude Code skill"],
+    stack: ["three.js", "Agent skill"],
     visual: "machine-teardown",
   },
   {
