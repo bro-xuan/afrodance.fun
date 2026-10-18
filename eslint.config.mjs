@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Build output from bro-xuan/3d-of-things (npm run export there), minified: not ours to lint.
+    "public/3d-of-everything/**",
   ]),
 ]);
 
