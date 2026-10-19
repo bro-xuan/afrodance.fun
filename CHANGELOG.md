@@ -3,6 +3,15 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.3.0] - 2026-10-19
+
+### Added
+- **Three more machines in 3D of Everything**, sixteen in all, each with real insides, a step-by-step "How it works" tour, live charts and experiments:
+  - **Personal cassette player.** The shell opens on the tape transport: motor, belt, flywheel, a 2 mm capstan and pinch roller, the slip clutch and the cassette's reels. Run it and the capstan holds the tape at 4.76 cm/s while the reels speed up and slow down as their packs change.
+  - **Pin tumbler lock.** A Kwikset KW1 cylinder in a deadbolt, built in code. Push the key in and the five pin stacks ride its cuts; try the right key, a wrong one or none, and a cutaway chart marks any pin left across the shear line.
+  - **Desk lamp.** An Anglepoise-type arm whose springs match the head's weight at every angle. Move either arm and the weight's torque and the springs' stay equal on the chart; unhook the springs and it drops.
+- A new **Sound & music** category in the gallery.
+
 ## [0.5.2.0] - 2026-10-19
 
 ### Changed
