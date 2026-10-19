@@ -3,6 +3,17 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.4.0] - 2026-10-19
+
+### Changed
+- **"How it works" in 3D of Everything is now a short film**, for all nineteen machines. Press it and the machine does its job once, start to finish, in 15 to 25 seconds: the key goes in and turns the lock, the shutter fires and winds on, the crank spins the drill's bit, the drum washes and then spins.
+  - **You can see inside.** The casing, housing or body turns to glass and the moving parts stay solid, so you watch the pins ride the key's cuts or the hook carry the thread round the bobbin.
+  - **No jumps.** The camera glides round the whole machine on one smooth path, at about one size, with no cuts and nothing running off the screen.
+  - **One line of caption per shot** says what's happening. The side panel becomes the film's script: click a line to jump to it.
+  - **Play, pause and scrub it** on the bar under the model, jump between its chapters, or slow it to ½× or ¼×. Space, the arrow keys and Esc work too. Drag the model to look closer and the film pauses; play again and the camera glides back. On a phone the bar sits along the bottom of the screen.
+  - It replaces the step-by-step tour of paragraphs, charts and experiments.
+- **The 3D of Everything page's pictures** are frames from the new films.
+
 ## [0.5.3.0] - 2026-10-19
 
 ### Added
