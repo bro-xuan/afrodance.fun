@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-12T13:52:06.126Z",
-  "btcPrice": 72494,
+  "generatedAt": "2026-11-12T15:38:22.112Z",
+  "btcPrice": 71394,
   "rows": [
     {
       "slug": "mvrv-zscore",
@@ -163,11 +163,11 @@
       "name": "Mayer Multiple",
       "blurb": "Price vs its 200-day average. Readings near 0.5 marked deep bottoms; above ~2.4 marked overheated tops.",
       "phase": "Bearish",
-      "score": 39,
-      "change30d": -22,
-      "rawValue": 0.9912,
+      "score": 37,
+      "change30d": -24,
+      "rawValue": 0.9762,
       "asOfDate": "2026-11-12",
-      "fetchedAt": "2026-11-12T13:52:06.122Z",
+      "fetchedAt": "2026-11-12T15:38:22.106Z",
       "available": true,
       "side": "both"
     },
@@ -178,9 +178,9 @@
       "phase": "Bottom",
       "score": 12,
       "change30d": -15,
-      "rawValue": 1.0684,
+      "rawValue": 1.0522,
       "asOfDate": "2026-11-12",
-      "fetchedAt": "2026-11-12T13:52:06.123Z",
+      "fetchedAt": "2026-11-12T15:38:22.108Z",
       "available": true,
       "side": "both"
     },
@@ -191,9 +191,9 @@
       "phase": "Bearish",
       "score": 28,
       "change30d": 3,
-      "rawValue": 1.214,
+      "rawValue": 1.2138,
       "asOfDate": "2026-11-12",
-      "fetchedAt": "2026-11-12T13:52:06.125Z",
+      "fetchedAt": "2026-11-12T15:38:22.111Z",
       "available": true,
       "side": "bottom"
     },
@@ -206,7 +206,7 @@
       "change30d": 4,
       "rawValue": 0.5053,
       "asOfDate": "2026-11-12",
-      "fetchedAt": "2026-11-12T13:52:06.126Z",
+      "fetchedAt": "2026-11-12T15:38:22.112Z",
       "available": true,
       "side": "top"
     }
