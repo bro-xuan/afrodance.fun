@@ -1,6 +1,8 @@
 import { corr, pairedReturns } from "@/app/marketintel/lib/quant";
 import type { CrossData, CrossQuote } from "@/app/marketintel/lib/types";
-import { cachedJson, getJSON, num, settle } from "../_lib/http";
+import { bybitKlines } from "../_lib/bybit";
+import { cachedJson, firstOk, getJSON, num, settle } from "../_lib/http";
+import { edgeCached } from "../_lib/edge-cache";
 import { yahooChart, type YBar } from "../_lib/yahoo";
 
 export const runtime = "nodejs";
@@ -26,18 +28,22 @@ const SYMBOLS = [
 
 const dateNY = (t: number) => new Date(t).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 
-export async function GET() {
+async function load() {
   const now = Date.now();
-  const { values: v, sources } = await settle({
-    ...Object.fromEntries(SYMBOLS.map((s) => [`yahoo-${s.key}`, () => yahooChart(s.symbol, "6mo", "1d")])),
-    "binance-btc-1d": async () => {
-      const rows = await getJSON<[number, string, string, string, string][]>("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=200");
-      return rows.flatMap((k) => {
-        const c = num(k[4]);
-        return c === null ? [] : [{ t: k[0], c }];
-      });
-    },
-  } as Record<string, () => Promise<unknown>>);
+  const [{ values: v, sources }, btcDaily] = await Promise.all([
+    settle(Object.fromEntries(SYMBOLS.map((s) => [`yahoo-${s.key}`, () => yahooChart(s.symbol, "6mo", "1d")])) as Record<string, () => Promise<unknown>>),
+    firstOk<{ t: number; c: number }[]>([
+      ["binance-btc-1d", async () => {
+        const rows = await getJSON<[number, string, string, string, string][]>("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=200");
+        return rows.flatMap((k) => {
+          const c = num(k[4]);
+          return c === null ? [] : [{ t: k[0], c }];
+        });
+      }],
+      ["bybit-btc-1d", async () => (await bybitKlines("spot", "D", 200)).map((b) => ({ t: b.t, c: b.c }))],
+    ]),
+  ]);
+  sources.push(...btcDaily.sources);
 
   const quotes: CrossQuote[] = SYMBOLS.flatMap((s) => {
     const r = v[`yahoo-${s.key}`] as Awaited<ReturnType<typeof yahooChart>> | null;
@@ -55,7 +61,7 @@ export async function GET() {
 
   // BTC's daily close is 00:00 UTC, i.e. ~20:00 New York the previous day,
   // right after the US close: date it to the New York session it ends.
-  const btc = ((v["binance-btc-1d"] as { t: number; c: number }[] | null) ?? []).map((x) => ({ date: dateNY(x.t + DAY - 1), c: x.c }));
+  const btc = (btcDaily.value ?? []).map((x) => ({ date: dateNY(x.t + DAY - 1), c: x.c }));
   const daily = (key: string) => ((v[`yahoo-${key}`] as { bars: YBar[] } | null)?.bars ?? []).map((b) => ({ date: dateNY(b.t), c: b.c }));
   const sd = (xs: readonly number[]) => {
     const m = xs.reduce((s, x) => s + x, 0) / xs.length;
@@ -82,3 +88,5 @@ export async function GET() {
   };
   return cachedJson(body, 60);
 }
+
+export const GET = edgeCached("cross", load);

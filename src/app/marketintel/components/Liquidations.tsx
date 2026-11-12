@@ -9,6 +9,8 @@ import { Empty, Panel, Skeleton, Stat } from "./ui";
 export function Liquidations({ l, spot }: { l: LiquidationData | null; spot: number | null }) {
   const mag = liqMagnet(l);
   const px = spot ?? l?.price ?? null;
+  const venue = l?.venue ?? "Binance";
+  const split = venue === "Bybit" ? "Bybit's all-account long/short ratio" : "Binance top-trader positioning";
 
   return (
     <Panel
@@ -17,8 +19,8 @@ export function Liquidations({ l, spot }: { l: LiquidationData | null; spot: num
       sources={l?.sources}
       footnote={
         <>
-          Model, not exchange data: reconstructs where leveraged positions opened from Binance 15-min OI changes, splits
-          long/short by Binance top-trader positioning, spreads them over a 5× to 100× leverage mix, drops any cohort a later wick
+          Model, not exchange data: reconstructs where leveraged positions opened from {venue} 15-min OI changes, splits
+          long/short by {split}, spreads them over a 5× to 100× leverage mix, drops any cohort a later wick
           already liquidated, then scales to all venue OI (×{l?.scale.toFixed(2) ?? "n/a"}). Tall bars are levels where forced
           orders would cascade, and price often gets pulled toward them.
         </>
@@ -43,7 +45,7 @@ export function Liquidations({ l, spot }: { l: LiquidationData | null; spot: num
           )}
         </>
       ) : (
-        <Empty>Liquidation model unavailable: Binance history couldn&apos;t be reached.</Empty>
+        <Empty>Liquidation model unavailable: neither Binance nor Bybit history could be reached.</Empty>
       )}
     </Panel>
   );

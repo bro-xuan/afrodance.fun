@@ -1,5 +1,6 @@
 import type { MacroData, MacroStat, OptionsSnapshot, Series } from "@/app/marketintel/lib/types";
 import { cachedJson, getJSON, getText, num, settle } from "../_lib/http";
+import { edgeCached } from "../_lib/edge-cache";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -110,7 +111,7 @@ async function options(): Promise<OptionsSnapshot> {
   };
 }
 
-export async function GET() {
+async function load() {
   const { values: v, sources } = await settle({
     "fred-DGS10": () => fred("DGS10"),
     "fred-DTWEXBGS": () => fred("DTWEXBGS"),
@@ -207,3 +208,5 @@ export async function GET() {
   };
   return cachedJson(body, 300);
 }
+
+export const GET = edgeCached("macro", load);

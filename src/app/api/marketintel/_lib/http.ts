@@ -4,11 +4,13 @@ import type { SourceStatus } from "@/app/marketintel/lib/types";
 /**
  * Shared plumbing for the /api/marketintel/* routes.
  *
- * All upstreams are keyless public APIs. Several (Binance, Bybit) geo-block US
- * IPs, so functions run in Frankfurt: vercel.json sets the project region
- * (the per-route `preferredRegion` is ignored on the Hobby plan). Responses
- * are cached at the CDN with `s-maxage`, so a burst of visitors costs one
- * upstream round-trip per window rather than one per viewer.
+ * All upstreams are keyless public APIs. Bybit geo-blocks US IPs, so the
+ * Cloudflare Worker is placed next to Frankfurt (`placement` in
+ * wrangler.jsonc; the `preferredRegion` exports are Vercel leftovers and do
+ * nothing there). Binance still refuses Cloudflare's egress IPs, which
+ * geolocate to the US wherever the Worker runs, so every Binance read has a
+ * Bybit fallback (./bybit.ts). Cloudflare doesn't cache a Worker's own
+ * responses, so `s-maxage` only helps browsers and any cache in front.
  */
 
 const UA = "Mozilla/5.0 (compatible; afrodance-marketintel/1.0; +https://afrodance.fun/marketintel)";
@@ -62,6 +64,23 @@ export async function settle<T extends Record<string, () => Promise<unknown>>>(
     }
   });
   return { values, sources };
+}
+
+/**
+ * Try fetchers in order; the first success wins. Only that one gets a status
+ * row: a primary that failed over isn't "unavailable" data. If all fail, every
+ * attempt's error is reported.
+ */
+export async function firstOk<T>(jobs: [string, () => Promise<T>][]): Promise<{ value: T | null; sources: SourceStatus[] }> {
+  const failed: SourceStatus[] = [];
+  for (const [source, job] of jobs) {
+    try {
+      return { value: await job(), sources: [{ source, ok: true }] };
+    } catch (e) {
+      failed.push({ source, ok: false, error: (e instanceof Error ? e.message : String(e)).slice(0, 120) });
+    }
+  }
+  return { value: null, sources: failed };
 }
 
 export function cachedJson(body: unknown, sMaxAge: number, swr = sMaxAge * 4) {

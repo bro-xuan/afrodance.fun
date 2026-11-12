@@ -1,5 +1,6 @@
 import type { RealizedLiq, RealizedLiqData } from "@/app/marketintel/lib/types";
 import { cachedJson, getJSON, num } from "../_lib/http";
+import { edgeCached } from "../_lib/edge-cache";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -21,7 +22,7 @@ const MAX_PAGES = 20;
 
 type Detail = { bkPx: string; sz: string; posSide: string; ts: string };
 
-export async function GET() {
+async function load() {
   const now = Date.now();
   const since = now - 24 * H;
   const orders: RealizedLiq[] = [];
@@ -70,3 +71,5 @@ export async function GET() {
   };
   return cachedJson(body, 60);
 }
+
+export const GET = edgeCached("liqs", load);

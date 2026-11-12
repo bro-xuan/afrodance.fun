@@ -1,6 +1,8 @@
 import { Redis } from "@upstash/redis";
 import type { EtfData, EtfDay } from "@/app/marketintel/lib/types";
-import { cachedJson, getJSON, getText } from "../_lib/http";
+import { bybitKlines } from "../_lib/bybit";
+import { cachedJson, firstOk, getJSON, getText } from "../_lib/http";
+import { edgeCached } from "../_lib/edge-cache";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -87,19 +89,25 @@ function merge(old: Stored | null, fresh: Omit<Stored, "savedAt">): Stored {
   return { tickers: fresh.tickers, days, cumulative: fresh.cumulative ?? old?.cumulative ?? null, savedAt: Date.now() };
 }
 
-/** BTC daily close (UTC) by date, for the price line over the flow bars. */
-async function dailyCloses(): Promise<Record<string, number>> {
-  const k = await getJSON<[number, string, string, string, string][]>(
-    "https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=100",
-  );
-  return Object.fromEntries(k.map((r) => [new Date(r[0]).toISOString().slice(0, 10), Number(r[4])]));
+const byDay = (rows: { t: number; c: number }[]) =>
+  Object.fromEntries(rows.map((r) => [new Date(r.t).toISOString().slice(0, 10), r.c]));
+
+/** BTC daily close (UTC) by date, for the price line over the flow bars. Binance first, Bybit if refused. */
+async function dailyCloses() {
+  const r = await firstOk<Record<string, number>>([
+    ["binance-1d", async () => {
+      const k = await getJSON<[number, string, string, string, string][]>(
+        "https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=100",
+      );
+      return byDay(k.map((x) => ({ t: x[0], c: Number(x[4]) })));
+    }],
+    ["bybit-1d", async () => byDay(await bybitKlines("spot", "D", 100))],
+  ]);
+  return { prices: r.value ?? {}, sources: r.sources };
 }
 
-export async function GET() {
-  const pricesP = dailyCloses().then(
-    (prices) => ({ prices, source: { source: "binance-1d", ok: true } }),
-    (e) => ({ prices: {}, source: { source: "binance-1d", ok: false, error: e instanceof Error ? e.message : String(e) } }),
-  );
+async function load() {
+  const pricesP = dailyCloses();
   const stored = redis ? await redis.get<Stored>(KEY).catch(() => null) : null;
 
   try {
@@ -118,7 +126,7 @@ export async function GET() {
       days: merged.days.slice(-60),
       cumulative: merged.cumulative,
       stale: false,
-      sources: [{ source: "farside", ok: true }, px.source],
+      sources: [{ source: "farside", ok: true }, ...px.sources],
     };
     return cachedJson(body, 900);
   } catch (e) {
@@ -131,8 +139,10 @@ export async function GET() {
       days: stored?.days.slice(-60) ?? [],
       cumulative: stored?.cumulative ?? null,
       stale: true,
-      sources: [{ source: "farside", ok: false, error }, px.source],
+      sources: [{ source: "farside", ok: false, error }, ...px.sources],
     };
     return cachedJson(body, 120);
   }
 }
+
+export const GET = edgeCached("etf", load);

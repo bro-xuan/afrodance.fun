@@ -46,7 +46,8 @@ export type LiquidationData = Envelope<{
   price: number | null;
   binSize: number;
   bins: LiqBin[];
-  scale: number; // Binance → all-venue OI multiplier used on the map
+  scale: number; // venue → all-venue OI multiplier used on the map
+  venue: "Binance" | "Bybit" | null; // whose OI history the model ran on (Bybit when Binance is unreachable)
   windowHours: number; // how far back the model's position cohorts reach
 }>;
 

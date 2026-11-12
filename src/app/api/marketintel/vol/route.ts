@@ -2,6 +2,7 @@ import type { ExpiryVol, VolData } from "@/app/marketintel/lib/types";
 import { gammaLevels, type OptLeg } from "@/app/marketintel/lib/gamma";
 import { normCdf } from "@/app/marketintel/lib/quant";
 import { cachedJson, getJSON, settle } from "../_lib/http";
+import { edgeCached } from "../_lib/edge-cache";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -41,7 +42,7 @@ function ivAtDelta(legs: Leg[], target: number): number | null {
 
 type Summary = { instrument_name: string; mark_iv?: number; mark_price: number; underlying_price?: number; estimated_delivery_price?: number; open_interest: number };
 
-export async function GET() {
+async function load() {
   const now = Date.now();
   const { values: v, sources } = await settle({
     "deribit-options": () => getJSON<{ result: Summary[] }>("https://www.deribit.com/api/v2/public/get_book_summary_by_currency?currency=BTC&kind=option"),
@@ -133,3 +134,5 @@ export async function GET() {
   };
   return cachedJson(body, 60);
 }
+
+export const GET = edgeCached("vol", load);

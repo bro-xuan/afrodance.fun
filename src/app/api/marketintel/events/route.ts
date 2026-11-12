@@ -1,5 +1,6 @@
 import type { EventsData, Impact, MarketEvent } from "@/app/marketintel/lib/types";
 import { cachedJson, getJSON } from "../_lib/http";
+import { edgeCached } from "../_lib/edge-cache";
 import { etToMs, FOMC } from "../_lib/fomc";
 
 export const runtime = "nodejs";
@@ -63,7 +64,7 @@ function categorize(title: string): MarketEvent["category"] {
 
 const KEY_RELEASE = /CPI|FOMC|Federal Funds|Non-Farm|PCE/i;
 
-export async function GET() {
+async function load() {
   const now = Date.now();
   const sources = [{ source: "curated-calendar", ok: true }] as EventsData["sources"];
 
@@ -132,3 +133,5 @@ export async function GET() {
 
   return cachedJson({ asOf: now, events, sources } satisfies EventsData, 1800);
 }
+
+export const GET = edgeCached("events", load);
