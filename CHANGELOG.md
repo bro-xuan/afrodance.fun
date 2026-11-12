@@ -3,6 +3,16 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.5.0] - 2026-11-12
+
+### Changed
+- **afrodance.fun is back up, now on Cloudflare.** Vercel had paused the site, so every page answered "Payment required". It now runs on Cloudflare Workers, at afrodance.fun and www.afrodance.fun, with every page, the 3D machines and Date Scoring where they were.
+- **Market Intel keeps working without Binance.** Binance refuses requests from Cloudflare, so the liquidation map now builds from Bybit's open interest when it has to, and says which exchange it used. The BTC lines in the cross-asset and ETF panels and the derivatives price line fall back to Bybit too.
+- **Market Intel panels blank out less.** Each data feed is now cached for its refresh window. When an exchange briefly refuses a refresh, the page keeps the last good numbers (up to 30 minutes old) instead of showing an empty panel.
+
+### Fixed
+- **A panel no longer says "Unavailable" for a source a backup covered.** If Binance failed but Bybit filled in, the warning is gone.
+
 ## [0.5.4.0] - 2026-10-19
 
 ### Changed
