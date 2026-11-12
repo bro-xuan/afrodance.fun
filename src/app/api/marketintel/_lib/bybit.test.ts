@@ -46,6 +46,12 @@ describe("bybitOiHistory", () => {
     expect(calls[1].searchParams.get("cursor")).toBe("next=1");
   });
 
+  it("gives up after enough pages when rows are unparseable but a cursor keeps coming", async () => {
+    const calls = mockFetch(() => json({ result: { list: [{ timestamp: "x", openInterest: "y" }], nextPageCursor: "again" } }));
+    expect(await bybitOiHistory("15min", 500)).toEqual([]);
+    expect(calls).toHaveLength(3); // ceil(500 / 200)
+  });
+
   it("stops when a page comes back empty, even with a cursor", async () => {
     const calls = mockFetch(() => json({ result: { list: [], nextPageCursor: "more" } }));
     expect(await bybitOiHistory("1h", 500)).toEqual([]);

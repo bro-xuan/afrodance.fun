@@ -28,7 +28,9 @@ export async function bybitKlines(category: "spot" | "linear", interval: string,
 export async function bybitOiHistory(intervalTime: "15min" | "1h" | "1d", limit: number): Promise<Pt[]> {
   const out: Pt[] = [];
   let cursor = "";
-  while (out.length < limit) {
+  // Page cap: a page of unparseable rows that still carries a cursor would
+  // otherwise loop until the Worker hits its CPU limit.
+  for (let page = 0; page < Math.ceil(limit / 200) && out.length < limit; page++) {
     const r = await getJSON<List<{ openInterest: string; timestamp: string }>>(
       `${BY}/open-interest?category=linear&symbol=BTCUSDT&intervalTime=${intervalTime}&limit=${Math.min(200, limit - out.length)}${cursor ? `&cursor=${cursor}` : ""}`,
     );

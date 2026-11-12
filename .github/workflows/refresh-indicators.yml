@@ -9,7 +9,8 @@
 # (price-derived metrics — Mayer, 200W MA, Pi Cycle — are computed from the
 # Binance feed and cost no bitcoin-data budget.)
 #
-# The push to main triggers the normal Vercel production deploy, so the page
+# The push to main triggers the Cloudflare Workers Builds production deploy
+# (afrodance-fun Worker, connected to this repo), so the page
 # refreshes without any manual step. The `push` trigger below also runs it once
 # whenever the fetch logic itself changes, so new indicators populate on merge
 # rather than waiting for the next cron. (Note: `schedule` only fires from the

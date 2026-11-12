@@ -1,6 +1,7 @@
 # Hourly snapshot of the /marketintel pulse scores, for its track record.
 #
-# Vercel Hobby crons run at most daily, so GitHub's scheduler is the clock.
+# The site has no scheduler of its own (it moved off Vercel, whose Hobby crons
+# ran at most daily), so GitHub's scheduler is the clock.
 # The endpoint records at most one snapshot per UTC hour no matter who calls
 # it (visitors also trigger it lazily), so it needs no secret and a late or
 # duplicate run is harmless. GitHub delays scheduled runs under load and

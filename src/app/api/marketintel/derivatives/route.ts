@@ -6,7 +6,7 @@ import { fetchVenues, weightedFunding } from "../_lib/venues";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// Binance & Bybit geo-block US datacenters; Frankfurt reaches every venue.
+// Vercel leftover, ignored on Cloudflare (placement is in wrangler.jsonc).
 export const preferredRegion = ["fra1"];
 export const maxDuration = 20;
 
@@ -40,8 +40,12 @@ async function load() {
         series(await getJSON<Kline[]>(`${BF}/fapi/v1/klines?symbol=BTCUSDT&interval=1h&limit=${HOURS}`), (k) => k[0], (k) => k[4])],
       ["bybit-klines", async () => (await bybitKlines("linear", "60", HOURS)).map((b) => ({ t: b.t, v: b.c }))],
     ]),
-    firstOk<number | null>([
-      ["binance-spot", async () => num((await getJSON<{ price: string }>("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT")).price)],
+    firstOk<number>([
+      ["binance-spot", async () => {
+        const p = num((await getJSON<{ price: string }>("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT")).price);
+        if (p === null) throw new Error("no price");
+        return p;
+      }],
       ["bybit-spot", bybitSpot],
     ]),
     settle({
