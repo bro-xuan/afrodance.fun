@@ -1,6 +1,7 @@
 import type { FedData, FedMeeting, FedMove } from "@/app/marketintel/lib/types";
 import { etToMs, FOMC } from "../_lib/fomc";
 import { cachedJson, getJSON, getText, num, settle } from "../_lib/http";
+import { edgeCached } from "../_lib/edge-cache";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -87,7 +88,7 @@ async function zqRate(y: number, m: number): Promise<number> {
 
 const MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
 
-export async function GET() {
+async function load() {
   const now = Date.now();
   const upcoming = FOMC.map((f) => ({ ...f, t: etToMs(f.date, "14:00") }))
     .filter((f) => f.t > now - 3_600_000)
@@ -222,3 +223,5 @@ export async function GET() {
   };
   return cachedJson(body, 120);
 }
+
+export const GET = edgeCached("fed", load);

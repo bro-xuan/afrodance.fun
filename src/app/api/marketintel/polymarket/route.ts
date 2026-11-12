@@ -1,5 +1,6 @@
 import type { PolyKind, PolyMarket, PolymarketData, PolyRung } from "@/app/marketintel/lib/types";
 import { cachedJson, getJSON, num } from "../_lib/http";
+import { edgeCached } from "../_lib/edge-cache";
 import { dropStale } from "../_lib/ladder";
 
 export const runtime = "nodejs";
@@ -99,7 +100,7 @@ function impliedMedian(r: PolyRung[]): number | null {
 const fmtDay = (t: number) =>
   new Date(t).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "America/New_York" });
 
-export async function GET() {
+async function load() {
   const now = Date.now();
   const pages = await Promise.all(
     [
@@ -177,3 +178,5 @@ export async function GET() {
   const body: PolymarketData = { asOf: now, markets, sources: [{ source: "polymarket-gamma", ok: true }] };
   return cachedJson(body, 30);
 }
+
+export const GET = edgeCached("polymarket", load);

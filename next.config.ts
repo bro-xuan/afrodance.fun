@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 const nextConfig: NextConfig = {
   async rewrites() {
@@ -23,3 +24,6 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+// Lets `next dev` see local versions of the Cloudflare bindings (IMAGES, ASSETS).
+initOpenNextCloudflareForDev();

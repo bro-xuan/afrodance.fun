@@ -40,7 +40,7 @@ export function EtfFlows({ e }: { e: EtfData | null }) {
         title="Daily net flows vs BTC price, last 30 sessions"
         aside={<>US$ millions, {e.stale ? "cached copy, Farside unreachable" : "source farside.co.uk/btc"}</>}
         sources={e.sources}
-        footnote="Top: BTC daily close (UTC, Binance). Bottom: net creations minus redemptions across all US spot bitcoin ETFs, in US$ millions. Farside publishes after each fund reports (evening ET); the newest day can be partial."
+        footnote="Top: BTC daily close (UTC, Binance, or Bybit when Binance is unreachable). Bottom: net creations minus redemptions across all US spot bitcoin ETFs, in US$ millions. Farside publishes after each fund reports (evening ET); the newest day can be partial."
       >
         <div className="mb-2 flex flex-wrap gap-x-6 gap-y-1 text-[0.85rem]" style={{ color: C.ink2 }}>
           <span className="inline-flex items-center gap-1.5"><span className="inline-block h-0.5 w-4" style={{ background: C.ink }} />BTC price</span>

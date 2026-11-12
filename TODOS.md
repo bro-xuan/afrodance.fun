@@ -10,6 +10,14 @@
   **Priority:** P2
   Each hourly sample in Redis (`marketintel:pulse:v1`) stores every read's score, not just the three totals. After a few months, fit the per-horizon weights in `src/app/marketintel/lib/signals.ts` against forward returns, then bump `MODEL` so old and new scoring aren't graded together.
 
+- **Fill the Binance-only gaps on Cloudflare**
+  **Priority:** P2
+  Binance answers 451/403 to every Cloudflare egress IP (they geolocate to the US whatever the Worker's placement), and Bitget 403s too. Still missing as a result: the Binance and Bitget rows in the venue table (so total OI and the liquidation map's all-venue scale undercount by roughly a third), the Binance long/short and taker ratios, the funding and OI percentiles (`leverageContext` in `src/app/marketintel/lib/quant.ts` reads Binance's funding and OI history only; Bybit has `/v5/market/funding/history` and 1d OI), and the perp CVD line. Found by /ship on feat/cloudflare-workers, 2026-11-12.
+
+- **Coinbase premium label when Binance is down**
+  **Priority:** P3
+  `derivatives/route.ts` falls back to Bybit spot for the premium's reference price, but `signals.ts` still says "Coinbase above/below Binance". Name the venue that was actually used.
+
 - **Add the 2027 second half FOMC dates**
   **Priority:** P3
   `src/app/api/marketintel/_lib/fomc.ts` lists meetings through June 2027. Append the rest when the Fed publishes them, or the Fed panel and calendar run dry.
@@ -65,6 +73,10 @@
 - **Polish scroll-motion edge cases**
   **Priority:** P3
   From /ship adversarial review (2026-07-03): (1) elements whose reveal range straddles the initial scroll position render mid-step (partial opacity) until the first scroll — consider `entry 0%` range start or accepting; (2) the Konami body shake makes `body` a containing block for 0.6s, so the fixed XP bar jumps during the shake — move the shake to a wrapper if it bothers; (3) rem-sized dither/grass tiles land on fractional device pixels at some fluid-root sizes on 1x displays, causing hairline seams.
+
+- **Remove the Vercel leftovers**
+  **Priority:** P4
+  The site runs on Cloudflare Workers now. `vercel.json` and the `preferredRegion` / `maxDuration` exports in `src/app/api/marketintel/*/route.ts` do nothing there. Delete them once nothing is expected to go back to Vercel, and disconnect the Vercel GitHub integration so PRs stop getting failed Vercel checks.
 
 ## Writing
 

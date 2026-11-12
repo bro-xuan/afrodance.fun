@@ -1,10 +1,12 @@
 import type { DerivativesData, OiPoint, RatioPoint } from "@/app/marketintel/lib/types";
-import { cachedJson, getJSON, num, settle } from "../_lib/http";
+import { bybitKlines, bybitSpot } from "../_lib/bybit";
+import { cachedJson, firstOk, getJSON, num, settle } from "../_lib/http";
+import { edgeCached } from "../_lib/edge-cache";
 import { fetchVenues, weightedFunding } from "../_lib/venues";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// Binance & Bybit geo-block US datacenters; Frankfurt reaches every venue.
+// Vercel leftover, ignored on Cloudflare (placement is in wrangler.jsonc).
 export const preferredRegion = ["fra1"];
 export const maxDuration = 20;
 
@@ -28,12 +30,25 @@ const binanceRatio = (path: string, field: string) => async () =>
     (r) => r[field],
   );
 
-export async function GET() {
-  const [{ venues, sources: venueSources }, hist] = await Promise.all([
+async function load() {
+  const [{ venues, sources: venueSources }, perp, spot, hist] = await Promise.all([
     fetchVenues(),
+    // Perp closes for the price line under OI, and the spot reference for the
+    // Coinbase premium. Bybit stands in when Binance refuses the request.
+    firstOk<Pt[]>([
+      ["binance-klines", async () =>
+        series(await getJSON<Kline[]>(`${BF}/fapi/v1/klines?symbol=BTCUSDT&interval=1h&limit=${HOURS}`), (k) => k[0], (k) => k[4])],
+      ["bybit-klines", async () => (await bybitKlines("linear", "60", HOURS)).map((b) => ({ t: b.t, v: b.c }))],
+    ]),
+    firstOk<number>([
+      ["binance-spot", async () => {
+        const p = num((await getJSON<{ price: string }>("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT")).price);
+        if (p === null) throw new Error("no price");
+        return p;
+      }],
+      ["bybit-spot", bybitSpot],
+    ]),
     settle({
-      "binance-klines": async () =>
-        series(await getJSON<Kline[]>(`${BF}/fapi/v1/klines?symbol=BTCUSDT&interval=1h&limit=${HOURS}`), (k) => k[0], (k) => k[4]),
       // OI history is kept in BTC (coins), not USD: USD OI rises mechanically
       // with price, which would hide whether positions are actually opening.
       "binance-oi-hist": binanceRatio("openInterestHist", "sumOpenInterest"),
@@ -73,13 +88,12 @@ export async function GET() {
           (r) => r.sumOpenInterest,
         ),
       "coinbase-spot": async () => num((await getJSON<{ price: string }>("https://api.exchange.coinbase.com/products/BTC-USD/ticker")).price),
-      "binance-spot": async () => num((await getJSON<{ price: string }>("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT")).price),
     }),
   ]);
 
   const v = hist.values;
   const at = (s: Pt[] | null) => new Map((s ?? []).map((p) => [p.t, p.v]));
-  const price = at(v["binance-klines"]);
+  const price = at(perp.value);
   const bOi = at(v["binance-oi-hist"]);
   const yOi = at(v["bybit-oi-hist"]);
   const oOi = at(v["okx-oi-hist"]);
@@ -111,8 +125,8 @@ export async function GET() {
   }));
 
   const cb = v["coinbase-spot"];
-  const bn = v["binance-spot"];
-  const klines = v["binance-klines"] ?? [];
+  const bn = spot.value;
+  const klines = perp.value ?? [];
 
   const body: DerivativesData = {
     asOf: Date.now(),
@@ -126,7 +140,9 @@ export async function GET() {
     coinbasePremiumPct: cb && bn ? ((cb - bn) / bn) * 100 : null,
     fundingHistory: v["binance-funding-hist"] ?? [],
     oiDaily: v["binance-oi-daily"] ?? [],
-    sources: [...venueSources, ...hist.sources],
+    sources: [...venueSources, ...perp.sources, ...spot.sources, ...hist.sources],
   };
   return cachedJson(body, 30);
 }
+
+export const GET = edgeCached("derivatives", load);

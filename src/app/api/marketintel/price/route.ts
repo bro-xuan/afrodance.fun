@@ -2,6 +2,7 @@ import indicators from "@/app/bottom_indicator/data/indicators.json";
 import { cmeGap, type Bar } from "@/app/marketintel/lib/levels";
 import type { Candle, PriceData } from "@/app/marketintel/lib/types";
 import { cachedJson, getJSON, num, settle } from "../_lib/http";
+import { edgeCached } from "../_lib/edge-cache";
 import { yahooChart } from "../_lib/yahoo";
 
 export const runtime = "nodejs";
@@ -63,8 +64,8 @@ function onchain(daily: Candle[]): PriceData["onchain"] {
   return { sth: sth?.price ?? null, realized: realized?.price ?? null, asOf: sth?.asOf ?? realized?.asOf ?? null };
 }
 
-export async function GET() {
-  const { values: v, sources } = await settle({
+async function load() {
+  const { values: v, sources: primary } = await settle({
     "binance-1h": () => binance("1h", HOURS),
     "binance-1d": () => binance("1d", 400), // 200D average needs 200+ closes
     // Perp candles carry the same taker split: perp CVD next to spot CVD
@@ -74,6 +75,7 @@ export async function GET() {
   });
   let hourly = v["binance-1h"];
   let daily = v["binance-1d"];
+  let sources = primary;
   if (!hourly || !daily) {
     const fb = await settle({
       "bybit-1h": () => bybit("60", HOURS),
@@ -81,7 +83,9 @@ export async function GET() {
     });
     hourly ??= fb.values["bybit-1h"];
     daily ??= fb.values["bybit-1d"];
-    sources.push(...fb.sources);
+    // A Binance series Bybit filled in isn't "unavailable" on the page.
+    const filled = new Set<string>([...(hourly ? ["binance-1h"] : []), ...(daily ? ["binance-1d"] : [])]);
+    sources = [...primary.filter((s) => s.ok || !filled.has(s.source)), ...fb.sources];
   }
 
   // Spot close of the hour containing `t` (CME bars are stamped at the hour).
@@ -97,3 +101,5 @@ export async function GET() {
   };
   return cachedJson(body, 30);
 }
+
+export const GET = edgeCached("price", load);
