@@ -92,10 +92,17 @@ public/
 
 ## Hosting
 
-Cloudflare Workers, via the [OpenNext adapter](https://opennext.js.org/cloudflare). Config is in
-`wrangler.jsonc` and `open-next.config.ts`. The Worker is placed next to AWS Frankfurt
-(`placement.region`) because Binance and Bybit refuse US IPs. Redis credentials are Worker secrets:
-`npx wrangler secret put UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
+Cloudflare Workers, via the [OpenNext adapter](https://opennext.js.org/cloudflare), serving
+afrodance.fun and www.afrodance.fun. Config is in `wrangler.jsonc` and `open-next.config.ts`.
+Pushes to `main` deploy through Workers Builds; `npm run deploy` deploys from your machine.
+
+- The Worker is placed next to AWS Frankfurt (`placement.region`), since exchange APIs refuse US IPs.
+  Binance refuses Cloudflare's IPs anyway, so the `/api/marketintel` routes fall back to Bybit
+  (`src/app/api/marketintel/_lib/bybit.ts`).
+- Cloudflare doesn't cache a Worker's own responses. `_lib/edge-cache.ts` caches the market routes
+  for their `s-maxage` and keeps the last healthy copy when an upstream briefly refuses.
+- Redis (guestbook, pulse history) is optional and off. To turn it on, set the Worker secrets
+  `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` with `npx wrangler secret put`.
 
 ## Easter Egg
 
