@@ -79,6 +79,17 @@ describe("edgeCached", () => {
     expect(await failedIn(res)).toBe(0);
   });
 
+  it("serves the cached copy when the route itself errors, and doesn't cache the error", async () => {
+    await edgeCached("t", route(1))();
+    vi.setSystemTime(120_000);
+    const res = await edgeCached("t", () => Promise.resolve(new Response("boom", { status: 500 })))();
+    expect(res.headers.get("x-mi-cache")).toBe("healthier");
+    expect(await failedIn(res)).toBe(1);
+    vi.setSystemTime(1_800_000 + 130_000);
+    const late = await edgeCached("t", () => Promise.resolve(new Response("boom", { status: 500 })))();
+    expect(late.status).toBe(500);
+  });
+
   it("stops preferring an old copy after 30 minutes", async () => {
     await edgeCached("t", route(0))();
     vi.setSystemTime(1_800_001);
