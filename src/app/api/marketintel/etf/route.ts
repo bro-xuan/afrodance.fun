@@ -1,4 +1,4 @@
-import { Redis } from "@upstash/redis";
+import { redis } from "@/lib/redis";
 import type { EtfData, EtfDay } from "@/app/marketintel/lib/types";
 import { cachedJson, getJSON, getText } from "../_lib/http";
 
@@ -22,8 +22,6 @@ const ALL_URL = "https://farside.co.uk/bitcoin-etf-flow-all-data/";
 const KEY = "marketintel:etf:v1";
 const KEEP_DAYS = 90;
 
-const redis =
-  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN ? Redis.fromEnv() : null;
 
 type Stored = { tickers: string[]; days: EtfDay[]; cumulative: number | null; savedAt: number };
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Redis } from "@upstash/redis";
+import { redis } from "@/lib/redis";
 import type { GuestbookMessage } from "@/types";
 
 export const runtime = "nodejs";
@@ -12,10 +12,6 @@ const MAX_RETURN = 50;
 const MAX_NAME_LENGTH = 30;
 const MAX_MESSAGE_LENGTH = 200;
 
-const redis =
-  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-    ? Redis.fromEnv()
-    : null;
 
 // Dev fallback: in-memory store so the form works without env vars.
 const devStore: GuestbookMessage[] = [];
