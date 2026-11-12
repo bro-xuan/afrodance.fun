@@ -87,6 +87,15 @@ public/
 | `npm run lint` | Run ESLint |
 | `npm test` | Run the vitest suite |
 | `npm run fetch:indicators` | Refresh the BTC Bottom Indicator data snapshot |
+| `npm run preview` | Build for Cloudflare and run it locally in the Workers runtime |
+| `npm run deploy` | Build for Cloudflare and deploy the `afrodance-fun` Worker |
+
+## Hosting
+
+Cloudflare Workers, via the [OpenNext adapter](https://opennext.js.org/cloudflare). Config is in
+`wrangler.jsonc` and `open-next.config.ts`. The Worker is placed next to AWS Frankfurt
+(`placement.region`) because Binance and Bybit refuse US IPs. Redis credentials are Worker secrets:
+`npx wrangler secret put UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
 
 ## Easter Egg
 

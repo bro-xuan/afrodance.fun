@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "afrodance-fun",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS",
+    // Serve public/<dir>/index.html at /<dir> with no redirect to /<dir>/,
+    // the way Vercel did (/date-scoring, /3d-of-everything, .../objects).
+    "html_handling": "drop-trailing-slash"
+  },
+  "services": [
+    // Must match "name" above: OpenNext calls back into its own Worker.
+    { "binding": "WORKER_SELF_REFERENCE", "service": "afrodance-fun" }
+  ],
+  // Binance and Bybit refuse US IPs (HTTP 451/403). On Vercel the API routes
+  // were pinned to fra1; this is the Workers equivalent: run the Worker next
+  // to AWS Frankfurt instead of next to whoever is visiting. Static assets
+  // still come from the nearest edge.
+  "placement": { "region": "aws:eu-central-1" },
+  // next/image optimisation (Hero portrait). Uses Cloudflare Images; the free
+  // allowance is 5,000 unique transformations a month.
+  "images": { "binding": "IMAGES" },
+  "observability": { "enabled": true }
+}
