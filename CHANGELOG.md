@@ -3,6 +3,11 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.9.0] - 2026-11-13
+
+### Changed
+- **afrodance.fun/paperkite is the new Paper Kite site.** The one that puts your social media on autopilot: how the studio works, what it makes, pricing, the FAQ, and Inside the studio for a café, a restaurant and a spa (demo businesses, sample numbers). "Get started" and the plan buttons open an email to the studio. It replaces the earlier agency site that went up there an hour before.
+
 ## [0.5.8.0] - 2026-11-13
 
 ### Added
