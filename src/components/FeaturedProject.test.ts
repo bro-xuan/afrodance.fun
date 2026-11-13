@@ -1,0 +1,44 @@
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it } from "vitest";
+import { featuredProject } from "@/data/projects";
+import FeaturedProject from "./FeaturedProject";
+import Hero from "./Hero";
+
+const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&");
+const html = renderToStaticMarkup(createElement(FeaturedProject));
+
+describe("FeaturedProject", () => {
+  it("is where the hero's newsletter link lands", () => {
+    // the in-page link whose own text (up to its </a>) mentions the newsletter
+    const target = renderToStaticMarkup(createElement(Hero)).match(
+      /<a href="#([^"]+)"[^>]*>(?:(?!<\/a>)[^])*weekly AI newsletter/,
+    );
+    expect(target?.[1]).toBe("what-people-made");
+    expect(html).toContain('id="what-people-made"');
+  });
+
+  it("opens every outside link in a new tab without handing it the opener", () => {
+    const { url, newsletter } = featuredProject;
+    const links = [...html.matchAll(/<a\b[^>]*>/g)].map(([tag]) => tag).filter((tag) => /href="https:/.test(tag));
+    expect(links).toHaveLength(4); // the scene, Browse the gallery, Subscribe, Past issues
+    for (const tag of links) {
+      expect(tag).toContain('target="_blank"');
+      expect(tag).toContain('rel="noopener noreferrer"');
+    }
+    const hrefs = links.map((tag) => tag.match(/href="([^"]+)"/)![1]);
+    expect(new Set(hrefs)).toEqual(new Set([url, newsletter.subscribeUrl, newsletter.archiveUrl]));
+  });
+
+  it("keeps the scene out of the tab order, since Browse the gallery goes to the same place", () => {
+    const scene = html.match(new RegExp(`<a href="${escape(featuredProject.url)}"[^>]*>(?=<div)`))![0];
+    expect(scene).toContain('tabindex="-1"');
+    expect(scene).toContain('aria-hidden="true"');
+  });
+
+  it("shows its facts and the newsletter pitch", () => {
+    for (const text of [...featuredProject.facts, featuredProject.newsletter.title, featuredProject.newsletter.pitch]) {
+      expect(html).toContain(text);
+    }
+  });
+});

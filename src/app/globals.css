@@ -53,6 +53,13 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Pixelify Sans draws its fi and fl ligatures as one "A"-like glyph ("first"
+   reads "Arst", "film flash" reads "Alm Aash"), so spell the letters out
+   wherever the body font is used. */
+.font-body {
+  font-variant-ligatures: none;
+}
+
 /* NES.css light theme overrides */
 
 /* WCAG AA: dark text on colored buttons (default white fails contrast on green/blue/red) */
@@ -1265,170 +1272,6 @@ html {
   }
 }
 
-/* === ADHD Saver (FocusTrackerVisual) === */
-/* ftv-* ADHD Saver focus HUD card visual */
-.ftv-dot {
-  animation: ftv-dot 6s steps(12) infinite;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-@keyframes ftv-dot {
-  0% { transform: translate(0px, 0px); }
-  10% { transform: translate(3px, -1px); }
-  20% { transform: translate(6px, -3px); }
-  30% { transform: translate(10px, -4px); }
-  40% { transform: translate(13px, -6px); }
-  46% { transform: translate(13px, -6px); }
-  50% { transform: translate(0px, 0px); }
-  100% { transform: translate(0px, 0px); }
-}
-
-.ftv-meter {
-  animation: ftv-meter 6s steps(16) infinite;
-  transform-box: fill-box;
-  transform-origin: left center;
-}
-@keyframes ftv-meter {
-  0% { transform: scaleX(1); }
-  40% { transform: scaleX(0.28); }
-  50% { transform: scaleX(0.28); }
-  64% { transform: scaleX(1); }
-  100% { transform: scaleX(1); }
-}
-
-.ftv-alert-a {
-  animation: ftv-alert-a 6s infinite;
-}
-@keyframes ftv-alert-a {
-  0%, 45.5% { opacity: 0; }
-  46%, 48% { opacity: 1; }
-  48.5%, 100% { opacity: 0; }
-}
-
-.ftv-alert-b {
-  animation: ftv-alert-b 6s infinite;
-}
-@keyframes ftv-alert-b {
-  0%, 48.5% { opacity: 0; }
-  49%, 51% { opacity: 1; }
-  51.5%, 100% { opacity: 0; }
-}
-
-.ftv-scan {
-  animation: ftv-scan 3s steps(8) infinite;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-@keyframes ftv-scan {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(16px); }
-  100% { transform: translateY(0px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ftv-dot,
-  .ftv-meter,
-  .ftv-alert-a,
-  .ftv-alert-b,
-  .ftv-scan {
-    /* ftv-*: freezes the ADHD Saver card on its locked-on frame:
-       dot centered, FOCUS meter full, alert rings hidden, scan at top */
-    animation: none !important;
-  }
-}
-
-/* === Greenroom (MicWaveformVisual) === */
-/* --- Greenroom mic visual (MicWaveformVisual.tsx) ------------------------
-   Voice-capture booth: EQ meter ripples, REC blinks, a "sourced" check pops,
-   and the stage light softly glows. All classes/keyframes/ids are grv-*
-   prefixed. */
-
-/* EQ meter: one shared wave, staggered by negative delays into a ripple.
-   Bars are clipped tall rects pushed DOWN by whole pixels, so every frame
-   grows crisply from the fixed baseline. transform-box: fill-box keeps the
-   translate anchored to each bar. The per-bar transform below is the FROZEN
-   silhouette (shown when animation is off). */
-.grv-bar {
-  transform-box: fill-box;
-  animation: grv-eq 2.4s linear infinite;
-}
-.grv-bar1 { animation-delay: 0s; transform: translateY(8px); }
-.grv-bar2 { animation-delay: -0.4s; transform: translateY(2px); }
-.grv-bar3 { animation-delay: -0.8s; transform: translateY(12px); }
-.grv-bar4 { animation-delay: -1.2s; transform: translateY(4px); }
-.grv-bar5 { animation-delay: -1.6s; transform: translateY(10px); }
-.grv-bar6 { animation-delay: -2.0s; transform: translateY(6px); }
-
-@keyframes grv-eq {
-  0%, 15.9%   { transform: translateY(2px); }
-  16%, 31.9%  { transform: translateY(8px); }
-  32%, 47.9%  { transform: translateY(0); }
-  48%, 63.9%  { transform: translateY(12px); }
-  64%, 79.9%  { transform: translateY(4px); }
-  80%, 100%   { transform: translateY(8px); }
-}
-
-/* soft green stage light — gentle brightness breathe over the mic */
-.grv-beam {
-  animation: grv-glow 3.6s ease-in-out infinite;
-}
-@keyframes grv-glow {
-  0%, 100% { opacity: 0.55; }
-  50%      { opacity: 1; }
-}
-
-/* red REC dot — calm 1.4s blink */
-.grv-rec {
-  animation: grv-blink 1.4s infinite;
-}
-@keyframes grv-blink {
-  0%, 49.9%  { opacity: 1; }
-  50%, 100%  { opacity: 0; }
-}
-
-/* mic power LED — slow green breathe */
-.grv-led {
-  animation: grv-breathe 3s ease-in-out infinite;
-}
-@keyframes grv-breathe {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.45; }
-}
-
-/* "sourced" check — pops in, holds, clears, over a 4.2s cycle */
-.grv-check {
-  animation: grv-pop 4.2s infinite;
-}
-@keyframes grv-pop {
-  0%, 6.9%    { opacity: 0; }
-  7%, 66.9%   { opacity: 1; }
-  67%, 100%   { opacity: 0; }
-}
-
-/* ring that flashes once at the exact moment the check appears */
-.grv-checkring {
-  animation: grv-flash 4.2s infinite;
-}
-@keyframes grv-flash {
-  0%, 6.9%    { opacity: 0; }
-  7%, 15.9%   { opacity: 1; }
-  16%, 100%   { opacity: 0; }
-}
-
-/* grv-*: freezes the Greenroom card on a complete frame — a jagged EQ
-   silhouette, soft stage light, REC dot lit, LED lit, check + ring shown
-   as a badge. */
-@media (prefers-reduced-motion: reduce) {
-  .grv-bar,
-  .grv-beam,
-  .grv-rec,
-  .grv-led,
-  .grv-check,
-  .grv-checkring {
-    animation: none !important;
-  }
-}
-
 /* Optional CRT scanline overlay */
 body::after {
   content: "";
@@ -2203,6 +2046,177 @@ body:has(.mi-root) {
   .tdv-seconds,
   .tdv-power {
     /* tdv-*: freezes on the exploded row: every part apart, the power line drawn */
+    animation: none !important;
+  }
+}
+
+/* === CineGlow (PhotoRelightVisual) ===
+   One 8s timeline, 0.2s per step of the line (STEP_S in the component). The
+   relit photo lies over the original in seven 4px strips, each wrapped in two
+   groups: the outer one shows it when the reveal reaches it (rlv-reveal, from
+   15%, delayed right to left so the light walks in from the sun's side) and
+   the inner one hides it again when the revert reaches it (rlv-revert, from
+   70%, delayed left to right). The line keeps step with the strips, and the
+   table's warm glow rises while the print is relit. Base (animation-less)
+   state = the line halfway, original left and relit right, for
+   prefers-reduced-motion; the strips' inline opacity carries it. */
+.rlv-reveal {
+  animation: rlv-reveal 8s steps(1, end) infinite backwards;
+}
+@keyframes rlv-reveal {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  85%, 100% { opacity: 0; }
+}
+
+.rlv-revert {
+  animation: rlv-revert 8s steps(1, end) infinite backwards;
+}
+@keyframes rlv-revert {
+  0% { opacity: 1; }
+  70%, 100% { opacity: 0; }
+}
+
+.rlv-line {
+  transform: translateX(16px);
+  animation: rlv-line 8s steps(1, end) infinite;
+}
+@keyframes rlv-line {
+  0% { opacity: 0; transform: translateX(24px); }
+  15% { opacity: 1; transform: translateX(24px); }
+  17.5% { transform: translateX(20px); }
+  20% { transform: translateX(16px); }
+  22.5% { transform: translateX(12px); }
+  25% { transform: translateX(8px); }
+  27.5% { transform: translateX(4px); }
+  30% { transform: translateX(0); }
+  32.5% { opacity: 0; transform: translateX(0); }
+  70% { opacity: 1; transform: translateX(4px); }
+  72.5% { transform: translateX(8px); }
+  75% { transform: translateX(12px); }
+  77.5% { transform: translateX(16px); }
+  80% { transform: translateX(20px); }
+  82.5% { transform: translateX(24px); }
+  85% { transform: translateX(28px); }
+  87.5%, 100% { opacity: 0; transform: translateX(28px); }
+}
+
+.rlv-glow {
+  opacity: 0.6;
+  animation: rlv-glow 8s steps(3, end) infinite;
+}
+@keyframes rlv-glow {
+  0%, 15% { opacity: 0; }
+  30%, 70% { opacity: 1; }
+  85%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rlv-reveal,
+  .rlv-revert,
+  .rlv-line,
+  .rlv-glow {
+    /* rlv-*: freezes on the line halfway: original left, relit right, the glow half up */
+    animation: none !important;
+  }
+}
+
+/* === What People Made (UseCaseGalleryVisual) ===
+   One 8s timeline. Paper covers shrink off the gallery's rows in four steps
+   each, one tile at a time (top row 4–19%, bottom row 24–39%); the three
+   picks get their frames at 44%, with one blink; the dotted line marches
+   from 52%; white paper lifts off the issue in five 5px bands (54–74%); the
+   paper plane appears at 80% and flies off in steps; at 92% everything
+   resets for the next week. Stepped intervals set their own timing function
+   and every other interval holds (steps(1, end)). Base (animation-less)
+   state = the finished frame: every tile, the picks framed, the issue
+   printed and the plane on it, for prefers-reduced-motion. */
+.wpv-cover-a,
+.wpv-cover-b {
+  transform-box: fill-box;
+  transform-origin: right center;
+  transform: scaleX(0);
+}
+.wpv-cover-a {
+  animation: wpv-cover-a 8s steps(1, end) infinite;
+}
+.wpv-cover-b {
+  animation: wpv-cover-b 8s steps(1, end) infinite;
+}
+@keyframes wpv-cover-a {
+  0% { transform: scaleX(1); }
+  4% { transform: scaleX(1); animation-timing-function: steps(4, jump-start); }
+  24% { transform: scaleX(0); }
+  92%, 100% { transform: scaleX(1); }
+}
+@keyframes wpv-cover-b {
+  0% { transform: scaleX(1); }
+  24% { transform: scaleX(1); animation-timing-function: steps(4, jump-start); }
+  44% { transform: scaleX(0); }
+  92%, 100% { transform: scaleX(1); }
+}
+
+.wpv-cover-page {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  transform: scaleY(0);
+  animation: wpv-cover-page 8s steps(1, end) infinite;
+}
+@keyframes wpv-cover-page {
+  0% { transform: scaleY(1); }
+  54% { transform: scaleY(1); animation-timing-function: steps(5, jump-start); }
+  79% { transform: scaleY(0); }
+  92%, 100% { transform: scaleY(1); }
+}
+
+.wpv-pick {
+  animation: wpv-pick 8s steps(1, end) infinite;
+}
+@keyframes wpv-pick {
+  0% { opacity: 0; }
+  44% { opacity: 1; }
+  47% { opacity: 0; }
+  49% { opacity: 1; }
+  92%, 100% { opacity: 0; }
+}
+
+.wpv-arrow {
+  animation: wpv-arrow 8s steps(1, end) infinite;
+}
+@keyframes wpv-arrow {
+  0% { opacity: 0; }
+  52% { opacity: 1; }
+  88%, 100% { opacity: 0; }
+}
+.wpv-dash {
+  animation: wpv-march 0.6s steps(3) infinite;
+}
+@keyframes wpv-march {
+  from { stroke-dashoffset: 3; }
+  to { stroke-dashoffset: 0; }
+}
+
+.wpv-plane {
+  animation: wpv-plane 8s steps(1, end) infinite;
+}
+@keyframes wpv-plane {
+  0% { opacity: 0; transform: translate(0, 0); }
+  80% { opacity: 1; transform: translate(0, 0); }
+  83% { transform: translate(3px, -2px); }
+  86% { transform: translate(6px, -4px); }
+  89% { transform: translate(9px, -6px); }
+  92%, 100% { opacity: 0; transform: translate(9px, -6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wpv-cover-a,
+  .wpv-cover-b,
+  .wpv-cover-page,
+  .wpv-pick,
+  .wpv-arrow,
+  .wpv-dash,
+  .wpv-plane {
+    /* wpv-*: freezes on the finished frame: every tile, the picks framed, the issue printed, the plane on it */
     animation: none !important;
   }
 }

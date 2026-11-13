@@ -6,17 +6,19 @@ A pixel-art portfolio site for showcasing fun side projects. Built with Next.js,
 
 | Project | Description |
 |---------|-------------|
+| **What People Made** (featured) | Daily gallery of real AI use cases from posts on X, plus a weekly AI newsletter ([whatpeoplemade.com](https://www.whatpeoplemade.com)) |
+| **CineGlow** | iOS app that relights photos you already took (golden hour, film flash and more); coming soon to the App Store |
 | **Predictooor** | Real-time Polymarket whale tracker with smart alerts and wallet analytics |
 | **ReferReady** | Reference-call prep for job candidates |
 | **Analog Camera Museum** | Pixel-art portfolio for fun projects |
+| **3D of Everything** | Real machines to turn over, look inside and take apart in 3D |
 | **Corporate Translator** | Decodes corporate jargon into plain English, live BS score included |
 | **Earl** | AI-powered bespoke portraiture — turn any photo into a classical artwork |
 | **InstaClaw** | Deploy OpenClaw AI assistants to European servers in under 60 seconds |
 | **NL House Buying Tool** | End-to-end calculator for buying property in the Netherlands |
 | **China Migration** | Three decades of China migration visualized as particle flows |
-| **ADHD Saver** | Webcam-based focus monitor that plays escalating alerts when you look away |
+| **Market Intel** | BTC trading desk on one page, scored into an intraday, swing and macro bias |
 | **BTC Bottom Indicator** | On-chain signal dashboard scoring how close Bitcoin is to a cycle bottom |
-| **Greenroom** | Voice-native mock finance interviews with cited company data (Megathon 2026) |
 
 ## Tech Stack
 
@@ -43,12 +45,13 @@ Open [http://localhost:3000](http://localhost:3000) to view the site.
 src/
 ├── app/
 │   ├── layout.tsx          # Root layout with pixel fonts
-│   ├── page.tsx            # Homepage
-│   └── adhd_saver/         # ADHD Saver landing page
+│   └── page.tsx            # Homepage
 ├── components/
 │   ├── Hero.tsx            # Animated hero section
 │   ├── ProjectGrid.tsx     # Project cards grid
+│   ├── FeaturedProject.tsx # Wide featured card above the grid, with the newsletter sign-up
 │   ├── ProjectCard.tsx     # Individual project card
+│   ├── visuals/            # One animated pixel-art scene per project card (*Visual.tsx)
 │   ├── ArticleGrid.tsx     # Substack posts grid
 │   ├── AboutMe.tsx         # About section with bio & identity badges
 │   ├── NowSection.tsx      # "What I'm doing now" section
@@ -73,7 +76,6 @@ src/
     └── index.ts            # TypeScript type definitions
 public/
 ├── 3d-of-everything/       # 3D of Things, baked in by `npm run export` in bro-xuan/3d-of-things (don't edit by hand)
-├── adhd_saver/             # ADHD Saver source code & sounds
 └── date-scoring/           # Date Scoring app assets
 ```
 

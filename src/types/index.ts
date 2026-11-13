@@ -10,18 +10,34 @@ export type ProjectVisual =
   | "instaclaw-deploy"
   | "house-build"
   | "migration-flow"
-  | "focus-tracker"
-  | "mic-waveform"
-  | "machine-teardown";
+  | "machine-teardown"
+  | "photo-relight";
 
 export interface Project {
   title: string;
   description: string;
-  url: string;
+  /** Where the card links. Leave it out for a project that isn't public yet: the card then has no link and says "Coming soon". */
+  url?: string;
   emoji: string;
   color?: "primary" | "success" | "warning" | "error";
   stack?: string[];
   visual?: ProjectVisual;
+}
+
+/** The one project shown wide above the grid, with the newsletter that goes with it. */
+export interface FeaturedProject {
+  title: string;
+  url: string;
+  /** Short facts shown as chips above the description. */
+  facts: string[];
+  description: string;
+  newsletter: {
+    title: string;
+    pitch: string;
+    subscribeUrl: string;
+    archiveUrl: string;
+  };
+  stack?: string[];
 }
 
 export interface SkillCategory {

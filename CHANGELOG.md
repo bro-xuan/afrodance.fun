@@ -3,6 +3,19 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.6.0] - 2026-11-13
+
+### Added
+- **What People Made is the featured project.** A wide card at the top of Projects introduces the gallery of real AI use cases at whatpeoplemade.com (1,300+ so far, new picks every day) with its own pixel scene: the gallery fills in tile by tile, the week's picks get framed, and the weekly issue prints itself and flies off. It links to the gallery, the newsletter sign-up and the past issues.
+- **The weekly AI newsletter, up top.** "I run a weekly AI newsletter: What People Made" now sits under the tagline in the hero and jumps to the featured card, and the About blurb mentions it too.
+- **CineGlow joins the grid.** The iOS app that relights photos you already took gets a darkroom scene: a line of light turns an overcast selfie into golden hour, next to a film canister and a strip of looks. It isn't on the App Store yet, so its card has no link and a greyed-out "Coming soon" button.
+
+### Removed
+- **Greenroom and ADHD Saver are off the portfolio**, along with their card animations. The `/adhd_saver` page and its downloadable source and sounds are gone too.
+
+### Fixed
+- **Words with "fi" and "fl" read properly.** The pixel body font drew those letter pairs as one "A"-like glyph, so "first" read "Arst" and the Writing section's "fireside chat" read "Areside chat". Ligatures are now off wherever that font is used.
+
 ## [0.5.5.0] - 2026-11-12
 
 ### Changed

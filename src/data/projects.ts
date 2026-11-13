@@ -1,4 +1,4 @@
-import { Project, AboutConfig, Article, NowItem, GuestbookMessage } from "@/types";
+import { Project, FeaturedProject, AboutConfig, Article, NowItem, GuestbookMessage } from "@/types";
 
 export const siteConfig = {
   name: "afrodance.fun",
@@ -18,7 +18,7 @@ export const siteConfig = {
 
 export const aboutConfig: AboutConfig = {
   greeting: "Hi, I'm Stefan.",
-  bio: "I build silly things that some people surprisingly use — mostly around AI, crypto, and trading. This page is part scrapbook of stuff I've shipped, part soapbox for my rants on whatever topic won't leave me alone lately. Poke around, and if you're building something fun, let's talk.",
+  bio: "I build silly things that some people surprisingly use — mostly around AI, crypto, and trading. These days I also run What People Made, a daily gallery of real AI use cases with a weekly AI newsletter on top. This page is part scrapbook of stuff I've shipped, part soapbox for my rants on whatever topic won't leave me alone lately. Poke around, and if you're building something fun, let's talk.",
   avatarUrl: "",
   avatarFallback: "SW",
   tags: [
@@ -120,7 +120,33 @@ export const seedGuestbookMessages: GuestbookMessage[] = [
   },
 ];
 
+// Shown wide above the project grid, with its newsletter's sign-up.
+export const featuredProject: FeaturedProject = {
+  title: "What People Made",
+  url: "https://www.whatpeoplemade.com",
+  facts: ["1,300+ real AI use cases", "New picks every day"],
+  description:
+    "Things people actually made with AI, from first-hand posts on X. An AI editor reads the day's posts, a second model checks the pictures, and every pick lists the tools behind it.",
+  newsletter: {
+    title: "I run a weekly AI newsletter",
+    pitch:
+      "One email a week: the biggest AI stories and what they change, the best things people built, and the new tools worth trying.",
+    subscribeUrl: "https://buttondown.com/afrodance",
+    archiveUrl: "https://buttondown.com/afrodance/archive/",
+  },
+  stack: ["Python", "DeepSeek", "Claude Code", "Buttondown", "Cloudflare Workers"],
+};
+
 export const projects: Project[] = [
+  {
+    title: "CineGlow",
+    description:
+      "Relights the photos you already took — golden hour, film flash, neon rain — and you still look exactly like you. An iOS app, almost ready for the App Store.",
+    emoji: "🎞️",
+    color: "error",
+    stack: ["Expo / React Native", "Firebase", "Gemini"],
+    visual: "photo-relight",
+  },
   {
     title: "Predictooor",
     description: "Real-time Polymarket whale tracker. Wallet leaderboards, large-position alerts, on-chain receipts.",
@@ -216,14 +242,6 @@ export const projects: Project[] = [
     stack: ["Next.js", "bitcoin-data.com", "On-chain"],
     visual: "btc-cycle",
   },
-  {
-    title: "ADHD Saver",
-    description: "Computer-vision focus tracker. Detects zone-outs in real time and nudges you back. 15 alert tones.",
-    url: "/adhd_saver",
-    emoji: "🧠",
-    color: "warning",
-    visual: "focus-tracker",
-  },
   // Hidden until the /date-scoring route exists — linking to it today 404s.
   // {
   //   title: "Date Scoring",
@@ -232,13 +250,4 @@ export const projects: Project[] = [
   //   emoji: "💘",
   //   color: "primary",
   // },
-  {
-    title: "Greenroom",
-    description: "Voice-native mock finance interviews. AI interviewer grounded in cited company data, with every bluff flagged and sourced after the call. Built for Megathon 2026.",
-    url: "https://greenroom-inky.vercel.app/",
-    emoji: "🎙️",
-    color: "success",
-    stack: ["Next.js", "Vapi", "Cala.ai", "Anthropic API"],
-    visual: "mic-waveform",
-  },
 ];
