@@ -53,6 +53,13 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Pixelify Sans draws its fi and fl ligatures as one "A"-like glyph ("first"
+   reads "Arst", "film flash" reads "Alm Aash"), so spell the letters out
+   wherever the body font is used. */
+.font-body {
+  font-variant-ligatures: none;
+}
+
 /* NES.css light theme overrides */
 
 /* WCAG AA: dark text on colored buttons (default white fails contrast on green/blue/red) */
