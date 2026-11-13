@@ -11,7 +11,7 @@ Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 - **CineGlow joins the grid.** The iOS app that relights photos you already took gets a darkroom scene: a line of light turns an overcast selfie into golden hour, next to a film canister and a strip of looks. It isn't on the App Store yet, so its card has no link and a greyed-out "Coming soon" button.
 
 ### Removed
-- **Greenroom and ADHD Saver are off the portfolio**, along with their card animations. The `/adhd_saver` page still works for anyone who has the link.
+- **Greenroom and ADHD Saver are off the portfolio**, along with their card animations. The `/adhd_saver` page and its downloadable source and sounds are gone too.
 
 ### Fixed
 - **Words with "fi" and "fl" read properly.** The pixel body font drew those letter pairs as one "A"-like glyph, so "first" read "Arst" and the Writing section's "fireside chat" read "Areside chat". Ligatures are now off wherever that font is used.

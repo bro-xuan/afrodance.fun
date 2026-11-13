@@ -45,8 +45,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the site.
 src/
 ├── app/
 │   ├── layout.tsx          # Root layout with pixel fonts
-│   ├── page.tsx            # Homepage
-│   └── adhd_saver/         # ADHD Saver landing page
+│   └── page.tsx            # Homepage
 ├── components/
 │   ├── Hero.tsx            # Animated hero section
 │   ├── ProjectGrid.tsx     # Project cards grid
@@ -77,7 +76,6 @@ src/
     └── index.ts            # TypeScript type definitions
 public/
 ├── 3d-of-everything/       # 3D of Things, baked in by `npm run export` in bro-xuan/3d-of-things (don't edit by hand)
-├── adhd_saver/             # ADHD Saver source code & sounds
 └── date-scoring/           # Date Scoring app assets
 ```
 
