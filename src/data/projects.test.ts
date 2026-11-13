@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { featuredProject, projects } from "./projects";
+import { agency, featuredProject, projects } from "./projects";
 
 describe("projects", () => {
   it("gives every card a unique title, since the grid keys on it", () => {
@@ -18,5 +18,16 @@ describe("projects", () => {
   it("links the featured project and its newsletter over https", () => {
     const { url, newsletter } = featuredProject;
     for (const href of [url, newsletter.subscribeUrl, newsletter.archiveUrl]) expect(href).toMatch(/^https:\/\//);
+  });
+
+  it("links the agency's site and its contact button over https", () => {
+    for (const href of [agency.url, agency.contact.url]) expect(href).toMatch(/^https:\/\//);
+  });
+
+  it("keeps the agency's steps and promises unique, since their lists key on them", () => {
+    const titles = agency.steps.map((s) => s.title);
+    expect(new Set(titles).size).toBe(titles.length);
+    expect(new Set(agency.promises).size).toBe(agency.promises.length);
+    expect(new Set(agency.facts).size).toBe(agency.facts.length);
   });
 });

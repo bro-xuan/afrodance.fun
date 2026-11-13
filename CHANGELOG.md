@@ -3,6 +3,17 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.7.0] - 2026-11-13
+
+### Added
+- **Paper Kite, my creative content agency, now leads the page.** A new section right under the intro says what the agency does for a local business (it plans their posts every week from their own photos, and the owner says yes on their phone), walks through the four steps of a week with it, and lists what it won't do: stock photos, fake reviews, unlabelled AI images, asking for passwords, or prices nobody confirmed. It links to paperkite.studio and to LinkedIn.
+- **The agency gets its own pixel scene.** An owner's phone approves a café, a florist and a shop post one at a time; each hops onto its day of the week (Instagram, TikTok, Facebook), then hearts pop up over the week. With reduced motion it rests on the full week.
+- **"I run a creative content agency: Paper Kite" up top.** The hero points to the agency first, above the newsletter link.
+
+### Changed
+- **The intro opens with the agency.** "Hi, I'm Stefan" now starts with "I run a creative content agency helping local businesses up their social media game", with a Marketing tag next to AI, Crypto and SaaS.
+- **Getting in touch puts business first.** The contact box asks about better posts for your business before AI and crypto, LinkedIn is the main button, and "or a job" is gone. Shared links now preview as the agency instead of "Open to AM / Sales roles".
+
 ## [0.5.6.0] - 2026-11-13
 
 ### Added
