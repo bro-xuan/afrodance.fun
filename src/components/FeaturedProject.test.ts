@@ -18,11 +18,22 @@ describe("FeaturedProject", () => {
     expect(html).toContain('id="what-people-made"');
   });
 
-  it("opens the site, the sign-up and the archive in new tabs without handing them the opener", () => {
+  it("opens every outside link in a new tab without handing it the opener", () => {
     const { url, newsletter } = featuredProject;
-    for (const href of [url, newsletter.subscribeUrl, newsletter.archiveUrl]) {
-      expect(html).toMatch(new RegExp(`href="${escape(href)}" target="_blank" rel="noopener noreferrer"`));
+    const links = [...html.matchAll(/<a\b[^>]*>/g)].map(([tag]) => tag).filter((tag) => /href="https:/.test(tag));
+    expect(links).toHaveLength(4); // the scene, Browse the gallery, Subscribe, Past issues
+    for (const tag of links) {
+      expect(tag).toContain('target="_blank"');
+      expect(tag).toContain('rel="noopener noreferrer"');
     }
+    const hrefs = links.map((tag) => tag.match(/href="([^"]+)"/)![1]);
+    expect(new Set(hrefs)).toEqual(new Set([url, newsletter.subscribeUrl, newsletter.archiveUrl]));
+  });
+
+  it("keeps the scene out of the tab order, since Browse the gallery goes to the same place", () => {
+    const scene = html.match(new RegExp(`<a href="${escape(featuredProject.url)}"[^>]*>(?=<div)`))![0];
+    expect(scene).toContain('tabindex="-1"');
+    expect(scene).toContain('aria-hidden="true"');
   });
 
   it("shows its facts and the newsletter pitch", () => {

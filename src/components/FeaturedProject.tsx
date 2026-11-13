@@ -11,12 +11,15 @@ export default function FeaturedProject() {
   const external = { target: "_blank", rel: "noopener noreferrer" } as const;
 
   return (
-    <article id="what-people-made" className="pixel-reveal mb-14 scroll-mt-8">
-      <div className="nes-container with-title pixel-shadow !bg-white">
+    // The anchor sits on the article, which never moves; the reveal animates the box inside,
+    // so a jump from the hero lands at scroll-mt-8 instead of the reveal's offset.
+    <article id="what-people-made" className="mb-14 scroll-mt-8">
+      <div className="pixel-reveal nes-container with-title pixel-shadow !bg-white">
         <h3 className="title font-pixel">{title}</h3>
 
         <div className="grid items-center gap-6 p-2 md:grid-cols-2 md:gap-8">
-          <a href={url} {...external} aria-label={`Open ${title}`} className="card-hover block">
+          {/* Out of the tab order: "Browse the gallery" goes to the same place. */}
+          <a href={url} {...external} tabIndex={-1} aria-hidden="true" className="card-hover block">
             <UseCaseGalleryVisual />
           </a>
 
@@ -38,7 +41,7 @@ export default function FeaturedProject() {
           </div>
         </div>
 
-        <div className="m-2 mt-6 flex flex-col gap-4 border-4 border-[#2d2d2d] bg-[#fbe9e5] p-4 md:flex-row md:items-center md:justify-between md:gap-8">
+        <div className="mt-6 flex flex-col gap-4 border-4 border-[#2d2d2d] bg-[#fbe9e5] p-3 sm:m-2 sm:mt-6 sm:p-4 md:flex-row md:items-center md:justify-between md:gap-8">
           <div>
             <p className="font-pixel !mb-2 text-[0.8rem] leading-relaxed text-[#a93226]">
               <span aria-hidden="true">📬 </span>

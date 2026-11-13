@@ -176,11 +176,18 @@ export default function PhotoRelightVisual() {
             <g id="rlv-relit">
               <Photo look="relit" />
             </g>
-            {Array.from({ length: STRIPS }, (_, i) => (
-              <clipPath key={i} id={`rlv-strip-${i}`}>
-                <rect x={PX + i * STRIP} y={PY} width={STRIP} height={PHOTO.length} />
-              </clipPath>
-            ))}
+            {/* Each strip's clip runs from its own left edge out past the print. The lit strips
+                are always a run ending at the right edge (revealed right to left, reverted left
+                to right), so they overlap, and the only anti-aliased clip edge inside the print
+                is the run's left edge, under the line of light. Side-by-side clips left seams. */}
+            {Array.from({ length: STRIPS }, (_, i) => {
+              const left = PX + i * STRIP - (i === 0 ? 1 : 0);
+              return (
+                <clipPath key={i} id={`rlv-strip-${i}`}>
+                  <rect x={left} y={PY - 1} width={PX + STRIPS * STRIP + 1 - left} height={PHOTO.length + 2} />
+                </clipPath>
+              );
+            })}
           </defs>
 
           {/* the lab table */}

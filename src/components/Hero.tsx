@@ -74,15 +74,17 @@ export default function Hero() {
           <SocialLinks size="regular" />
         </div>
 
-        <p className="font-body mb-6 max-w-xl text-lg text-[#2d2d2d] sm:text-xl">
+        <p className="font-body mb-8 max-w-xl text-lg text-[#2d2d2d] sm:text-xl">
           {siteConfig.tagline}
           <span className="cursor-blink ml-1 inline-block text-[#4a7c10]">_</span>
         </p>
 
-        {/* The newsletter, pointed out up top; the featured card below has the sign-up. */}
+        {/* The newsletter, pointed out up top; the featured card below has the sign-up.
+            The `!`s beat nes.css's unlayered `a { background-color: transparent }` and
+            `a:hover { text-decoration: underline }`. */}
         <a
           href="#what-people-made"
-          className="pixel-shadow mb-8 inline-flex max-w-full items-center gap-3 border-4 border-[#2d2d2d] bg-white px-4 py-2 text-left transition-colors hover:bg-[#fdf6d8]"
+          className="pixel-shadow mb-8 inline-flex max-w-full items-center gap-3 border-4 border-[#2d2d2d] !bg-white px-4 py-2 text-left !no-underline hover:!bg-[#fdf6d8]"
         >
           <span aria-hidden="true" className="text-xl leading-none">
             📬

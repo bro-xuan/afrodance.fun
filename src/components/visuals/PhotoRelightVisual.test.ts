@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
@@ -41,12 +42,16 @@ describe("PhotoRelightVisual", () => {
     expect(lit.filter((c) => !fills("rlv-relit").has(c))).toEqual([]);
   });
 
-  it("cuts the relit photo into seven side-by-side 4px strips across the print", () => {
+  it("clips each strip from its own 4px step out past the print, so lit strips overlap instead of seaming", () => {
     const clips = [...html.matchAll(/<clipPath id="rlv-strip-\d"><rect\b([^>]*?)\/?>/g)].map(
       ([, attrs]) => rects(`<rect${attrs}>`)[0],
     );
-    expect(clips.map((r) => r.x)).toEqual([34, 38, 42, 46, 50, 54, 58]);
-    expect(clips.every((r) => r.width === 4 && r.y === 4 && r.height === 32)).toBe(true);
+    expect(clips.map((r) => r.x)).toEqual([33, 38, 42, 46, 50, 54, 58]); // the first starts left of the print
+    for (const r of clips) {
+      expect(r.x + r.width).toBeGreaterThan(62);
+      expect(r.y).toBeLessThan(4);
+      expect(r.y + r.height).toBeGreaterThan(36);
+    }
   });
 
   it("walks the light in from the sun's side and back out, with the right three strips lit when still", () => {
@@ -58,5 +63,21 @@ describe("PhotoRelightVisual", () => {
     expect(strips.map(([, still]) => still)).toEqual(["0", "0", "0", "0", "1", "1", "1"]);
     expect(strips.map(([, , reveal]) => reveal)).toEqual(["1.2", "1.0", "0.8", "0.6", "0.4", "0.2", "0.0"]);
     expect(strips.map(([, , , revert]) => revert)).toEqual(["0.0", "0.2", "0.4", "0.6", "0.8", "1.0", "1.2"]);
+  });
+
+  it("keeps the line's keyframes in step with the strips' delays", () => {
+    const css = readFileSync(new URL("../../app/globals.css", import.meta.url), "utf8");
+    const keyframes = (name: string) => css.match(new RegExp(`@keyframes ${name} \\{([\\s\\S]*?)\\n\\}`))![1];
+    const stops = (name: string) => [...keyframes(name).matchAll(/^\s*([\d.]+)%/gm)].map(([, p]) => Number(p));
+    const loopMs = 1000 * Number(css.match(/\.rlv-line \{[^}]*?animation: rlv-line ([\d.]+)s/)![1]);
+    const delays = [...html.matchAll(/class="rlv-revert" style="animation-delay:([\d.]+)s"/g)].map(([, s]) => 1000 * Number(s));
+    const stepPct = (100 * (delays[1] - delays[0])) / loopMs;
+    const walk = (from: number) => Array.from({ length: 7 }, (_, k) => from + k * stepPct);
+
+    const [, revealAt, revealOff] = stops("rlv-reveal");
+    const [, revertAt] = stops("rlv-revert");
+    expect(stops("rlv-line")).toEqual(expect.arrayContaining([...walk(revealAt), ...walk(revertAt)]));
+    // the reveal may only switch a strip off once the last strip has been reverted
+    expect(revealOff).toBe(revertAt + 6 * stepPct);
   });
 });
