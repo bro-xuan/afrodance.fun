@@ -50,7 +50,9 @@ src/
 ├── components/
 │   ├── Hero.tsx            # Animated hero section
 │   ├── ProjectGrid.tsx     # Project cards grid
+│   ├── FeaturedProject.tsx # Wide featured card above the grid, with the newsletter sign-up
 │   ├── ProjectCard.tsx     # Individual project card
+│   ├── visuals/            # One animated pixel-art scene per project card (*Visual.tsx)
 │   ├── ArticleGrid.tsx     # Substack posts grid
 │   ├── AboutMe.tsx         # About section with bio & identity badges
 │   ├── NowSection.tsx      # "What I'm doing now" section
