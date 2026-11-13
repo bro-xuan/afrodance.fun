@@ -4,11 +4,15 @@ A pixel-art portfolio site for showcasing fun side projects, and the home page o
 
 ## The agency
 
-Right under the intro sits **Paper Kite** ([paperkite.studio](https://paperkite.studio)), my creative content agency for local businesses: we learn the
+Right under the intro sits **Paper Kite**, my creative content agency for local businesses: we learn the
 business, plan its posts every week from its own photos, and the owner approves them on their phone. The
 section has its own pixel scene (a phone where the week's posts get approved and hop onto the calendar),
-the four steps of a week, what the agency won't do, a button to its site and one to LinkedIn. The hero
-links to it first.
+what the agency won't do, and one button to its site at [/paperkite](https://afrodance.fun/paperkite).
+The hero links to it first.
+
+That site is Paper Kite's own (services, pricing, website and ad concepts, films, the intro form), built
+as static files by `pnpm export:afrodance` in bro-xuan/small-business-marketing and copied into
+`public/paperkite`. Change it there and export again; don't edit the copy here by hand.
 Its copy lives in `agency` in `src/data/projects.ts` and says only what the studio does today: no client
 names, results or prices.
 
@@ -87,6 +91,7 @@ src/
     └── index.ts            # TypeScript type definitions
 public/
 ├── 3d-of-everything/       # 3D of Things, baked in by `npm run export` in bro-xuan/3d-of-things (don't edit by hand)
+├── paperkite/              # Paper Kite's site, baked in by `pnpm export:afrodance` in bro-xuan/small-business-marketing (don't edit by hand)
 └── date-scoring/           # Date Scoring app assets
 ```
 

@@ -46,28 +46,21 @@ export const aboutConfig: AboutConfig = {
 };
 
 // The agency, right under the intro. Its copy says only what the studio does today, with no
-// client names, results or prices.
+// client names, results or prices. Its site is Paper Kite's own, served from public/paperkite.
 export const agency: Agency = {
   name: "Paper Kite",
-  url: "https://paperkite.studio",
+  url: "/paperkite",
   intro: "The marketing person your business never hired.",
   headline: "Up your social media game. On autopilot.",
   facts: ["Planned every week", "You approve every post", "Instagram · TikTok · Facebook"],
   description:
     "We get to know your business, then plan and write your posts every week from your own photos, in your voice. You say yes on your phone, each post goes out at the time you agreed, and what worked shapes next week.",
-  steps: [
-    { title: "We learn your business", body: "A kick-off: what you sell, who comes in, how you talk, and what you'd never say." },
-    { title: "Your brand, set up", body: "Your brand kit, tone of voice, confirmed facts and photo library go in. Every post starts from them." },
-    { title: "Your week, planned", body: "Every week we look at what works for businesses like yours and plan your posts from your photos." },
-    { title: "Say yes, and learn", body: "Approve, change or skip each post on your phone. Your results steer next week's plan." },
-  ],
   promises: [
     "Your own photos, never stock pretending to be you",
     "No fake reviews, and AI-made images say so",
     "Your accounts stay yours: we never ask for a password",
     "Prices, offers and opening hours only after you confirm them",
   ],
-  contact: { label: "Talk to me on LinkedIn", url: siteConfig.socials.linkedin },
 };
 
 export const articles: Article[] = [

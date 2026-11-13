@@ -19,6 +19,17 @@ const nextConfig: NextConfig = {
         source: "/3d-of-everything/objects",
         destination: "/3d-of-everything/objects/index.html",
       },
+      // Paper Kite, the agency's site, baked into public/paperkite by `pnpm export:afrodance` in
+      // bro-xuan/small-business-marketing: one .html file per page. Cloudflare serves each at its
+      // clean path itself; these are for `next start` (files that exist, like its scripts, win).
+      {
+        source: "/paperkite",
+        destination: "/paperkite/index.html",
+      },
+      {
+        source: "/paperkite/:path*",
+        destination: "/paperkite/:path*.html",
+      },
     ];
   },
 };

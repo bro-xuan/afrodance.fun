@@ -1,19 +1,15 @@
 import { agency } from "@/data/projects";
 import AgencyWeekVisual from "./visuals/AgencyWeekVisual";
 
-// Day-badge tints for the four steps, from the About tags' palette.
-const STEP_TINTS = ["bg-[#e8f5d4]", "bg-[#d6eaf8]", "bg-[#fef3cd]", "bg-[#fadbd8]"];
-
 // The agency, right under the intro: one box like the featured project's, with
-// its scene and pitch on top, the four steps of a week in a band, and what it
-// won't do along the bottom. It carries two outside links, the agency's site
-// (the scene goes there too) and LinkedIn. Layout lives on divs because
-// nes.css's unlayered normalize outranks Tailwind's flex/grid on semantic
-// elements (so the lists are divs with list roles); `!` undoes its
+// its scene and pitch on top and what it won't do along the bottom. Its one way
+// out is the agency's own site at /paperkite (the scene goes there too), which
+// stays in the tab like the site's other on-site projects. Layout lives on divs
+// because nes.css's unlayered normalize outranks Tailwind's flex/grid on semantic
+// elements (so the list is divs with list roles); `!` undoes its
 // `p { margin-bottom: 1rem }`.
 export default function Agency() {
-  const { name, url, intro, headline, facts, description, steps, promises, contact } = agency;
-  const external = { target: "_blank", rel: "noopener noreferrer" } as const;
+  const { name, url, intro, headline, facts, description, promises } = agency;
 
   return (
     <section id="agency" className="mx-auto w-full max-w-6xl scroll-mt-8 px-4 py-8">
@@ -29,7 +25,7 @@ export default function Agency() {
 
         <div className="grid items-center gap-6 p-2 md:grid-cols-2 md:gap-8">
           {/* Out of the tab order: the site button goes to the same place. */}
-          <a href={url} {...external} tabIndex={-1} aria-hidden="true" className="card-hover block">
+          <a href={url} tabIndex={-1} aria-hidden="true" className="card-hover block">
             <AgencyWeekVisual />
           </a>
 
@@ -46,31 +42,9 @@ export default function Agency() {
               ))}
             </div>
             <p className="font-body !mb-0 text-base text-[#2d2d2d]">{description}</p>
-            <div className="flex flex-wrap items-center gap-3">
-              <a href={url} {...external} className="nes-btn is-success">
-                Visit {new URL(url).host}
-              </a>
-              <a href={contact.url} {...external} className="nes-btn is-primary">
-                {contact.label}
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 border-4 border-[#2d2d2d] bg-[#f2f7e6] p-3 sm:m-2 sm:mt-6 sm:p-4">
-          <p className="font-pixel !mb-4 text-[0.8rem] leading-relaxed text-[#4a7c10]">How it works</p>
-          <div role="list" className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {steps.map((step, i) => (
-              <div role="listitem" key={step.title} className="flex flex-col items-start gap-2">
-                <span
-                  className={`font-pixel border-2 border-[#2d2d2d] px-2 py-1 text-[0.7rem] leading-none text-[#2d2d2d] ${STEP_TINTS[i % STEP_TINTS.length]}`}
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <p className="font-pixel !mb-0 text-[0.75rem] leading-relaxed text-[#2d2d2d]">{step.title}</p>
-                <p className="font-body !mb-0 text-base text-[#2d2d2d]">{step.body}</p>
-              </div>
-            ))}
+            <a href={url} className="nes-btn is-success">
+              Visit {name}
+            </a>
           </div>
         </div>
 

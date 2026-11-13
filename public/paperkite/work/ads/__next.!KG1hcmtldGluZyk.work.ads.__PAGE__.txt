@@ -1,0 +1,45 @@
+3:"$Sreact.fragment"
+4:"/paperkite/_next/static/chunks/1hqhaln5fa5c-.js"
+5:"/paperkite/_next/static/chunks/1gqe3-m4lekpx.js"
+6:I[35444,["$4","$5"],"default"]
+7:I[85677,["$4","$5"],"default"]
+e:"/paperkite/_next/static/chunks/0c9n68i1aik_k.js"
+f:"/paperkite/_next/static/chunks/0v7qrgphsybsk.js"
+10:"/paperkite/_next/static/chunks/1yg9w6cfnaaik.js"
+11:"/paperkite/_next/static/chunks/3qgyytu7qwny3.js"
+12:"/paperkite/_next/static/chunks/0hzqk5idac004.js"
+13:I[92138,["$4","$5","$e","$f","$10","$11","$12"],""]
+14:"$Sreact.suspense"
+15:I[7519,["$4","$5","$e","$f","$10","$11","$12"],"AdFeedFallback"]
+16:I[7519,["$4","$5","$e","$f","$10","$11","$12"],"AdFeed"]
+1e:"ViewportBoundary"
+1f:I[64761,["$4","$5"],"$1e"]
+20:"MetadataBoundary"
+21:I[64761,["$4","$5"],"$20"]
+22:I[32553,["$4","$5"],"IconMark"]
+9:X
+9:C
+a:X
+d:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[["$","div",null,{"className":"_MbE9q_variable atxibW_variable MrOFCa_variable RekPFW_variable _2QOysG_variable oxb8-W_variable T1EaFq_variable W0TKlW_variable","children":[["$","section",null,{"className":"container-page pt-12 pb-12","children":[["$","nav",null,{"aria-label":"Work library","className":"pressed inline-flex rounded-full bg-card p-1","children":[["$","$L13","websites",{"href":"/work","className":"flex items-center gap-2 rounded-full px-5 py-1.5 text-[0.95rem] font-medium transition-colors text-ink/70 hover:bg-secondary hover:text-ink","children":["Websites",["$","span",null,{"className":"font-mono text-[0.8rem] tabular-nums text-ink/45","children":4}]]}],["$","$L13","ads",{"href":"/work/ads","aria-current":"page","className":"flex items-center gap-2 rounded-full px-5 py-1.5 text-[0.95rem] font-medium transition-colors bg-ink text-cream","children":["Ads",["$","span",null,{"className":"font-mono text-[0.8rem] tabular-nums text-cream/60","children":20}]]}],["$","$L13","films",{"href":"/work/films","className":"flex items-center gap-2 rounded-full px-5 py-1.5 text-[0.95rem] font-medium transition-colors text-ink/70 hover:bg-secondary hover:text-ink","children":["Films",["$","span",null,{"className":"font-mono text-[0.8rem] tabular-nums text-ink/45","children":5}]]}]]}],["$","p",null,{"className":"mt-10 font-mono text-[0.8rem] tracking-widest text-muted-foreground uppercase","children":["Ad library · ",20," ads · ",4," local brands"]}],["$","div",null,{"className":"mt-4 grid items-end gap-8 lg:grid-cols-[1fr_auto]","children":[["$","div",null,{"children":[["$","h1",null,{"className":"max-w-[56rem] font-display text-[2.75rem] leading-[0.95] uppercase md:text-[4.5rem]","children":["Ads that bring people",["$","br",null,{}],["$","span",null,{"className":"text-ink/55","children":"through the door."}]]}],["$","p",null,{"className":"mt-6 max-w-[44rem] text-xl text-muted-foreground","children":"Every creative here is live code, not a mock-up: stories play, carousels swipe. Open one to see the copy, the audience, where it lands on the brand's site and why we made it that way."}]]}],["$","dl",null,{"className":"grid grid-cols-3 gap-x-8 gap-y-4 border-t border-border pt-5 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8","children":[["$","div","running now",{"children":[["$","dt",null,{"className":"sr-only","children":"running now"}],["$","dd",null,{"children":[["$","span",null,{"className":"block font-display text-[2.6rem] leading-none tabular-nums","children":"15"}],["$","span",null,{"className":"mt-1.5 block text-[0.85rem] text-muted-foreground","children":"running now"}]]}]]}],["$","div","days, longest run",{"children":[["$","dt",null,{"className":"sr-only","children":"days, longest run"}],["$","dd",null,{"children":[["$","span",null,{"className":"block font-display text-[2.6rem] leading-none tabular-nums","children":"260"}],["$","span",null,{"className":"mt-1.5 block text-[0.85rem] text-muted-foreground","children":"days, longest run"}]]}]]}],["$","div","avg. days live",{"children":[["$","dt",null,{"className":"sr-only","children":"avg. days live"}],["$","dd",null,{"children":[["$","span",null,{"className":"block font-display text-[2.6rem] leading-none tabular-nums","children":"122"}],["$","span",null,{"className":"mt-1.5 block text-[0.85rem] text-muted-foreground","children":"avg. days live"}]]}]]}]]}]]}]]}],["$","section",null,{"aria-label":"Ad feed","className":"container-page pb-24","children":["$","$14",null,{"fallback":["$","$L15",null,{}],"children":["$","$L16",null,{}]}]}],["$","section",null,{"className":"bg-ink text-cream","children":["$","div",null,{"className":"container-page flex flex-col items-start justify-between gap-6 py-16 md:flex-row md:items-center","children":[["$","div",null,{"children":[["$","p",null,{"className":"font-display text-[2rem] leading-none uppercase md:text-[2.75rem]","children":"Want ads like these?"}],"$L17"]}],"$L18"]}]}]]}],["$L19","$L1a","$L1b"],"$L1c"]}],"p":"$@1d","v":null,"s":"$a"}}]]
+b:[["children",{"s":"ads","h":96,"d":{"r":["$","$3","c",{"children":[null,["$","$L6",null,{"parallelRouterKey":"children","template":["$","$L7",null,{}]}]]}],"p":"$@c","v":"$9","s":"$a"},"c":"$Qd"}]]
+2:[["children",{"s":"work","h":64,"d":{"r":["$","$3","c",{"children":[null,["$","$L6",null,{"parallelRouterKey":"children","template":["$","$L7",null,{}]}]]}],"p":"$@8","v":"$9","s":"$a"},"c":"$Qb"}]]
+1:[["children",{"s":"(marketing)","h":32,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":80,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L1f",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L21",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$14",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Work · Ad library · Paper Kite"}],["$","meta","1",{"name":"description","content":"Social and search ads we designed for local businesses: Instagram, Facebook, TikTok and Google, with the thinking behind each one."}],["$","link","2",{"rel":"icon","href":"/paperkite/favicon.ico?favicon.117ezoe8m31dk.ico","sizes":"48x48","type":"image/x-icon"}],["$","$L22","3",{}]]}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":"$@23","v":null,"s":"$a"}},"a":"$@24","u":"$@25","b":"D1jtkGymdrn-b-XTqT1wF"}
+26:I[99360,["$4","$5","$e","$f","$10","$11","$12"],"default"]
+27:I[64761,["$4","$5"],"OutletBoundary"]
+:HL["/paperkite/_next/static/chunks/20_vxn0k1i5ov.css","style"]
+17:["$","p",null,{"className":"mt-3 text-cream/70","children":"Strategy, creative and weekly optimisation, made for your neighbourhood."}]
+18:["$","$L13",null,{"data-slot":"button","className":"group/button inline-flex shrink-0 items-center justify-center border bg-clip-padding whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 border-tangerine-edge bg-tangerine text-ink font-semibold shadow-[0_0.15rem_0_0_var(--tangerine-edge)] hover:brightness-105 active:translate-y-[0.15rem] active:shadow-none h-12 gap-2 rounded-xl px-5 text-base has-data-[icon=inline-start]:pl-4 [&_svg:not([class*='size-'])]:size-5","href":"/book?service=social-ads","children":["Get ads like this ",["$","$L26",null,{"icon":{"name":"arrow-right","size":24,"node":[["path",{"d":"M5 12h14","key":"1ays0h"}],["path",{"d":"m12 5 7 7-7 7","key":"xquz4c"}]]}}]]}]
+19:["$","link","0",{"rel":"stylesheet","href":"/paperkite/_next/static/chunks/20_vxn0k1i5ov.css","precedence":"next"}]
+1a:["$","script","script-0",{"src":"/paperkite/_next/static/chunks/3qgyytu7qwny3.js","async":true}]
+1b:["$","script","script-1",{"src":"/paperkite/_next/static/chunks/0hzqk5idac004.js","async":true}]
+1c:["$","$L27",null,{"children":["$","$14",null,{"name":"Next.MetadataOutlet","children":"$@28"}]}]
+25:true
+a:300
+28:null
+a:C
+24:0
+c:"$undefined"
+8:"$undefined"
+23:"$undefined"
+1d:"$undefined"
