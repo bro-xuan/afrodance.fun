@@ -20,13 +20,11 @@ describe("projects", () => {
     for (const href of [url, newsletter.subscribeUrl, newsletter.archiveUrl]) expect(href).toMatch(/^https:\/\//);
   });
 
-  it("links the agency's site and its contact button over https", () => {
-    for (const href of [agency.url, agency.contact.url]) expect(href).toMatch(/^https:\/\//);
+  it("links the agency to its site on this one", () => {
+    expect(agency.url).toMatch(/^\/[a-z-]+$/);
   });
 
-  it("keeps the agency's steps and promises unique, since their lists key on them", () => {
-    const titles = agency.steps.map((s) => s.title);
-    expect(new Set(titles).size).toBe(titles.length);
+  it("keeps the agency's facts and promises unique, since their lists key on them", () => {
     expect(new Set(agency.promises).size).toBe(agency.promises.length);
     expect(new Set(agency.facts).size).toBe(agency.facts.length);
   });

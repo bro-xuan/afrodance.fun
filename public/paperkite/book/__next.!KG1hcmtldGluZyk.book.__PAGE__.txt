@@ -1,0 +1,34 @@
+3:"$Sreact.fragment"
+4:"/paperkite/_next/static/chunks/1hqhaln5fa5c-.js"
+5:"/paperkite/_next/static/chunks/1gqe3-m4lekpx.js"
+6:I[35444,["$4","$5"],"default"]
+7:I[85677,["$4","$5"],"default"]
+c:"/paperkite/_next/static/chunks/0c9n68i1aik_k.js"
+d:"/paperkite/_next/static/chunks/0v7qrgphsybsk.js"
+e:"/paperkite/_next/static/chunks/1yg9w6cfnaaik.js"
+f:"/paperkite/_next/static/chunks/1rrhx2ue9w580.js"
+10:"/paperkite/_next/static/chunks/2ptiss-1xvfll.js"
+11:I[99360,["$4","$5","$c","$d","$e","$f","$10"],"default"]
+12:"$Sreact.suspense"
+13:I[61271,["$4","$5","$c","$d","$e","$f","$10"],"LeadForm"]
+14:I[64761,["$4","$5"],"OutletBoundary"]
+17:"ViewportBoundary"
+18:I[64761,["$4","$5"],"$17"]
+19:"MetadataBoundary"
+1a:I[64761,["$4","$5"],"$19"]
+1b:I[32553,["$4","$5"],"IconMark"]
+9:X
+9:C
+a:X
+b:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$3","c",{"children":[["$","section",null,{"className":"bg-cobalt","children":["$","div",null,{"className":"container-page grid gap-12 py-20 lg:grid-cols-[1fr_1.3fr]","children":[["$","div",null,{"children":[["$","h1",null,{"className":"font-display text-[2.75rem] leading-[0.97] uppercase md:text-[3.75rem]","children":["Tell us",["$","br",null,{}],["$","span",null,{"className":"text-ink/55","children":"about your brand."}]]}],["$","ul",null,{"className":"mt-8 space-y-4","children":[["$","li","A free 20-minute creative call",{"className":"flex items-center gap-3 text-lg","children":[["$","span",null,{"className":"pressed grid size-10 shrink-0 place-items-center rounded-lg bg-card","children":["$","$L11",null,{"icon":{"name":"clock","size":24,"node":[["circle",{"cx":"12","cy":"12","r":"10","key":"1mglay"}],["path",{"d":"M12 6v6l4 2","key":"mmk7yg"}]]},"className":"size-5"}]}],"A free 20-minute creative call"]}],["$","li","A sample week of work made for your brand",{"className":"flex items-center gap-3 text-lg","children":[["$","span",null,{"className":"pressed grid size-10 shrink-0 place-items-center rounded-lg bg-card","children":["$","$L11",null,{"icon":{"name":"gift","size":24,"node":[["path",{"d":"M12 7v14","key":"1akyts"}],["path",{"d":"M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8","key":"1sqzm4"}],["path",{"d":"M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5","key":"kc0143"}],["rect",{"x":"3","y":"7","width":"18","height":"4","rx":"1","key":"1hberx"}]]},"className":"size-5"}]}],"A sample week of work made for your brand"]}],["$","li","Honest advice, even if we're not the right fit",{"className":"flex items-center gap-3 text-lg","children":[["$","span",null,{"className":"pressed grid size-10 shrink-0 place-items-center rounded-lg bg-card","children":["$","$L11",null,{"icon":{"name":"message-circle","size":24,"node":[["path",{"d":"M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719","key":"1sd12s"}]]},"className":"size-5"}]}],"Honest advice, even if we're not the right fit"]}]]}]]}],["$","$12",null,{"children":["$","$L13",null,{}]}]]}]}],[["$","script","script-0",{"src":"/paperkite/_next/static/chunks/1rrhx2ue9w580.js","async":true}],["$","script","script-1",{"src":"/paperkite/_next/static/chunks/2ptiss-1xvfll.js","async":true}]],["$","$L14",null,{"children":["$","$12",null,{"name":"Next.MetadataOutlet","children":"$@15"}]}]]}],"p":"$@16","v":null,"s":"$a"}}]]
+2:[["children",{"s":"book","h":64,"d":{"r":["$","$3","c",{"children":[null,["$","$L6",null,{"parallelRouterKey":"children","template":["$","$L7",null,{}]}]]}],"p":"$@8","v":"$9","s":"$a"},"c":"$Qb"}]]
+1:[["children",{"s":"(marketing)","h":32,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":80,"c":"$Q1"},"h":{"r":["$","$3","h",{"children":[null,["$","$L18",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L1a",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$12",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Start a project · Paper Kite"}],["$","meta","1",{"name":"description","content":"A free 20-minute intro plus a sample week of content for your business."}],["$","link","2",{"rel":"icon","href":"/paperkite/favicon.ico?favicon.117ezoe8m31dk.ico","sizes":"48x48","type":"image/x-icon"}],["$","$L1b","3",{}]]}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":"$@1c","v":null,"s":"$a"}},"a":"$@1d","u":"$@1e","b":"D1jtkGymdrn-b-XTqT1wF"}
+15:null
+1e:true
+a:300
+a:C
+1d:0
+8:"$undefined"
+1c:"$undefined"
+16:"$undefined"

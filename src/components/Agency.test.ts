@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
@@ -8,6 +9,7 @@ import Hero from "./Hero";
 const html = renderToStaticMarkup(createElement(Agency));
 /** The markup's text with React's escapes undone, to look for copy in. */
 const text = html.replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
+const links = [...html.matchAll(/<a\b[^>]*>/g)].map(([tag]) => tag);
 
 describe("Agency", () => {
   it("is where the hero's agency link lands", () => {
@@ -19,32 +21,28 @@ describe("Agency", () => {
     expect(html).toContain('id="agency"');
   });
 
-  it("opens every outside link in a new tab without handing it the opener", () => {
-    const links = [...html.matchAll(/<a\b[^>]*>/g)].map(([tag]) => tag).filter((tag) => /href="https:/.test(tag));
-    expect(links).toHaveLength(3); // the scene, the site button, LinkedIn
+  it("links only to the agency's site, in the same tab like the site's other pages", () => {
+    expect(links).toHaveLength(2); // the scene and the button
     for (const tag of links) {
-      expect(tag).toContain('target="_blank"');
-      expect(tag).toContain('rel="noopener noreferrer"');
+      expect(tag).toContain(`href="${agency.url}"`);
+      expect(tag).not.toContain('target="_blank"');
     }
-    const hrefs = links.map((tag) => tag.match(/href="([^"]+)"/)![1]);
-    expect(new Set(hrefs)).toEqual(new Set([agency.url, agency.contact.url]));
+    expect(text).toContain(`Visit ${agency.name}`);
   });
 
-  it("keeps the scene out of the tab order, since the site button goes to the same place", () => {
-    const scene = html.match(new RegExp(`<a href="${agency.url.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}"[^>]*>(?=<div)`))![0];
-    expect(scene).toContain('tabindex="-1"');
+  it("keeps the scene out of the tab order, since the button goes to the same place", () => {
+    const scene = links.find((tag) => tag.includes('tabindex="-1"'));
     expect(scene).toContain('aria-hidden="true"');
-    expect(text).toContain(`Visit ${new URL(agency.url).host}`);
   });
 
-  it("shows the pitch, the facts, every step and every promise", () => {
-    const { name, intro, headline, facts, description, steps, promises, contact } = agency;
-    for (const copy of [name, intro, headline, ...facts, description, ...promises, contact.label]) {
+  it("points at a page that exists: the agency site's export in public/", () => {
+    expect(existsSync(new URL(`../../public${agency.url}/index.html`, import.meta.url))).toBe(true);
+  });
+
+  it("shows the pitch, the facts and every promise", () => {
+    const { name, intro, headline, facts, description, promises } = agency;
+    for (const copy of [name, intro, headline, ...facts, description, ...promises]) {
       expect(text).toContain(copy);
-    }
-    for (const step of steps) {
-      expect(text).toContain(step.title);
-      expect(text).toContain(step.body);
     }
   });
 
