@@ -10,8 +10,6 @@ export type ProjectVisual =
   | "instaclaw-deploy"
   | "house-build"
   | "migration-flow"
-  | "focus-tracker"
-  | "mic-waveform"
   | "machine-teardown";
 
 export interface Project {

@@ -216,14 +216,6 @@ export const projects: Project[] = [
     stack: ["Next.js", "bitcoin-data.com", "On-chain"],
     visual: "btc-cycle",
   },
-  {
-    title: "ADHD Saver",
-    description: "Computer-vision focus tracker. Detects zone-outs in real time and nudges you back. 15 alert tones.",
-    url: "/adhd_saver",
-    emoji: "🧠",
-    color: "warning",
-    visual: "focus-tracker",
-  },
   // Hidden until the /date-scoring route exists — linking to it today 404s.
   // {
   //   title: "Date Scoring",
@@ -232,13 +224,4 @@ export const projects: Project[] = [
   //   emoji: "💘",
   //   color: "primary",
   // },
-  {
-    title: "Greenroom",
-    description: "Voice-native mock finance interviews. AI interviewer grounded in cited company data, with every bluff flagged and sourced after the call. Built for Megathon 2026.",
-    url: "https://greenroom-inky.vercel.app/",
-    emoji: "🎙️",
-    color: "success",
-    stack: ["Next.js", "Vapi", "Cala.ai", "Anthropic API"],
-    visual: "mic-waveform",
-  },
 ];

@@ -10,8 +10,6 @@ import PortraitFrameVisual from "./visuals/PortraitFrameVisual";
 import InstaClawDeployVisual from "./visuals/InstaClawDeployVisual";
 import HouseBuildVisual from "./visuals/HouseBuildVisual";
 import MigrationFlowVisual from "./visuals/MigrationFlowVisual";
-import FocusTrackerVisual from "./visuals/FocusTrackerVisual";
-import MicWaveformVisual from "./visuals/MicWaveformVisual";
 import TeardownVisual from "./visuals/TeardownVisual";
 
 // Animated pixel-art scenes; projects without one fall back to the emoji tile.
@@ -26,8 +24,6 @@ const visuals: Record<ProjectVisual, ComponentType> = {
   "instaclaw-deploy": InstaClawDeployVisual,
   "house-build": HouseBuildVisual,
   "migration-flow": MigrationFlowVisual,
-  "focus-tracker": FocusTrackerVisual,
-  "mic-waveform": MicWaveformVisual,
   "machine-teardown": TeardownVisual,
 };
 
