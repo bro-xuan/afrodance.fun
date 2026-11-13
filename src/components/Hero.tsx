@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { siteConfig } from "@/data/projects";
+import { agency, siteConfig } from "@/data/projects";
 import SocialLinks from "@/components/SocialLinks";
 import PixelCritters, { type Critter } from "@/components/PixelCritters";
 import { robot, chick, cat, dino, butterfly, EMOTES } from "@/data/sprites";
@@ -79,24 +79,42 @@ export default function Hero() {
           <span className="cursor-blink ml-1 inline-block text-[#4a7c10]">_</span>
         </p>
 
-        {/* The newsletter, pointed out up top; the featured card below has the sign-up.
-            The `!`s beat nes.css's unlayered `a { background-color: transparent }` and
+        {/* The agency and the newsletter, pointed out up top; the agency first, on butter,
+            since it's what this page leads with. Each jumps to its box below. The `!`s beat
+            nes.css's unlayered `a { background-color: transparent }` and
             `a:hover { text-decoration: underline }`. */}
-        <a
-          href="#what-people-made"
-          className="pixel-shadow mb-8 inline-flex max-w-full items-center gap-3 border-4 border-[#2d2d2d] !bg-white px-4 py-2 text-left !no-underline hover:!bg-[#fdf6d8]"
-        >
-          <span aria-hidden="true" className="text-xl leading-none">
-            📬
-          </span>
-          <span className="font-body text-base text-[#2d2d2d] sm:text-lg">
-            I run a weekly AI newsletter:{" "}
-            <span className="whitespace-nowrap text-[#a93226] underline underline-offset-2">What People Made</span>
-          </span>
-          <span aria-hidden="true" className="font-pixel text-[0.8rem] text-[#a93226]">
-            ↓
-          </span>
-        </a>
+        <div className="mb-8 flex max-w-full flex-col items-center gap-3">
+          <a
+            href="#agency"
+            className="pixel-shadow inline-flex max-w-full items-center gap-3 border-4 border-[#2d2d2d] !bg-[#fdf6d8] px-4 py-2 text-left !no-underline hover:!bg-[#f9ebb4]"
+          >
+            <span aria-hidden="true" className="text-xl leading-none">
+              🎨
+            </span>
+            <span className="font-body text-base text-[#2d2d2d] sm:text-lg">
+              I run a creative content agency:{" "}
+              <span className="whitespace-nowrap text-[#4a7c10] underline underline-offset-2">{agency.name}</span>
+            </span>
+            <span aria-hidden="true" className="font-pixel text-[0.8rem] text-[#4a7c10]">
+              ↓
+            </span>
+          </a>
+          <a
+            href="#what-people-made"
+            className="pixel-shadow inline-flex max-w-full items-center gap-3 border-4 border-[#2d2d2d] !bg-white px-4 py-2 text-left !no-underline hover:!bg-[#fdf6d8]"
+          >
+            <span aria-hidden="true" className="text-xl leading-none">
+              📬
+            </span>
+            <span className="font-body text-base text-[#2d2d2d] sm:text-lg">
+              I run a weekly AI newsletter:{" "}
+              <span className="whitespace-nowrap text-[#a93226] underline underline-offset-2">What People Made</span>
+            </span>
+            <span aria-hidden="true" className="font-pixel text-[0.8rem] text-[#a93226]">
+              ↓
+            </span>
+          </a>
+        </div>
 
         <div className="flex flex-wrap items-center justify-center gap-4">
           <a href="#projects" className="nes-btn is-success">

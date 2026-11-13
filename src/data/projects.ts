@@ -1,4 +1,4 @@
-import { Project, FeaturedProject, AboutConfig, Article, NowItem, GuestbookMessage } from "@/types";
+import { Project, FeaturedProject, AboutConfig, Agency, Article, NowItem, GuestbookMessage } from "@/types";
 
 export const siteConfig = {
   name: "afrodance.fun",
@@ -18,11 +18,12 @@ export const siteConfig = {
 
 export const aboutConfig: AboutConfig = {
   greeting: "Hi, I'm Stefan.",
-  bio: "I build silly things that some people surprisingly use — mostly around AI, crypto, and trading. These days I also run What People Made, a daily gallery of real AI use cases with a weekly AI newsletter on top. This page is part scrapbook of stuff I've shipped, part soapbox for my rants on whatever topic won't leave me alone lately. Poke around, and if you're building something fun, let's talk.",
+  bio: "I run a creative content agency helping local businesses up their social media game, no marketing hire needed. We plan their posts every week from their own photos, and the owner just says yes on their phone. On the side I still build things that some people surprisingly use, mostly around AI and crypto, and run What People Made, a daily gallery of real AI use cases. Run a business, or know one that could use better posts? Let's talk.",
   avatarUrl: "",
   avatarFallback: "SW",
   tags: [
     { label: "AI", color: "bg-[#e8f5d4] text-[#3a6510]" },
+    { label: "Marketing", color: "bg-[#efe1f5] text-[#6c2f8a]" },
     { label: "Crypto", color: "bg-[#d6eaf8] text-[#15608f]" },
     { label: "SaaS", color: "bg-[#fef3cd] text-[#856404]" },
     { label: "EN / 中文 / DE", color: "bg-[#fadbd8] text-[#a93226]" },
@@ -42,6 +43,31 @@ export const aboutConfig: AboutConfig = {
     },
   ],
   likes: [],
+};
+
+// The agency, right under the intro. Its copy says only what the studio does today, with no
+// client names, results or prices.
+export const agency: Agency = {
+  name: "Paper Kite",
+  url: "https://paperkite.studio",
+  intro: "The marketing person your business never hired.",
+  headline: "Up your social media game. On autopilot.",
+  facts: ["Planned every week", "You approve every post", "Instagram · TikTok · Facebook"],
+  description:
+    "We get to know your business, then plan and write your posts every week from your own photos, in your voice. You say yes on your phone, each post goes out at the time you agreed, and what worked shapes next week.",
+  steps: [
+    { title: "We learn your business", body: "A kick-off: what you sell, who comes in, how you talk, and what you'd never say." },
+    { title: "Your brand, set up", body: "Your brand kit, tone of voice, confirmed facts and photo library go in. Every post starts from them." },
+    { title: "Your week, planned", body: "Every week we look at what works for businesses like yours and plan your posts from your photos." },
+    { title: "Say yes, and learn", body: "Approve, change or skip each post on your phone. Your results steer next week's plan." },
+  ],
+  promises: [
+    "Your own photos, never stock pretending to be you",
+    "No fake reviews, and AI-made images say so",
+    "Your accounts stay yours: we never ask for a password",
+    "Prices, offers and opening hours only after you confirm them",
+  ],
+  contact: { label: "Talk to me on LinkedIn", url: siteConfig.socials.linkedin },
 };
 
 export const articles: Article[] = [

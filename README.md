@@ -1,6 +1,16 @@
 # afrodance.fun
 
-A pixel-art portfolio site for showcasing fun side projects. Built with Next.js, NES.css, and Tailwind CSS.
+A pixel-art portfolio site for showcasing fun side projects, and the home page of my agency. Built with Next.js, NES.css, and Tailwind CSS.
+
+## The agency
+
+Right under the intro sits **Paper Kite** ([paperkite.studio](https://paperkite.studio)), my creative content agency for local businesses: we learn the
+business, plan its posts every week from its own photos, and the owner approves them on their phone. The
+section has its own pixel scene (a phone where the week's posts get approved and hop onto the calendar),
+the four steps of a week, what the agency won't do, a button to its site and one to LinkedIn. The hero
+links to it first.
+Its copy lives in `agency` in `src/data/projects.ts` and says only what the studio does today: no client
+names, results or prices.
 
 ## Projects
 
@@ -48,10 +58,11 @@ src/
 │   └── page.tsx            # Homepage
 ├── components/
 │   ├── Hero.tsx            # Animated hero section
+│   ├── Agency.tsx          # The agency (Paper Kite) under the intro: scene, pitch, steps, promises
 │   ├── ProjectGrid.tsx     # Project cards grid
 │   ├── FeaturedProject.tsx # Wide featured card above the grid, with the newsletter sign-up
 │   ├── ProjectCard.tsx     # Individual project card
-│   ├── visuals/            # One animated pixel-art scene per project card (*Visual.tsx)
+│   ├── visuals/            # One animated pixel-art scene per project card, and the agency's (*Visual.tsx)
 │   ├── ArticleGrid.tsx     # Substack posts grid
 │   ├── AboutMe.tsx         # About section with bio & identity badges
 │   ├── NowSection.tsx      # "What I'm doing now" section
@@ -66,7 +77,7 @@ src/
 │   ├── Footer.tsx          # Site footer
 │   └── ui/                 # shadcn/ui + 8-bit component variants
 ├── data/
-│   ├── projects.ts         # All site content (projects, articles, config)
+│   ├── projects.ts         # All site content (the agency, projects, articles, config)
 │   └── sprites.ts          # Pixel-art critter sprite data + palette
 ├── hooks/
 │   └── useKonamiCode.ts    # Konami code detection hook

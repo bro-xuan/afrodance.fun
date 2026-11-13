@@ -31,6 +31,12 @@ const aboutCritters: Critter[] = [
   { sprite: mushroom, pos: "right-[8%] top-[62%]", width: "2.4rem", behavior: "hover-wiggle", emote: EMOTES.sparkle },
 ];
 
+// A busy bee and a sprout for the agency: it's about getting a business noticed and growing.
+const agencyCritters: Critter[] = [
+  { sprite: bee, pos: "left-[2%] top-[30%]", width: "1.7rem", behavior: "buzz", delay: "0.2s" },
+  { sprite: sprout, pos: "right-[2.5%] top-[68%]", width: "2.6rem", behavior: "bob", delay: "0.5s" },
+];
+
 const projectsCritters: Critter[] = [
   { sprite: robot, pos: "left-[1.5%] top-[68%]", width: "2.8rem", behavior: "patrol", range: "6rem", frameDur: "0.3s" },
   { sprite: chick, pos: "right-[2%] top-[16%]", width: "2.3rem", behavior: "walk-scroll", range: "7rem", facing: "right", frameDur: "0.24s" },
@@ -66,6 +72,12 @@ const aboutDrift: DriftPixel[] = [
   { pos: "right-[11%] top-[55%]", size: "h-2 w-2", color: "bg-[#e6b800]/45", speed: "drift-fast" },
 ];
 
+const agencyDrift: DriftPixel[] = [
+  { pos: "left-[3%] top-[16%]", size: "h-2.5 w-2.5", color: "bg-[#e6b800]/45", speed: "drift-mid", bob: "0.3s" },
+  { pos: "right-[3%] top-[32%]", size: "h-2 w-2", color: "bg-[#3498db]/40", speed: "drift-fast" },
+  { pos: "left-[2%] top-[78%]", size: "h-3 w-3", color: "bg-[#6aad30]/40", speed: "drift-slow", bob: "1s" },
+];
+
 const projectsDrift: DriftPixel[] = [
   { pos: "left-[2.5%] top-[10%]", size: "h-3 w-3", color: "bg-[#6aad30]/50", speed: "drift-fast", bob: "0.2s" },
   { pos: "left-[3%] top-[48%]", size: "h-2 w-2", color: "bg-[#3498db]/40", speed: "drift-mid" },
@@ -91,6 +103,7 @@ const guestbookDrift: DriftPixel[] = [
   { pos: "right-[5%] top-[88%]", size: "h-2 w-2", color: "bg-[#6aad30]/45", speed: "drift-mid" },
 ];
 import AboutMe from "@/components/AboutMe";
+import Agency from "@/components/Agency";
 import ProjectGrid from "@/components/ProjectGrid";
 import ArticleGrid from "@/components/ArticleGrid";
 import Guestbook from "@/components/Guestbook";
@@ -107,6 +120,11 @@ export default function Home() {
         <DriftPixels pixels={aboutDrift} className="hidden lg:block" />
         <PixelCritters critters={aboutCritters} className="hidden lg:block" />
         <AboutMe />
+      </div>
+      <div className="relative">
+        <DriftPixels pixels={agencyDrift} className="hidden xl:block" />
+        <PixelCritters critters={agencyCritters} className="hidden xl:block" />
+        <Agency />
       </div>
       <PixelDivider />
       <DitherBand color="#f2f7e6" className="relative overflow-clip py-6">

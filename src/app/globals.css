@@ -2220,3 +2220,164 @@ body:has(.mi-root) {
     animation: none !important;
   }
 }
+
+/* === Paper Kite (AgencyWeekVisual) ===
+   One 8s timeline, three posts. Each is on the phone for 24% (a from 0%, b
+   from 24%, c from 48%): 10% into its turn the owner taps approve (the
+   button stays down for 2%, the ring shows for 4%), and from 13% the post
+   hops from the phone to its slot on the week in an arc, four whole-pixel
+   hops 2% apart, landing at 21%. At 72% the phone says the week is set and
+   hearts pop up over the posts at 74%, 78% and 82%, each rising 2px in two
+   steps. At 92% the week clears for the next one. The hearts' rise sets its own timing function
+   and every other interval holds (steps(1, end)). A post's first offset is
+   its lift-off point on the phone minus its slot (AgencyWeekVisual.tsx;
+   the test keeps them in step). Base (animation-less) state = the finished
+   frame: the third post on the phone, the whole week with its hearts, for
+   prefers-reduced-motion. */
+.awv-screen-a,
+.awv-screen-b,
+.awv-done,
+.awv-press,
+.awv-ring {
+  opacity: 0;
+}
+.awv-screen-a {
+  animation: awv-screen-a 8s steps(1, end) infinite;
+}
+@keyframes awv-screen-a {
+  0% { opacity: 1; }
+  24% { opacity: 0; }
+  92%, 100% { opacity: 1; }
+}
+.awv-screen-b {
+  animation: awv-screen-b 8s steps(1, end) infinite;
+}
+@keyframes awv-screen-b {
+  0% { opacity: 0; }
+  24% { opacity: 1; }
+  48%, 100% { opacity: 0; }
+}
+.awv-screen-c {
+  animation: awv-screen-c 8s steps(1, end) infinite;
+}
+@keyframes awv-screen-c {
+  0% { opacity: 0; }
+  48% { opacity: 1; }
+  72%, 100% { opacity: 0; }
+}
+.awv-done {
+  animation: awv-done 8s steps(1, end) infinite;
+}
+@keyframes awv-done {
+  0% { opacity: 0; }
+  72% { opacity: 1; }
+  92%, 100% { opacity: 0; }
+}
+
+.awv-press {
+  animation: awv-press 8s steps(1, end) infinite;
+}
+@keyframes awv-press {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  12% { opacity: 0; }
+  34% { opacity: 1; }
+  36% { opacity: 0; }
+  58% { opacity: 1; }
+  60%, 100% { opacity: 0; }
+}
+.awv-ring {
+  animation: awv-ring 8s steps(1, end) infinite;
+}
+@keyframes awv-ring {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  14% { opacity: 0; }
+  34% { opacity: 1; }
+  38% { opacity: 0; }
+  58% { opacity: 1; }
+  62%, 100% { opacity: 0; }
+}
+
+.awv-post-a {
+  animation: awv-post-a 8s steps(1, end) infinite;
+}
+@keyframes awv-post-a {
+  0% { opacity: 0; transform: translate(-21px, -8px); }
+  13% { opacity: 1; transform: translate(-21px, -8px); }
+  15% { opacity: 1; transform: translate(-16px, -10px); }
+  17% { opacity: 1; transform: translate(-11px, -10px); }
+  19% { opacity: 1; transform: translate(-5px, -7px); }
+  21% { opacity: 1; transform: translate(0, 0); }
+  92%, 100% { opacity: 0; transform: translate(0, 0); }
+}
+.awv-post-b {
+  animation: awv-post-b 8s steps(1, end) infinite;
+}
+@keyframes awv-post-b {
+  0% { opacity: 0; transform: translate(-37px, -16px); }
+  37% { opacity: 1; transform: translate(-37px, -16px); }
+  39% { opacity: 1; transform: translate(-28px, -17px); }
+  41% { opacity: 1; transform: translate(-19px, -14px); }
+  43% { opacity: 1; transform: translate(-9px, -9px); }
+  45% { opacity: 1; transform: translate(0, 0); }
+  92%, 100% { opacity: 0; transform: translate(0, 0); }
+}
+.awv-post-c {
+  animation: awv-post-c 8s steps(1, end) infinite;
+}
+@keyframes awv-post-c {
+  0% { opacity: 0; transform: translate(-53px, -10px); }
+  61% { opacity: 1; transform: translate(-53px, -10px); }
+  63% { opacity: 1; transform: translate(-40px, -13px); }
+  65% { opacity: 1; transform: translate(-27px, -13px); }
+  67% { opacity: 1; transform: translate(-13px, -9px); }
+  69% { opacity: 1; transform: translate(0, 0); }
+  92%, 100% { opacity: 0; transform: translate(0, 0); }
+}
+
+.awv-heart-a {
+  animation: awv-heart-a 8s steps(1, end) infinite;
+}
+@keyframes awv-heart-a {
+  0% { opacity: 0; transform: translate(0, 2px); }
+  74% { opacity: 1; transform: translate(0, 2px); animation-timing-function: steps(2, end); }
+  76% { opacity: 1; transform: translate(0, 0); }
+  92%, 100% { opacity: 0; transform: translate(0, 0); }
+}
+.awv-heart-b {
+  animation: awv-heart-b 8s steps(1, end) infinite;
+}
+@keyframes awv-heart-b {
+  0% { opacity: 0; transform: translate(0, 2px); }
+  78% { opacity: 1; transform: translate(0, 2px); animation-timing-function: steps(2, end); }
+  80% { opacity: 1; transform: translate(0, 0); }
+  92%, 100% { opacity: 0; transform: translate(0, 0); }
+}
+.awv-heart-c {
+  animation: awv-heart-c 8s steps(1, end) infinite;
+}
+@keyframes awv-heart-c {
+  0% { opacity: 0; transform: translate(0, 2px); }
+  82% { opacity: 1; transform: translate(0, 2px); animation-timing-function: steps(2, end); }
+  84% { opacity: 1; transform: translate(0, 0); }
+  92%, 100% { opacity: 0; transform: translate(0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .awv-screen-a,
+  .awv-screen-b,
+  .awv-screen-c,
+  .awv-done,
+  .awv-press,
+  .awv-ring,
+  .awv-post-a,
+  .awv-post-b,
+  .awv-post-c,
+  .awv-heart-a,
+  .awv-heart-b,
+  .awv-heart-c {
+    /* awv-*: freezes on the finished frame: the third post on the phone, the week full, the hearts up */
+    animation: none !important;
+  }
+}

@@ -40,6 +40,23 @@ export interface FeaturedProject {
   stack?: string[];
 }
 
+/** The agency, right under the intro: what it does, how a week with it goes, what it won't do, and how to get in touch. */
+export interface Agency {
+  name: string;
+  /** The agency's own site. */
+  url: string;
+  /** One line under the section's heading. */
+  intro: string;
+  headline: string;
+  /** Short facts shown as chips above the description. */
+  facts: string[];
+  description: string;
+  steps: { title: string; body: string }[];
+  /** What it won't do, each with a check. */
+  promises: string[];
+  contact: { label: string; url: string };
+}
+
 export interface SkillCategory {
   title: string;
   items: string[];
