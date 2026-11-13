@@ -11,11 +11,13 @@ A pixel-art portfolio site for showcasing fun side projects. Built with Next.js,
 | **Predictooor** | Real-time Polymarket whale tracker with smart alerts and wallet analytics |
 | **ReferReady** | Reference-call prep for job candidates |
 | **Analog Camera Museum** | Pixel-art portfolio for fun projects |
+| **3D of Everything** | Real machines to turn over, look inside and take apart in 3D |
 | **Corporate Translator** | Decodes corporate jargon into plain English, live BS score included |
 | **Earl** | AI-powered bespoke portraiture — turn any photo into a classical artwork |
 | **InstaClaw** | Deploy OpenClaw AI assistants to European servers in under 60 seconds |
 | **NL House Buying Tool** | End-to-end calculator for buying property in the Netherlands |
 | **China Migration** | Three decades of China migration visualized as particle flows |
+| **Market Intel** | BTC trading desk on one page, scored into an intraday, swing and macro bias |
 | **BTC Bottom Indicator** | On-chain signal dashboard scoring how close Bitcoin is to a cycle bottom |
 
 ## Tech Stack
