@@ -3,6 +3,14 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.8.0] - 2026-11-13
+
+### Added
+- **Paper Kite's own site lives at afrodance.fun/paperkite.** Its services, pricing, website and ad concepts, films and intro form are now part of this site. The intro form opens your email app with your request written out, addressed to the studio.
+
+### Changed
+- **The agency box is shorter.** It keeps the pitch, the facts and what the agency won't do, with one button to its site. The LinkedIn button and the four steps are gone.
+
 ## [0.5.7.0] - 2026-11-13
 
 ### Added
