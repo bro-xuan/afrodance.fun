@@ -46,7 +46,7 @@ export const aboutConfig: AboutConfig = {
 };
 
 // The agency, right under the intro. Its copy says only what the studio does today, with no
-// client names, results or prices. Its site is Paper Kite's own, served from public/paperkite.
+// client names, results or prices. Its site is Paper Kite's own, exported into public/paperkite.
 export const agency: Agency = {
   name: "Paper Kite",
   url: "/paperkite",

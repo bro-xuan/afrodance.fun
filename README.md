@@ -10,9 +10,11 @@ section has its own pixel scene (a phone where the week's posts get approved and
 what the agency won't do, and one button to its site at [/paperkite](https://afrodance.fun/paperkite).
 The hero links to it first.
 
-That site is Paper Kite's own (services, pricing, website and ad concepts, films, the intro form), built
-as static files by `pnpm export:afrodance` in bro-xuan/small-business-marketing and copied into
-`public/paperkite`. Change it there and export again; don't edit the copy here by hand.
+That site is Paper Kite's own public site (social media on autopilot: how the studio works, pricing,
+FAQ, and Inside the studio for three demo businesses), exported as static files by
+`node web/export.ts <afrodance.fun>/public/paperkite` in bro-xuan/ai-marketing. Change it there and export
+again; don't edit the copy here by hand. "Get started" opens an email to the studio, since a static copy
+has no sign-up form, login or demo portal behind it.
 Its copy lives in `agency` in `src/data/projects.ts` and says only what the studio does today: no client
 names, results or prices.
 
@@ -91,7 +93,7 @@ src/
     └── index.ts            # TypeScript type definitions
 public/
 ├── 3d-of-everything/       # 3D of Things, baked in by `npm run export` in bro-xuan/3d-of-things (don't edit by hand)
-├── paperkite/              # Paper Kite's site, baked in by `pnpm export:afrodance` in bro-xuan/small-business-marketing (don't edit by hand)
+├── paperkite/              # Paper Kite's site, exported by `node web/export.ts` in bro-xuan/ai-marketing (don't edit by hand)
 └── date-scoring/           # Date Scoring app assets
 ```
 
