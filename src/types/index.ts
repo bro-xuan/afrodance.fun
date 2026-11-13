@@ -24,6 +24,22 @@ export interface Project {
   visual?: ProjectVisual;
 }
 
+/** The one project shown wide above the grid, with the newsletter that goes with it. */
+export interface FeaturedProject {
+  title: string;
+  url: string;
+  /** Short facts shown as chips above the description. */
+  facts: string[];
+  description: string;
+  newsletter: {
+    title: string;
+    pitch: string;
+    subscribeUrl: string;
+    archiveUrl: string;
+  };
+  stack?: string[];
+}
+
 export interface SkillCategory {
   title: string;
   items: string[];

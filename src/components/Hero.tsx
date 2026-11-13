@@ -74,10 +74,27 @@ export default function Hero() {
           <SocialLinks size="regular" />
         </div>
 
-        <p className="font-body mb-8 max-w-xl text-lg text-[#2d2d2d] sm:text-xl">
+        <p className="font-body mb-6 max-w-xl text-lg text-[#2d2d2d] sm:text-xl">
           {siteConfig.tagline}
           <span className="cursor-blink ml-1 inline-block text-[#4a7c10]">_</span>
         </p>
+
+        {/* The newsletter, pointed out up top; the featured card below has the sign-up. */}
+        <a
+          href="#what-people-made"
+          className="pixel-shadow mb-8 inline-flex max-w-full items-center gap-3 border-4 border-[#2d2d2d] bg-white px-4 py-2 text-left transition-colors hover:bg-[#fdf6d8]"
+        >
+          <span aria-hidden="true" className="text-xl leading-none">
+            📬
+          </span>
+          <span className="font-body text-base text-[#2d2d2d] sm:text-lg">
+            I run a weekly AI newsletter:{" "}
+            <span className="whitespace-nowrap text-[#a93226] underline underline-offset-2">What People Made</span>
+          </span>
+          <span aria-hidden="true" className="font-pixel text-[0.8rem] text-[#a93226]">
+            ↓
+          </span>
+        </a>
 
         <div className="flex flex-wrap items-center justify-center gap-4">
           <a href="#projects" className="nes-btn is-success">

@@ -1,4 +1,5 @@
 import { projects } from "@/data/projects";
+import FeaturedProject from "./FeaturedProject";
 import ProjectCard from "./ProjectCard";
 
 export default function ProjectGrid() {
@@ -19,6 +20,7 @@ export default function ProjectGrid() {
           <span className="inline-block h-2 w-2 bg-[#7e3f9b]" />
         </div>
       </div>
+      <FeaturedProject />
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {projects.map((project) => (
           <ProjectCard key={project.title} project={project} />
