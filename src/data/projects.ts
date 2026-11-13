@@ -122,6 +122,15 @@ export const seedGuestbookMessages: GuestbookMessage[] = [
 
 export const projects: Project[] = [
   {
+    title: "CineGlow",
+    description:
+      "Relights the photos you already took — golden hour, film flash, neon rain — and you still look exactly like you. An iOS app, almost ready for the App Store.",
+    emoji: "🎞️",
+    color: "error",
+    stack: ["Expo / React Native", "Firebase", "Gemini"],
+    visual: "photo-relight",
+  },
+  {
     title: "Predictooor",
     description: "Real-time Polymarket whale tracker. Wallet leaderboards, large-position alerts, on-chain receipts.",
     url: "https://www.predictooor.xyz",

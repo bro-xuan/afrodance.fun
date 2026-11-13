@@ -10,12 +10,14 @@ export type ProjectVisual =
   | "instaclaw-deploy"
   | "house-build"
   | "migration-flow"
-  | "machine-teardown";
+  | "machine-teardown"
+  | "photo-relight";
 
 export interface Project {
   title: string;
   description: string;
-  url: string;
+  /** Where the card links. Leave it out for a project that isn't public yet: the card then has no link and says "Coming soon". */
+  url?: string;
   emoji: string;
   color?: "primary" | "success" | "warning" | "error";
   stack?: string[];

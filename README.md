@@ -6,6 +6,7 @@ A pixel-art portfolio site for showcasing fun side projects. Built with Next.js,
 
 | Project | Description |
 |---------|-------------|
+| **CineGlow** | iOS app that relights photos you already took (golden hour, film flash and more); coming soon to the App Store |
 | **Predictooor** | Real-time Polymarket whale tracker with smart alerts and wallet analytics |
 | **ReferReady** | Reference-call prep for job candidates |
 | **Analog Camera Museum** | Pixel-art portfolio for fun projects |

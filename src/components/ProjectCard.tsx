@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { Project, ProjectVisual } from "@/types";
 import BtcCycleVisual from "./visuals/BtcCycleVisual";
 import MarketIntelVisual from "./visuals/MarketIntelVisual";
@@ -11,6 +11,7 @@ import InstaClawDeployVisual from "./visuals/InstaClawDeployVisual";
 import HouseBuildVisual from "./visuals/HouseBuildVisual";
 import MigrationFlowVisual from "./visuals/MigrationFlowVisual";
 import TeardownVisual from "./visuals/TeardownVisual";
+import PhotoRelightVisual from "./visuals/PhotoRelightVisual";
 
 // Animated pixel-art scenes; projects without one fall back to the emoji tile.
 const visuals: Record<ProjectVisual, ComponentType> = {
@@ -25,6 +26,7 @@ const visuals: Record<ProjectVisual, ComponentType> = {
   "house-build": HouseBuildVisual,
   "migration-flow": MigrationFlowVisual,
   "machine-teardown": TeardownVisual,
+  "photo-relight": PhotoRelightVisual,
 };
 
 const buttonClass: Record<string, string> = {
@@ -45,38 +47,57 @@ const accentBg: Record<string, string> = {
 export default function ProjectCard({ project }: { project: Project }) {
   const color = project.color ?? "primary";
   const btnCls = buttonClass[color];
-  const isExternal = project.url.startsWith("http");
   const Visual = project.visual ? visuals[project.visual] : undefined;
 
+  const card = (button: ReactNode) => (
+    <div className="nes-container with-title is-centered pixel-shadow h-full flex flex-col !bg-white">
+      <p className="title font-pixel !flex items-start justify-center text-center min-h-[4.5rem] leading-snug">
+        {project.title}
+      </p>
+      <div className="flex flex-col items-center text-center gap-4 p-2 flex-1">
+        {Visual ? (
+          <Visual />
+        ) : (
+          <span
+            className="emoji-tile inline-flex h-16 w-16 shrink-0 items-center justify-center border-4 border-[#2d2d2d] text-4xl leading-none"
+            style={{ backgroundColor: accentBg[color] }}
+          >
+            {project.emoji}
+          </span>
+        )}
+        <p className="font-body text-sm text-muted-foreground flex-1 w-full">
+          {project.description}
+        </p>
+        {button}
+      </div>
+    </div>
+  );
+
+  // Not public yet: no link to follow, so no hover lift and a greyed-out button.
+  if (!project.url) {
+    return (
+      <div className="pixel-reveal block h-full">
+        {card(
+          <button type="button" className="nes-btn is-disabled" disabled>
+            Coming soon
+          </button>,
+        )}
+      </div>
+    );
+  }
+
+  const isExternal = project.url.startsWith("http");
   return (
     <a
       href={project.url}
       {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       className="pixel-reveal card-hover block transition-transform h-full"
     >
-      <div className="nes-container with-title is-centered pixel-shadow h-full flex flex-col !bg-white">
-        <p className="title font-pixel !flex items-start justify-center text-center min-h-[4.5rem] leading-snug">
-          {project.title}
-        </p>
-        <div className="flex flex-col items-center text-center gap-4 p-2 flex-1">
-          {Visual ? (
-            <Visual />
-          ) : (
-            <span
-              className="emoji-tile inline-flex h-16 w-16 shrink-0 items-center justify-center border-4 border-[#2d2d2d] text-4xl leading-none"
-              style={{ backgroundColor: accentBg[color] }}
-            >
-              {project.emoji}
-            </span>
-          )}
-          <p className="font-body text-sm text-muted-foreground flex-1 w-full">
-            {project.description}
-          </p>
-          <button type="button" className={btnCls}>
-            Visit
-          </button>
-        </div>
-      </div>
+      {card(
+        <button type="button" className={btnCls}>
+          Visit
+        </button>,
+      )}
     </a>
   );
 }
