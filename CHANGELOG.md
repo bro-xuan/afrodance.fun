@@ -6,7 +6,7 @@ Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 ## [0.5.12.0] - 2026-11-14
 
 ### Changed
-- **The Subscribe button asks for the newsletter, not the site.** It reads "Subscribe to my weekly AI newsletter". whatpeoplemade.com is a gallery of AI use cases, not something to subscribe to, so it moved to the button's hover text, with what's in each issue.
+- **The Subscribe button asks for the newsletter and takes you to its site.** It reads "Subscribe to my AI newsletter" and opens whatpeoplemade.com, where the sign-up is. Hovering it says where it goes and what's in each issue.
 
 ## [0.5.11.0] - 2026-11-14
 
