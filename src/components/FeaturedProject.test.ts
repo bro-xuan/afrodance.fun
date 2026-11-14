@@ -11,12 +11,14 @@ const html = renderToStaticMarkup(createElement(FeaturedProject));
 describe("FeaturedProject", () => {
   it("has the sign-up the hero's Subscribe button opens, in a new tab", () => {
     // the hero link whose own text (up to its </a>) says Subscribe
-    const [, button] = renderToStaticMarkup(createElement(Hero)).match(/(<a\b[^>]*>)(?:(?!<\/a>)[^])*Subscribe/) ?? [];
+    const [, button, inside] =
+      renderToStaticMarkup(createElement(Hero)).match(/(<a\b[^>]*>)((?:(?!<\/a>)[^])*Subscribe(?:(?!<\/a>)[^])*)/) ?? [];
     expect(button).toContain(`href="${featuredProject.newsletter.subscribeUrl}"`);
     expect(button).toContain('target="_blank"');
     expect(button).toContain('rel="noopener noreferrer"');
-    // the button only says "Subscribe", so its name says to what
-    expect(button).toContain(`aria-label="Subscribe to my weekly AI newsletter, ${featuredProject.title}"`);
+    // it sits beside the agency's box, so it says whose newsletter it is: this site's
+    const says = inside.replace(/<[^>]+>/g, "").replace(/\s+/g, " ");
+    expect(says).toContain("Subscribe to whatpeoplemade.com");
   });
 
   it("is not a second box in the hero: only the agency says \"I run a\" up top", () => {

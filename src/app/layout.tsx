@@ -17,11 +17,11 @@ const pixelify = Pixelify_Sans({
 export const metadata: Metadata = {
   title: "Stefan Wang — afrodance.fun",
   description:
-    "Stefan Wang — I run Paper Kite, a creative content agency helping local businesses up their social media game. Also building fun things on the internet, mostly AI and crypto.",
+    "Stefan Wang — I run Paper Kite, an agentic social media agency for local businesses. Also building fun things on the internet, mostly AI and crypto.",
   openGraph: {
     title: "Stefan Wang — afrodance.fun",
     description:
-      "I run Paper Kite, a creative content agency helping local businesses up their social media game. Also building fun things on the internet, mostly AI and crypto.",
+      "I run Paper Kite, an agentic social media agency for local businesses. Also building fun things on the internet, mostly AI and crypto.",
     type: "website",
   },
 };

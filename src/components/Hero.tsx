@@ -28,6 +28,9 @@ const floatingPixels = [
   { pos: "right-[7%] top-[24%]", size: "h-2.5 w-2.5", color: "bg-[#92cc41]", delay: "1.8s", speed: "drift-mid" },
 ];
 
+// The site the newsletter comes from, as you'd type it: "whatpeoplemade.com".
+const newsletterSite = new URL(featuredProject.url).hostname.replace(/^www\./, "");
+
 export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#eef5df] via-[#f6f6ee] to-[#faf8f2] px-4 pt-20 pb-16 text-center">
@@ -81,10 +84,12 @@ export default function Hero() {
 
         {/* One box up top, for what this page leads with: the agency, on butter, which jumps
             to its section below. The newsletter is a button beside it, not a second box
-            under it, and goes straight to the sign-up. Where the two don't fit on a line,
+            under it, and goes straight to the sign-up. It belongs to What People Made, not
+            to the agency, so the button names that site. Where the two don't fit on a line,
             the button drops below. The `!`s beat nes.css's unlayered rules:
-            `a { background-color: transparent }`, `a:hover { text-decoration: underline }`
-            and `.nes-btn { display: inline-block }`. */}
+            `a { background-color: transparent }`, `a:hover { text-decoration: underline }`,
+            `.nes-btn { display: inline-block }` and, in Chrome and Safari,
+            `.nes-btn { border-image-repeat: space }`. */}
         <div className="mb-8 flex max-w-full flex-wrap items-stretch justify-center gap-x-4 gap-y-3">
           <a
             href="#agency"
@@ -94,28 +99,32 @@ export default function Hero() {
               🎨
             </span>
             <span className="font-body text-base text-[#2d2d2d] sm:text-lg">
-              I run a creative content agency:{" "}
+              I run an agentic social media agency:{" "}
               <span className="whitespace-nowrap text-[#4a7c10] underline underline-offset-2">{agency.name}</span>
             </span>
             <span aria-hidden="true" className="font-pixel text-[0.8rem] text-[#4a7c10]">
               ↓
             </span>
           </a>
-          {/* Stretched to the agency box's height: nes.css draws the button's border in the 4px
-              outside its box, which its own 4px margin leaves room for, so the two line up
-              edge to edge. Its text is sized in rem so it grows with that box on wide screens. */}
+          {/* As tall as the agency box: nes.css draws the button's border in the 4px outside
+              its box, which its own 4px margin leaves room for, so the two line up edge to
+              edge. Its text is sized in rem so it grows with that box on wide screens, which
+              leaves its sides no whole number of 4px border tiles: `space` would spread the
+              tiles out into a dotted line, `stretch` keeps the border solid. */}
           <a
             href={featuredProject.newsletter.subscribeUrl}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`Subscribe to my weekly AI newsletter, ${featuredProject.title}`}
-            title={`My weekly AI newsletter: ${featuredProject.title}`}
-            className="nes-btn is-error !inline-flex items-center justify-center gap-2 text-[1rem]"
+            title={`My weekly AI newsletter, from ${featuredProject.title}`}
+            className="nes-btn is-error !inline-flex items-center justify-center gap-2 ![border-image-repeat:stretch]"
           >
             <span aria-hidden="true" className="text-xl leading-none">
               📬
             </span>
-            Subscribe
+            <span className="flex flex-col items-start gap-1 whitespace-nowrap text-left leading-none">
+              <span className="text-[1rem]">Subscribe</span>{" "}
+              <span className="font-body text-[0.85rem]">to {newsletterSite}</span>
+            </span>
           </a>
         </div>
 

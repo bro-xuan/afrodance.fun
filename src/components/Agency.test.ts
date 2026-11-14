@@ -15,7 +15,7 @@ describe("Agency", () => {
   it("is where the hero's agency link lands", () => {
     // the in-page link whose own text (up to its </a>) mentions the agency
     const target = renderToStaticMarkup(createElement(Hero)).match(
-      /<a href="#([^"]+)"[^>]*>(?:(?!<\/a>)[^])*creative content agency/,
+      /<a href="#([^"]+)"[^>]*>(?:(?!<\/a>)[^])*agentic social media agency/,
     );
     expect(target?.[1]).toBe("agency");
     expect(html).toContain('id="agency"');
@@ -47,6 +47,6 @@ describe("Agency", () => {
   });
 
   it("is introduced by the About blurb", () => {
-    expect(aboutConfig.bio.startsWith("I run a creative content agency")).toBe(true);
+    expect(aboutConfig.bio.startsWith("I run an agentic social media agency")).toBe(true);
   });
 });
