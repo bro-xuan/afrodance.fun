@@ -84,9 +84,11 @@ export default function Hero() {
 
         {/* One box up top, for what this page leads with: the agency, on butter, which jumps
             to its section below. The newsletter is a button beside it, not a second box
-            under it, and goes straight to the sign-up. It belongs to What People Made, not
-            to the agency, so the button names that site. Where the two don't fit on a line,
-            the button drops below. The `!`s beat nes.css's unlayered rules:
+            under it, and goes straight to the sign-up. It isn't the agency's, so the button
+            says what you're subscribing to: a weekly AI newsletter. The site it comes from
+            is a gallery, not something to subscribe to, so that goes in the hover text with
+            the pitch. Where the two don't fit on a line, the button drops below. The `!`s
+            beat nes.css's unlayered rules:
             `a { background-color: transparent }`, `a:hover { text-decoration: underline }`,
             `.nes-btn { display: inline-block }` and, in Chrome and Safari,
             `.nes-btn { border-image-repeat: space }`. */}
@@ -115,7 +117,7 @@ export default function Hero() {
             href={featuredProject.newsletter.subscribeUrl}
             target="_blank"
             rel="noopener noreferrer"
-            title={`My weekly AI newsletter, from ${featuredProject.title}`}
+            title={`From ${newsletterSite}. ${featuredProject.newsletter.pitch}`}
             className="nes-btn is-error !inline-flex items-center justify-center gap-2 ![border-image-repeat:stretch]"
           >
             <span aria-hidden="true" className="text-xl leading-none">
@@ -123,7 +125,7 @@ export default function Hero() {
             </span>
             <span className="flex flex-col items-start gap-1 whitespace-nowrap text-left leading-none">
               <span className="text-[1rem]">Subscribe</span>{" "}
-              <span className="font-body text-[0.85rem]">to {newsletterSite}</span>
+              <span className="font-body text-[0.85rem]">to my weekly AI newsletter</span>
             </span>
           </a>
         </div>

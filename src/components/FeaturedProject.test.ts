@@ -16,9 +16,11 @@ describe("FeaturedProject", () => {
     expect(button).toContain(`href="${featuredProject.newsletter.subscribeUrl}"`);
     expect(button).toContain('target="_blank"');
     expect(button).toContain('rel="noopener noreferrer"');
-    // it sits beside the agency's box, so it says whose newsletter it is: this site's
+    // it sits beside the agency's box, so it says what you're subscribing to; the site it
+    // comes from is a gallery, so that and the pitch are in the hover text
     const says = inside.replace(/<[^>]+>/g, "").replace(/\s+/g, " ");
-    expect(says).toContain("Subscribe to whatpeoplemade.com");
+    expect(says).toContain("Subscribe to my weekly AI newsletter");
+    expect(button).toContain(`title="From whatpeoplemade.com. ${featuredProject.newsletter.pitch}"`);
   });
 
   it("is not a second box in the hero: only the agency says \"I run a\" up top", () => {
