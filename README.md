@@ -8,7 +8,7 @@ Right under the intro sits **Paper Kite**, my creative content agency for local 
 business, plan its posts every week from its own photos, and the owner approves them on their phone. The
 section has its own pixel scene (a phone where the week's posts get approved and hop onto the calendar),
 what the agency won't do, and one button to its site at [/paperkite](https://afrodance.fun/paperkite).
-The hero links to it first.
+The hero's one box points to it, with the newsletter's Subscribe button beside it.
 
 That site is Paper Kite's own public site (social media on autopilot: how the studio works, pricing,
 FAQ, and Inside the studio for three demo businesses), exported as static files by
