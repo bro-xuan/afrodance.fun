@@ -3,6 +3,11 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.12.0] - 2026-11-14
+
+### Changed
+- **The Subscribe button asks for the newsletter and takes you to its site.** It reads "Subscribe to my AI newsletter" and opens whatpeoplemade.com, where the sign-up is. Hovering it says where it goes and what's in each issue.
+
 ## [0.5.11.0] - 2026-11-14
 
 ### Changed

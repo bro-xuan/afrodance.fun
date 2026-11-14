@@ -84,9 +84,11 @@ export default function Hero() {
 
         {/* One box up top, for what this page leads with: the agency, on butter, which jumps
             to its section below. The newsletter is a button beside it, not a second box
-            under it, and goes straight to the sign-up. It belongs to What People Made, not
-            to the agency, so the button names that site. Where the two don't fit on a line,
-            the button drops below. The `!`s beat nes.css's unlayered rules:
+            under it. It isn't the agency's, so the button says what you're subscribing to,
+            my AI newsletter, and goes to the site it comes from, What People Made, which has
+            the sign-up (in its sidebar; in its footer on a phone). The hover text says where
+            the click goes, with the pitch. Where the two don't fit on a line, the button
+            drops below. The `!`s beat nes.css's unlayered rules:
             `a { background-color: transparent }`, `a:hover { text-decoration: underline }`,
             `.nes-btn { display: inline-block }` and, in Chrome and Safari,
             `.nes-btn { border-image-repeat: space }`. */}
@@ -112,10 +114,10 @@ export default function Hero() {
               leaves its sides no whole number of 4px border tiles: `space` would spread the
               tiles out into a dotted line, `stretch` keeps the border solid. */}
           <a
-            href={featuredProject.newsletter.subscribeUrl}
+            href={featuredProject.url}
             target="_blank"
             rel="noopener noreferrer"
-            title={`My weekly AI newsletter, from ${featuredProject.title}`}
+            title={`Sign up at ${newsletterSite}. ${featuredProject.newsletter.pitch}`}
             className="nes-btn is-error !inline-flex items-center justify-center gap-2 ![border-image-repeat:stretch]"
           >
             <span aria-hidden="true" className="text-xl leading-none">
@@ -123,7 +125,7 @@ export default function Hero() {
             </span>
             <span className="flex flex-col items-start gap-1 whitespace-nowrap text-left leading-none">
               <span className="text-[1rem]">Subscribe</span>{" "}
-              <span className="font-body text-[0.85rem]">to {newsletterSite}</span>
+              <span className="font-body text-[0.85rem]">to my AI newsletter</span>
             </span>
           </a>
         </div>
