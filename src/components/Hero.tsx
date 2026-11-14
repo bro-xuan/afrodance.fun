@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { agency, siteConfig } from "@/data/projects";
+import { agency, featuredProject, siteConfig } from "@/data/projects";
 import SocialLinks from "@/components/SocialLinks";
 import PixelCritters, { type Critter } from "@/components/PixelCritters";
 import { robot, chick, cat, dino, butterfly, EMOTES } from "@/data/sprites";
@@ -79,11 +79,13 @@ export default function Hero() {
           <span className="cursor-blink ml-1 inline-block text-[#4a7c10]">_</span>
         </p>
 
-        {/* The agency and the newsletter, pointed out up top; the agency first, on butter,
-            since it's what this page leads with. Each jumps to its box below. The `!`s beat
-            nes.css's unlayered `a { background-color: transparent }` and
-            `a:hover { text-decoration: underline }`. */}
-        <div className="mb-8 flex max-w-full flex-col items-center gap-3">
+        {/* One box up top, for what this page leads with: the agency, on butter, which jumps
+            to its section below. The newsletter is a button beside it, not a second box
+            under it, and goes straight to the sign-up. Where the two don't fit on a line,
+            the button drops below. The `!`s beat nes.css's unlayered rules:
+            `a { background-color: transparent }`, `a:hover { text-decoration: underline }`
+            and `.nes-btn { display: inline-block }`. */}
+        <div className="mb-8 flex max-w-full flex-wrap items-stretch justify-center gap-x-4 gap-y-3">
           <a
             href="#agency"
             className="pixel-shadow inline-flex max-w-full items-center gap-3 border-4 border-[#2d2d2d] !bg-[#fdf6d8] px-4 py-2 text-left !no-underline hover:!bg-[#f9ebb4]"
@@ -99,20 +101,21 @@ export default function Hero() {
               ↓
             </span>
           </a>
+          {/* Stretched to the agency box's height: nes.css draws the button's border in the 4px
+              outside its box, which its own 4px margin leaves room for, so the two line up
+              edge to edge. Its text is sized in rem so it grows with that box on wide screens. */}
           <a
-            href="#what-people-made"
-            className="pixel-shadow inline-flex max-w-full items-center gap-3 border-4 border-[#2d2d2d] !bg-white px-4 py-2 text-left !no-underline hover:!bg-[#fdf6d8]"
+            href={featuredProject.newsletter.subscribeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Subscribe to my weekly AI newsletter, ${featuredProject.title}`}
+            title={`My weekly AI newsletter: ${featuredProject.title}`}
+            className="nes-btn is-error !inline-flex items-center justify-center gap-2 text-[1rem]"
           >
             <span aria-hidden="true" className="text-xl leading-none">
               📬
             </span>
-            <span className="font-body text-base text-[#2d2d2d] sm:text-lg">
-              I run a weekly AI newsletter:{" "}
-              <span className="whitespace-nowrap text-[#a93226] underline underline-offset-2">What People Made</span>
-            </span>
-            <span aria-hidden="true" className="font-pixel text-[0.8rem] text-[#a93226]">
-              ↓
-            </span>
+            Subscribe
           </a>
         </div>
 

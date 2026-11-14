@@ -12,7 +12,7 @@ export default function FeaturedProject() {
 
   return (
     // The anchor sits on the article, which never moves; the reveal animates the box inside,
-    // so a jump from the hero lands at scroll-mt-8 instead of the reveal's offset.
+    // so a link to #what-people-made lands at scroll-mt-8 instead of the reveal's offset.
     <article id="what-people-made" className="mb-14 scroll-mt-8">
       <div className="pixel-reveal nes-container with-title pixel-shadow !bg-white">
         <h3 className="title font-pixel">{title}</h3>

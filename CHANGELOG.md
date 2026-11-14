@@ -3,6 +3,11 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.10.0] - 2026-11-14
+
+### Changed
+- **One box up top, not two.** The hero used to stack two boxes that looked alike, one for the agency and one for the newsletter. Now "I run a creative content agency: Paper Kite" stands alone, and the newsletter is a red Subscribe button next to it that goes straight to the sign-up. On a phone the button sits under the box.
+
 ## [0.5.9.0] - 2026-11-13
 
 ### Changed

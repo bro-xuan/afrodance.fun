@@ -9,13 +9,20 @@ const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&");
 const html = renderToStaticMarkup(createElement(FeaturedProject));
 
 describe("FeaturedProject", () => {
-  it("is where the hero's newsletter link lands", () => {
-    // the in-page link whose own text (up to its </a>) mentions the newsletter
-    const target = renderToStaticMarkup(createElement(Hero)).match(
-      /<a href="#([^"]+)"[^>]*>(?:(?!<\/a>)[^])*weekly AI newsletter/,
-    );
-    expect(target?.[1]).toBe("what-people-made");
-    expect(html).toContain('id="what-people-made"');
+  it("has the sign-up the hero's Subscribe button opens, in a new tab", () => {
+    // the hero link whose own text (up to its </a>) says Subscribe
+    const [, button] = renderToStaticMarkup(createElement(Hero)).match(/(<a\b[^>]*>)(?:(?!<\/a>)[^])*Subscribe/) ?? [];
+    expect(button).toContain(`href="${featuredProject.newsletter.subscribeUrl}"`);
+    expect(button).toContain('target="_blank"');
+    expect(button).toContain('rel="noopener noreferrer"');
+    // the button only says "Subscribe", so its name says to what
+    expect(button).toContain(`aria-label="Subscribe to my weekly AI newsletter, ${featuredProject.title}"`);
+  });
+
+  it("is not a second box in the hero: only the agency says \"I run a\" up top", () => {
+    const hero = renderToStaticMarkup(createElement(Hero));
+    expect(hero.match(/I run a/g)).toHaveLength(1);
+    expect(hero).not.toContain('href="#what-people-made"');
   });
 
   it("opens every outside link in a new tab without handing it the opener", () => {
