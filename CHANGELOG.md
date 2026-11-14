@@ -3,6 +3,15 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.11.0] - 2026-11-14
+
+### Changed
+- **Paper Kite is "an agentic social media agency".** The hero's box now reads "I run an agentic social media agency: Paper Kite", the intro opens with "I run an agentic social media agency for local businesses", and shared links preview the same way.
+- **The Subscribe button says what it's for.** It reads "Subscribe to whatpeoplemade.com", so it no longer looks like it belongs to the agency in the box beside it.
+
+### Fixed
+- **The Subscribe button's border is solid.** In Chrome and Safari it was drawn as a row of dots.
+
 ## [0.5.10.0] - 2026-11-14
 
 ### Changed
