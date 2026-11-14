@@ -18,7 +18,7 @@ export const siteConfig = {
 
 export const aboutConfig: AboutConfig = {
   greeting: "Hi, I'm Stefan.",
-  bio: "I run a creative content agency helping local businesses up their social media game, no marketing hire needed. We plan their posts every week from their own photos, and the owner just says yes on their phone. On the side I still build things that some people surprisingly use, mostly around AI and crypto, and run What People Made, a daily gallery of real AI use cases. Run a business, or know one that could use better posts? Let's talk.",
+  bio: "I run an agentic social media agency for local businesses, no marketing hire needed. We plan their posts every week from their own photos, and the owner just says yes on their phone. On the side I still build things that some people surprisingly use, mostly around AI and crypto, and run What People Made, a daily gallery of real AI use cases. Run a business, or know one that could use better posts? Let's talk.",
   avatarUrl: "",
   avatarFallback: "SW",
   tags: [

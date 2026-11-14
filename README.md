@@ -4,7 +4,7 @@ A pixel-art portfolio site for showcasing fun side projects, and the home page o
 
 ## The agency
 
-Right under the intro sits **Paper Kite**, my creative content agency for local businesses: we learn the
+Right under the intro sits **Paper Kite**, my agentic social media agency for local businesses: we learn the
 business, plan its posts every week from its own photos, and the owner approves them on their phone. The
 section has its own pixel scene (a phone where the week's posts get approved and hop onto the calendar),
 what the agency won't do, and one button to its site at [/paperkite](https://afrodance.fun/paperkite).
