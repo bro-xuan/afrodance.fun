@@ -3,6 +3,11 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.14.0] - 2026-11-15
+
+### Changed
+- **The agency box opens with Paper Kite's own line.** Its headline reads "Agentic social media scheduler for brands, local businesses and SaaS.", the line paperkite.eu opens with, instead of "Up your social media game. On autopilot." Its lines come out even, so no word is left alone on the last one.
+
 ## [0.5.13.0] - 2026-11-15
 
 ### Changed

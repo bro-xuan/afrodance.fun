@@ -51,7 +51,8 @@ export const agency: Agency = {
   name: "Paper Kite",
   url: "https://paperkite.eu",
   intro: "The marketing person your business never hired.",
-  headline: "Up your social media game. On autopilot.",
+  // The line paperkite.eu opens with (its hero, `spoken` in web/copy.ts in bro-xuan/ai-marketing).
+  headline: "Agentic social media scheduler for brands, local businesses and SaaS.",
   facts: ["Planned every week", "You approve every post", "Instagram · TikTok · Facebook"],
   description:
     "We get to know your business, then plan and write your posts every week from your own photos, in your voice. You say yes on your phone, each post goes out at the time you agreed, and what worked shapes next week.",
