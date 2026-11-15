@@ -43,7 +43,7 @@ export interface FeaturedProject {
 /** The agency, right under the intro: what it does, what it won't do, and a way to its own site. */
 export interface Agency {
   name: string;
-  /** The agency's own site: on this one, from public/ (its static export). */
+  /** The agency's own site, on its own domain. */
   url: string;
   /** One line under the section's heading. */
   intro: string;

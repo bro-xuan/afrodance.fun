@@ -20,8 +20,8 @@ describe("projects", () => {
     for (const href of [url, newsletter.subscribeUrl, newsletter.archiveUrl]) expect(href).toMatch(/^https:\/\//);
   });
 
-  it("links the agency to its site on this one", () => {
-    expect(agency.url).toMatch(/^\/[a-z-]+$/);
+  it("links the agency to its own domain, over https", () => {
+    expect(agency.url).toMatch(/^https:\/\/[a-z0-9.-]+$/);
   });
 
   it("keeps the agency's facts and promises unique, since their lists key on them", () => {

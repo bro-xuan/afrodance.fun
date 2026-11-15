@@ -3,8 +3,8 @@ import AgencyWeekVisual from "./visuals/AgencyWeekVisual";
 
 // The agency, right under the intro: one box like the featured project's, with
 // its scene and pitch on top and what it won't do along the bottom. Its one way
-// out is the agency's own site at /paperkite (the scene goes there too), which
-// stays in the tab like the site's other on-site projects. Layout lives on divs
+// out is the agency's own site, paperkite.eu (the scene goes there too), which
+// opens in a new tab like the site's other links out. Layout lives on divs
 // because nes.css's unlayered normalize outranks Tailwind's flex/grid on semantic
 // elements (so the list is divs with list roles); `!` undoes its
 // `p { margin-bottom: 1rem }`.
@@ -25,7 +25,14 @@ export default function Agency() {
 
         <div className="grid items-center gap-6 p-2 md:grid-cols-2 md:gap-8">
           {/* Out of the tab order: the site button goes to the same place. */}
-          <a href={url} tabIndex={-1} aria-hidden="true" className="card-hover block">
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            tabIndex={-1}
+            aria-hidden="true"
+            className="card-hover block"
+          >
             <AgencyWeekVisual />
           </a>
 
@@ -42,7 +49,7 @@ export default function Agency() {
               ))}
             </div>
             <p className="font-body !mb-0 text-base text-[#2d2d2d]">{description}</p>
-            <a href={url} className="nes-btn is-success">
+            <a href={url} target="_blank" rel="noopener noreferrer" className="nes-btn is-success">
               Visit {name}
             </a>
           </div>

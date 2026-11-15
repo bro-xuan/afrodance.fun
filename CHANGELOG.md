@@ -3,6 +3,11 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.13.0] - 2026-11-15
+
+### Changed
+- **Paper Kite's site lives at paperkite.eu.** The agency box's "Visit Paper Kite" button and its scene open paperkite.eu in a new tab, and every old afrodance.fun/paperkite link goes on to the same page there. The copy of the site that was kept here is gone.
+
 ## [0.5.12.0] - 2026-11-14
 
 ### Changed

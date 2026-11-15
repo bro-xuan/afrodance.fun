@@ -2,6 +2,20 @@ import type { NextConfig } from "next";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      // Paper Kite, the agency, has its own domain: its site was a static copy at /paperkite
+      // until 2026-11-15, and every old link goes on to the same page there (/paperkite →
+      // paperkite.eu, /paperkite/showcase/nightjar → paperkite.eu/showcase/nightjar). Nothing
+      // in public/paperkite may answer first: Cloudflare serves a matching file before the
+      // Worker, and so this redirect, sees the request.
+      {
+        source: "/paperkite/:path*",
+        destination: "https://paperkite.eu/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {
@@ -18,17 +32,6 @@ const nextConfig: NextConfig = {
       {
         source: "/3d-of-everything/objects",
         destination: "/3d-of-everything/objects/index.html",
-      },
-      // Paper Kite, the agency's site, exported into public/paperkite by `node web/export.ts` in
-      // bro-xuan/ai-marketing: one .html file per page. Cloudflare serves each at its clean path
-      // itself; these are for `next start` (files that exist, like its scripts, win).
-      {
-        source: "/paperkite",
-        destination: "/paperkite/index.html",
-      },
-      {
-        source: "/paperkite/:path*",
-        destination: "/paperkite/:path*.html",
       },
     ];
   },

@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { aboutConfig, agency } from "@/data/projects";
+import nextConfig from "../../next.config";
 import Agency from "./Agency";
 import Hero from "./Hero";
 
@@ -21,11 +22,12 @@ describe("Agency", () => {
     expect(html).toContain('id="agency"');
   });
 
-  it("links only to the agency's site, in the same tab like the site's other pages", () => {
+  it("links only to the agency's site, in a new tab like the site's other links out", () => {
     expect(links).toHaveLength(2); // the scene and the button
     for (const tag of links) {
       expect(tag).toContain(`href="${agency.url}"`);
-      expect(tag).not.toContain('target="_blank"');
+      expect(tag).toContain('target="_blank"');
+      expect(tag).toContain('rel="noopener noreferrer"');
     }
     expect(text).toContain(`Visit ${agency.name}`);
   });
@@ -35,8 +37,14 @@ describe("Agency", () => {
     expect(scene).toContain('aria-hidden="true"');
   });
 
-  it("points at a page that exists: the agency site's export in public/", () => {
-    expect(existsSync(new URL(`../../public${agency.url}/index.html`, import.meta.url))).toBe(true);
+  it("sends every old afrodance.fun/paperkite link on to the same page on the agency's site", async () => {
+    expect(await nextConfig.redirects?.()).toContainEqual({
+      source: "/paperkite/:path*",
+      destination: `${agency.url}/:path*`,
+      permanent: true,
+    });
+    // Cloudflare serves a file in public/ before the Worker, and so the redirect, sees the request.
+    expect(existsSync(new URL("../../public/paperkite", import.meta.url))).toBe(false);
   });
 
   it("shows the pitch, the facts and every promise", () => {
