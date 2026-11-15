@@ -7,16 +7,15 @@ A pixel-art portfolio site for showcasing fun side projects, and the home page o
 Right under the intro sits **Paper Kite**, my agentic social media agency for local businesses: we learn the
 business, plan its posts every week from its own photos, and the owner approves them on their phone. The
 section has its own pixel scene (a phone where the week's posts get approved and hop onto the calendar),
-what the agency won't do, and one button to its site at [/paperkite](https://afrodance.fun/paperkite).
+what the agency won't do, and one button to its site, [paperkite.eu](https://paperkite.eu), in a new tab.
 The hero's one box points to it, with the newsletter's Subscribe button beside it.
 
-That site is Paper Kite's own public site (social media on autopilot: how the studio works, pricing,
-FAQ, and Inside the studio for three demo businesses), exported as static files by
-`node web/export.ts <afrodance.fun>/public/paperkite` in bro-xuan/ai-marketing. Change it there and export
-again; don't edit the copy here by hand. "Get started" opens an email to the studio, since a static copy
-has no sign-up form, login or demo portal behind it.
-Its copy lives in `agency` in `src/data/projects.ts` and says only what the studio does today: no client
-names, results or prices.
+Until 2026-11-15 a static copy of that site lived here at /paperkite. It has its own domain now, built
+and deployed from bro-xuan/ai-marketing, and `next.config.ts` sends every old afrodance.fun/paperkite
+link on to the same page on paperkite.eu. Don't put anything back in `public/paperkite`: Cloudflare
+would serve it before the redirect.
+The agency box's copy lives in `agency` in `src/data/projects.ts` and says only what the studio does
+today: no client names, results or prices.
 
 ## Projects
 
@@ -93,7 +92,6 @@ src/
     └── index.ts            # TypeScript type definitions
 public/
 ├── 3d-of-everything/       # 3D of Things, baked in by `npm run export` in bro-xuan/3d-of-things (don't edit by hand)
-├── paperkite/              # Paper Kite's site, exported by `node web/export.ts` in bro-xuan/ai-marketing (don't edit by hand)
 └── date-scoring/           # Date Scoring app assets
 ```
 
