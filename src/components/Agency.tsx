@@ -37,7 +37,9 @@ export default function Agency() {
           </a>
 
           <div className="flex flex-col items-start gap-4">
-            <p className="font-pixel !mb-0 text-[0.85rem] leading-relaxed text-[#2d2d2d] sm:text-base">{headline}</p>
+            <p className="font-pixel !mb-0 text-balance text-[0.85rem] leading-relaxed text-[#2d2d2d] sm:text-base">
+              {headline}
+            </p>
             <div className="flex flex-wrap gap-2">
               {facts.map((fact) => (
                 <span
