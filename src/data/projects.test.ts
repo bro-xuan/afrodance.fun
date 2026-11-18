@@ -1,4 +1,6 @@
+import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import nextConfig from "../../next.config";
 import { agency, featuredProject, projects } from "./projects";
 
 describe("projects", () => {
@@ -22,6 +24,16 @@ describe("projects", () => {
 
   it("links the agency to its own domain, over https", () => {
     expect(agency.url).toMatch(/^https:\/\/[a-z0-9.-]+$/);
+  });
+
+  it("sends every old afrodance.fun/paperkite link on to the same page on the agency's site", async () => {
+    expect(await nextConfig.redirects?.()).toContainEqual({
+      source: "/paperkite/:path*",
+      destination: `${agency.url}/:path*`,
+      permanent: true,
+    });
+    // Cloudflare serves a file in public/ before the Worker, and so the redirect, sees the request.
+    expect(existsSync(new URL("../../public/paperkite", import.meta.url))).toBe(false);
   });
 
   it("keeps the agency's facts and promises unique, since their lists key on them", () => {

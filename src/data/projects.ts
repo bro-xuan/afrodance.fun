@@ -1,4 +1,4 @@
-import { Project, FeaturedProject, AboutConfig, Agency, Article, NowItem, GuestbookMessage } from "@/types";
+import { Project, FeaturedProject, AboutConfig, Agency, Article, NowItem } from "@/types";
 
 export const siteConfig = {
   name: "afrodance.fun",
@@ -93,51 +93,6 @@ export const nowItems: NowItem[] = [
   { emoji: "🤖", text: "Tinkering with Claude and OpenAI APIs for fun" },
   { emoji: "🍻", text: "Down to chat if you're building in AI or crypto" },
   { emoji: "🇳🇱", text: "Living in the Netherlands, ordering coffee in broken Dutch" },
-];
-
-export const seedGuestbookMessages: GuestbookMessage[] = [
-  {
-    id: 6,
-    name: "indiehacker_jo",
-    message: "How do you ship this many side projects?? Teach me your ways 😅",
-    date: "2026-05-12",
-  },
-  {
-    id: 5,
-    name: "amsterdammer",
-    message: "Your NL house-buying calc saved me a whole spreadsheet. Dank je! 🇳🇱",
-    date: "2026-04-18",
-  },
-  {
-    id: 4,
-    name: "whale_watcher",
-    message: "Found you through Predictooor — the whale alerts are legit. Nice work 🐋",
-    date: "2026-03-30",
-  },
-  {
-    id: 1,
-    name: "PixelFan42",
-    message: "Love the retro vibes! This site is so cool 🎮",
-    date: "2026-02-28",
-  },
-  {
-    id: 2,
-    name: "CodeWizard",
-    message: "Great portfolio! The CRT effect is a nice touch.",
-    date: "2026-02-20",
-  },
-  {
-    id: 7,
-    name: "ai_curious",
-    message: "Came for the portfolio, stayed for the corporate translator 😂",
-    date: "2026-02-15",
-  },
-  {
-    id: 3,
-    name: "RetroGamer",
-    message: "Did you find the secret? ↑↑↓↓←→←→BA 👀",
-    date: "2026-02-10",
-  },
 ];
 
 // Shown wide above the project grid, with its newsletter's sign-up.

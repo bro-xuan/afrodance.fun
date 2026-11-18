@@ -9,23 +9,23 @@ const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&");
 const html = renderToStaticMarkup(createElement(FeaturedProject));
 
 describe("FeaturedProject", () => {
-  it("is where the hero's Subscribe button goes, in a new tab: the site, which has the sign-up", () => {
-    // the hero link whose own text (up to its </a>) says Subscribe
+  it("is where the hero's newsletter link goes, in a new tab: the site, which has the sign-up", () => {
+    // the hero link whose own text (up to its </a>) mentions the newsletter
     const [, button, inside] =
-      renderToStaticMarkup(createElement(Hero)).match(/(<a\b[^>]*>)((?:(?!<\/a>)[^])*Subscribe(?:(?!<\/a>)[^])*)/) ?? [];
+      renderToStaticMarkup(createElement(Hero)).match(/(<a\b[^>]*>)((?:(?!<\/a>)[^])*newsletter(?:(?!<\/a>)[^])*)/) ?? [];
     expect(button).toContain(`href="${featuredProject.url}"`);
     expect(button).toContain('target="_blank"');
     expect(button).toContain('rel="noopener noreferrer"');
-    // it sits beside the agency's box, so it says what you're subscribing to; the hover
-    // text says where the click goes, with the pitch
+    // it says what it is and names it; the hover text says where the click goes, with the pitch
     const says = inside.replace(/<[^>]+>/g, "").replace(/\s+/g, " ");
-    expect(says).toContain("Subscribe to my AI newsletter");
+    expect(says).toContain("I curate the most awesome AI use cases every day, plus a weekly AI newsletter");
+    expect(says).toContain(featuredProject.title);
     expect(button).toContain(`title="Sign up at whatpeoplemade.com. ${featuredProject.newsletter.pitch}"`);
   });
 
-  it("is not a second box in the hero: only the agency says \"I run a\" up top", () => {
+  it("is not a second box in the hero", () => {
     const hero = renderToStaticMarkup(createElement(Hero));
-    expect(hero.match(/I run a/g)).toHaveLength(1);
+    expect(hero).not.toContain("I run a");
     expect(hero).not.toContain('href="#what-people-made"');
   });
 

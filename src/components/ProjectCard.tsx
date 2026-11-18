@@ -36,39 +36,74 @@ const buttonClass: Record<string, string> = {
   error: "nes-btn is-error",
 };
 
-// NES.css button palette — emoji tiles pick up the same accent as the card's button
-const accentBg: Record<string, string> = {
-  primary: "#e3f3fd",
-  success: "#eef7df",
-  warning: "#fdf6d8",
-  error: "#fbe9e5",
+const headerPalette: Record<string, { bg: string; label: string }> = {
+  primary: { bg: "#e3f3fd", label: "#15608f" },
+  success: { bg: "#eef7df", label: "#3a6510" },
+  warning: { bg: "#fdf6d8", label: "#6b5200" },
+  error: { bg: "#fbe9e5", label: "#a93226" },
 };
 
 export default function ProjectCard({ project }: { project: Project }) {
   const color = project.color ?? "primary";
   const btnCls = buttonClass[color];
+  const palette = headerPalette[color];
   const Visual = project.visual ? visuals[project.visual] : undefined;
+  const isExternal = Boolean(project.url?.startsWith("http"));
+  const badgeLabel = !project.url ? "SOON" : isExternal ? "EXTERNAL" : "ON-SITE";
 
   const card = (button: ReactNode) => (
-    <div className="nes-container with-title is-centered pixel-shadow h-full flex flex-col !bg-white">
-      <p className="title font-pixel !flex items-start justify-center text-center min-h-[4.5rem] leading-snug">
-        {project.title}
-      </p>
-      <div className="flex flex-col items-center text-center gap-4 p-2 flex-1">
+    <div className="pixel-shadow flex h-full flex-col border-4 border-[#2d2d2d] bg-white">
+      <div
+        className="flex items-center justify-between border-b-4 border-[#2d2d2d] px-3.5 py-2"
+        style={{ backgroundColor: palette.bg }}
+      >
+        <span aria-hidden="true" className="text-base leading-none">
+          {project.emoji}
+        </span>
+        <span
+          className="font-pixel text-[0.52rem] tracking-wider"
+          style={{ color: !project.url ? "#595959" : palette.label }}
+        >
+          {badgeLabel}
+        </span>
+      </div>
+
+      <div className="flex flex-1 flex-col gap-3.5 p-4 text-left">
         {Visual ? (
           <Visual />
         ) : (
-          <span
-            className="emoji-tile inline-flex h-16 w-16 shrink-0 items-center justify-center border-4 border-[#2d2d2d] text-4xl leading-none"
-            style={{ backgroundColor: accentBg[color] }}
-          >
-            {project.emoji}
-          </span>
+          <div className="flex justify-center py-2">
+            <span
+              className="emoji-tile inline-flex h-16 w-16 shrink-0 items-center justify-center border-4 border-[#2d2d2d] text-4xl leading-none"
+              style={{ backgroundColor: palette.bg }}
+            >
+              {project.emoji}
+            </span>
+          </div>
         )}
-        <p className="font-body text-sm text-muted-foreground flex-1 w-full">
+
+        <h3 className="font-pixel !mb-0 text-[0.76rem] leading-relaxed text-[#2d2d2d] transition-colors group-hover:text-[#4a7c10]">
+          {project.title}
+        </h3>
+
+        <p className="font-body !mb-0 flex-1 text-sm leading-relaxed text-[#595959]">
           {project.description}
         </p>
-        {button}
+
+        {project.stack && project.stack.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {project.stack.map((tech) => (
+              <span
+                key={tech}
+                className="font-body border border-[#2d2d2d]/25 bg-[#faf8f2] px-1.5 py-0.5 text-xs leading-tight text-[#595959]"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="pt-1">{button}</div>
       </div>
     </div>
   );
@@ -78,7 +113,7 @@ export default function ProjectCard({ project }: { project: Project }) {
     return (
       <div className="pixel-reveal block h-full">
         {card(
-          <button type="button" className="nes-btn is-disabled" disabled>
+          <button type="button" className="nes-btn is-disabled w-full" disabled>
             Coming soon
           </button>,
         )}
@@ -86,15 +121,14 @@ export default function ProjectCard({ project }: { project: Project }) {
     );
   }
 
-  const isExternal = project.url.startsWith("http");
   return (
     <a
       href={project.url}
       {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      className="pixel-reveal card-hover block transition-transform h-full"
+      className="group pixel-reveal card-hover block h-full !no-underline transition-transform"
     >
       {card(
-        <button type="button" className={btnCls}>
+        <button type="button" className={`${btnCls} w-full`}>
           Visit
         </button>,
       )}
