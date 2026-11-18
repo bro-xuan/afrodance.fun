@@ -1,39 +1,39 @@
 import Image from "next/image";
-import { agency, featuredProject, siteConfig } from "@/data/projects";
+import { aboutConfig, featuredProject, siteConfig } from "@/data/projects";
 import SocialLinks from "@/components/SocialLinks";
 import PixelCritters, { type Critter } from "@/components/PixelCritters";
 import { robot, chick, cat, dino, butterfly, EMOTES } from "@/data/sprites";
 
-// Critters on the hero's grass strip — the page's first sign of life. A big cat
-// waves back when you hover it; a dino paces the far side; a butterfly drifts
-// overhead. Robot, chick and slime fill in between.
-// Positions keep the standing critters in the clear zones left and right of the
-// button row so the interactive cat never sits over a CTA.
+// Critters on the hero's grass strip — the page's first sign of life.
+// `pb-24` keeps the newsletter line well above the standing sprites at every viewport width.
 const heroCritters: Critter[] = [
   { sprite: robot, pos: "bottom-[0.7rem] left-[4%]", width: "2.9rem", behavior: "patrol", range: "5rem", frameDur: "0.32s" },
-  { sprite: cat, pos: "bottom-[0.55rem] left-[13%]", width: "3.8rem", behavior: "hover-wiggle", emote: EMOTES.heart, delay: "0.5s" },
-  { sprite: chick, pos: "bottom-[0.8rem] right-[18%]", width: "2.2rem", behavior: "patrol", range: "4rem", delay: "0.4s", frameDur: "0.26s" },
-  { sprite: dino, pos: "bottom-[0.7rem] right-[5%]", width: "4rem", behavior: "patrol", range: "5rem", frameDur: "0.34s" },
-  { sprite: butterfly, pos: "top-[20%] right-[26%]", width: "2.2rem", behavior: "flutter", delay: "0.3s" },
+  { sprite: cat, pos: "bottom-[0.55rem] left-[12%]", width: "3.6rem", behavior: "hover-wiggle", emote: EMOTES.heart, delay: "0.5s" },
+  { sprite: chick, pos: "bottom-[0.8rem] right-[15%]", width: "2.2rem", behavior: "patrol", range: "4rem", delay: "0.4s", frameDur: "0.26s" },
+  { sprite: dino, pos: "bottom-[0.7rem] right-[4%]", width: "4rem", behavior: "patrol", range: "5rem", frameDur: "0.34s" },
+  { sprite: butterfly, pos: "top-[24%] right-[22%]", width: "2.2rem", behavior: "flutter", delay: "0.3s" },
 ];
 
-// Decorative floating pixels — same palette as PixelDivider.
-// Each bobs in place and drifts upward on scroll at its own speed.
 const floatingPixels = [
-  { pos: "left-[8%] top-[22%]", size: "h-3 w-3", color: "bg-[#92cc41]", delay: "0s", speed: "drift-mid" },
-  { pos: "left-[16%] top-[64%]", size: "h-2 w-2", color: "bg-[#209cee]", delay: "0.7s", speed: "drift-fast" },
-  { pos: "left-[26%] top-[38%]", size: "h-2.5 w-2.5", color: "bg-[#f7d51d]", delay: "1.4s", speed: "drift-slow" },
-  { pos: "right-[24%] top-[30%]", size: "h-2 w-2", color: "bg-[#e76e55]", delay: "0.4s", speed: "drift-fast" },
-  { pos: "right-[14%] top-[58%]", size: "h-3 w-3", color: "bg-[#209cee]", delay: "1.1s", speed: "drift-slow" },
-  { pos: "right-[7%] top-[24%]", size: "h-2.5 w-2.5", color: "bg-[#92cc41]", delay: "1.8s", speed: "drift-mid" },
+  { pos: "left-[7%] top-[26%]", size: "h-3 w-3", color: "bg-[#92cc41]", delay: "0s", speed: "drift-mid" },
+  { pos: "left-[15%] top-[62%]", size: "h-2 w-2", color: "bg-[#209cee]", delay: "0.7s", speed: "drift-fast" },
+  { pos: "left-[24%] top-[36%]", size: "h-2.5 w-2.5", color: "bg-[#f7d51d]", delay: "1.4s", speed: "drift-slow" },
+  { pos: "right-[24%] top-[32%]", size: "h-2 w-2", color: "bg-[#e76e55]", delay: "0.4s", speed: "drift-fast" },
+  { pos: "right-[13%] top-[58%]", size: "h-3 w-3", color: "bg-[#209cee]", delay: "1.1s", speed: "drift-slow" },
+  { pos: "right-[7%] top-[28%]", size: "h-2.5 w-2.5", color: "bg-[#92cc41]", delay: "1.8s", speed: "drift-mid" },
 ];
 
-// The site the newsletter comes from, as you'd type it: "whatpeoplemade.com".
+const navItems = [
+  { label: "Projects", href: "#projects" },
+  { label: "Writing", href: "#writing" },
+  { label: "Say hi", href: "#contact" },
+];
+
 const newsletterSite = new URL(featuredProject.url).hostname.replace(/^www\./, "");
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#eef5df] via-[#f6f6ee] to-[#faf8f2] px-4 pt-20 pb-16 text-center">
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#e8f2d5] via-[#f5f6ec] to-[#faf8f2] px-4 pt-5 pb-24">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         {floatingPixels.map((p, i) => (
           <span key={i} className={`drift-pixel absolute ${p.pos} ${p.speed}`}>
@@ -52,7 +52,46 @@ export default function Hero() {
 
       <PixelCritters critters={heroCritters} className="hidden sm:block" />
 
-      <div className="relative flex flex-col items-center">
+      {/* Top navigation bar — 2 tidy rows on phones (brand + socials, then section links),
+          collapsing into a single horizontal bar from md upward. */}
+      <header className="relative mx-auto mb-10 w-full max-w-6xl sm:mb-14">
+        <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 border-b-2 border-[#2d2d2d]/12 pb-3">
+          <div className="order-1 inline-flex items-center gap-2.5">
+            <span
+              aria-hidden="true"
+              className="inline-block h-2.5 w-2.5 border border-[#2d2d2d] bg-[#6aad30]"
+            />
+            <span className="font-pixel text-[0.68rem] text-[#2d2d2d]">Stefan Wang</span>
+          </div>
+
+          <nav
+            aria-label="Page sections"
+            className="order-3 w-full border-t border-[#2d2d2d]/10 pt-2 md:order-2 md:ml-auto md:w-auto md:border-t-0 md:pt-0"
+          >
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 md:justify-end">
+              {navItems.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="font-body inline-flex min-h-9 items-center px-1 text-base !text-[#2d2d2d] !no-underline transition-colors hover:!text-[#4a7c10]"
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          </nav>
+
+          <div className="order-2 flex items-center gap-4 md:order-3">
+            <span
+              aria-hidden="true"
+              className="hidden h-5 w-[2px] bg-[#2d2d2d]/15 md:inline-block"
+            />
+            <SocialLinks size="regular" />
+          </div>
+        </div>
+      </header>
+
+      <div className="relative mx-auto flex max-w-4xl flex-col items-center text-center">
         <Image
           src="/selfie-pixel.png"
           alt="Pixel portrait of Stefan Wang"
@@ -60,87 +99,52 @@ export default function Hero() {
           height={128}
           unoptimized
           priority
-          className="float-pixel mb-6 h-28 w-28 sm:h-32 sm:w-32"
+          className="float-pixel mb-5 h-28 w-28 sm:h-32 sm:w-32"
           style={{ imageRendering: "pixelated" }}
         />
 
-        <h1 className="font-pixel mb-3 text-[clamp(1.4rem,5.5vw,3.5rem)] leading-tight text-[#4a7c10] [text-shadow:0.12em_0.12em_0_#d5e7b4]">
+        <h1 className="font-pixel !mb-3 text-[clamp(1.4rem,5.2vw,3.35rem)] leading-tight text-[#4a7c10] [text-shadow:0.12em_0.12em_0_#d5e7b4]">
           {siteConfig.name}
         </h1>
 
-        <div className="mb-5 flex flex-wrap items-center justify-center gap-3">
-          {/* span, not p: NES.css's unlayered `p {margin-bottom}` outranks
-              Tailwind margin utilities and skews items-center alignment */}
-          <span className="font-body text-base text-muted-foreground sm:text-lg">
-            by Stefan Wang
-          </span>
-          <SocialLinks size="regular" />
-        </div>
-
-        <p className="font-body mb-8 max-w-xl text-lg text-[#2d2d2d] sm:text-xl">
-          {siteConfig.tagline}
+        <p className="font-body !mb-5 max-w-xl text-lg text-[#2d2d2d] sm:text-xl">
+          Hi, I&apos;m Stefan — {siteConfig.tagline}
           <span className="cursor-blink ml-1 inline-block text-[#4a7c10]">_</span>
         </p>
 
-        {/* One box up top, for what this page leads with: the agency, on butter, which jumps
-            to its section below. The newsletter is a button beside it, not a second box
-            under it. It isn't the agency's, so the button says what you're subscribing to,
-            my AI newsletter, and goes to the site it comes from, What People Made, which has
-            the sign-up (in its sidebar; in its footer on a phone). The hover text says where
-            the click goes, with the pitch. Where the two don't fit on a line, the button
-            drops below. The `!`s beat nes.css's unlayered rules:
-            `a { background-color: transparent }`, `a:hover { text-decoration: underline }`,
-            `.nes-btn { display: inline-block }` and, in Chrome and Safari,
-            `.nes-btn { border-image-repeat: space }`. */}
-        <div className="mb-8 flex max-w-full flex-wrap items-stretch justify-center gap-x-4 gap-y-3">
-          <a
-            href="#agency"
-            className="pixel-shadow inline-flex max-w-full items-center gap-3 border-4 border-[#2d2d2d] !bg-[#fdf6d8] px-4 py-2 text-left !no-underline hover:!bg-[#f9ebb4]"
-          >
-            <span aria-hidden="true" className="text-xl leading-none">
-              🎨
+        <div className="mb-9 flex flex-wrap items-center justify-center gap-2">
+          {aboutConfig.tags.map((tag) => (
+            <span
+              key={tag.label}
+              className={`font-body border-2 border-[#2d2d2d]/80 px-2.5 py-0.5 text-sm leading-snug ${tag.color}`}
+            >
+              {tag.label}
             </span>
-            <span className="font-body text-base text-[#2d2d2d] sm:text-lg">
-              I run an agentic social media agency:{" "}
-              <span className="whitespace-nowrap text-[#4a7c10] underline underline-offset-2">{agency.name}</span>
-            </span>
-            <span aria-hidden="true" className="font-pixel text-[0.8rem] text-[#4a7c10]">
-              ↓
-            </span>
-          </a>
-          {/* As tall as the agency box: nes.css draws the button's border in the 4px outside
-              its box, which its own 4px margin leaves room for, so the two line up edge to
-              edge. Its text is sized in rem so it grows with that box on wide screens, which
-              leaves its sides no whole number of 4px border tiles: `space` would spread the
-              tiles out into a dotted line, `stretch` keeps the border solid. */}
-          <a
-            href={featuredProject.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            title={`Sign up at ${newsletterSite}. ${featuredProject.newsletter.pitch}`}
-            className="nes-btn is-error !inline-flex items-center justify-center gap-2 ![border-image-repeat:stretch]"
-          >
-            <span aria-hidden="true" className="text-xl leading-none">
-              📬
-            </span>
-            <span className="flex flex-col items-start gap-1 whitespace-nowrap text-left leading-none">
-              <span className="text-[1rem]">Subscribe</span>{" "}
-              <span className="font-body text-[0.85rem]">to my AI newsletter</span>
-            </span>
-          </a>
+          ))}
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <a href="#projects" className="nes-btn is-success">
-            View projects
-          </a>
-          <a href="#writing" className="nes-btn is-primary">
-            View articles
-          </a>
-          <a href="#guestbook" className="nes-btn is-warning">
-            Leave a message
-          </a>
-        </div>
+        {/* What People Made (daily curation + the weekly newsletter): one centred, balanced
+            sentence carrying on from the intro, all of it the link. `!` overrides nes.css `a` rules. */}
+        <a
+          href={featuredProject.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          title={`Sign up at ${newsletterSite}. ${featuredProject.newsletter.pitch}`}
+          className="group font-body !block max-w-2xl text-balance text-center text-lg leading-snug !text-[#2d2d2d] !no-underline sm:text-xl"
+        >
+          I curate the most awesome AI use cases every day, plus a weekly AI newsletter —{" "}
+          <span className="whitespace-nowrap">
+            <span className="font-semibold text-[#a93226] underline decoration-2 decoration-dotted underline-offset-4 group-hover:decoration-solid">
+              {featuredProject.title}
+            </span>
+            <span
+              aria-hidden="true"
+              className="ml-2 inline-block font-bold text-[#a93226] transition-transform group-hover:translate-x-1"
+            >
+              →
+            </span>
+          </span>
+        </a>
       </div>
     </section>
   );

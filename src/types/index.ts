@@ -93,10 +93,3 @@ export interface NowItem {
   emoji: string;
   text: string;
 }
-
-export interface GuestbookMessage {
-  id: number;
-  name: string;
-  message: string;
-  date: string;
-}

@@ -3,6 +3,16 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.5.15.0] - 2026-11-18
+
+### Changed
+- **The top of the page is one line, not two boxes.** Under the tags it now says "I curate the most awesome AI use cases every day, plus a weekly AI newsletter — What People Made", centred, and the whole line opens whatpeoplemade.com in a new tab. The top bar no longer says Amsterdam.
+- **Paper Kite is one line above the projects.** The agency's own section is gone. Right above the projects it says "Running an agentic social media agency for my apps' growth: Paper Kite", with a thin bracket dropping onto the projects it grows; Paper Kite opens paperkite.eu in a new tab. The sections count from 01 again, the top bar drops "Agency", and shared links describe the site the same way.
+- **The projects, writing, contact and footer sections share the framed pixel-window look**, and the contact box adds Substack.
+
+### Removed
+- **The guestbook**, and its "Leave a message" link.
+
 ## [0.5.14.0] - 2026-11-15
 
 ### Changed
