@@ -8,7 +8,7 @@
 import { type Film, type FilmOptions, createFilm } from "./film";
 import { BlockDef, City, DEPTH, IsletDef, buildCity } from "./scene/city";
 
-export { planTimeline, planTour } from "./film";
+export { cueStops, planTimeline, planTour } from "./film";
 export type { Caption, FilmOptions, Leg, Timeline } from "./film";
 
 export type London = Film<City>;
@@ -23,5 +23,20 @@ export interface Plan {
 }
 
 export function createLondon(canvas: HTMLCanvasElement, plan: Plan, opts: FilmOptions = {}): London {
-  return createFilm(canvas, { build: () => buildCity(plan.blocks, plan.islets), tour: plan.tour, closeup: plan.closeup, depth: DEPTH }, opts);
+  const film = createFilm(canvas, { build: () => buildCity(plan.blocks, plan.islets), tour: plan.tour, closeup: plan.closeup, depth: DEPTH }, opts);
+  // The tour is timed now, so the traffic can be worked out for the whole loop: here, with the
+  // paper still blank, rather than in the frame that first shows a bus.
+  film.city.traffic.prepare(film.timeline.end + 1);
+  return film;
+}
+
+/**
+ * The second to hold the film at, from the page's ?t= (null: let it play).
+ * Anything that is not a sensible number of seconds is ignored: a huge one
+ * would put numbers on the page that no drawing survives.
+ */
+export function heldSecond(raw: string | null): number | null {
+  if (raw === null || raw.trim() === "") return null;
+  const t = Number(raw);
+  return t >= 0 && t <= 3600 ? t : null;
 }

@@ -2,12 +2,33 @@ import { describe, expect, it } from "vitest";
 import { V3, paperX, paperY } from "../engine/math";
 import { FV, LV, Mesh, Sprite } from "../engine/mesh";
 import { Pen } from "../engine/pen";
-import { BLOCKS, ISLETS, TOUR } from "./blocks";
+import { cueStops, planTimeline, planTour } from "../film";
+import { BLOCKS, CLOSEUP, ISLETS, TOUR } from "./blocks";
 import { ISLET_PLAN, PLAN } from "./blocks/plan";
 import { BLOCK, COL, DEPTH, FOOTBRIDGE_W, FOOTBRIDGE_X, GX, GY, ROW, RY0, RY1, STREET, TOWER_BRIDGE, TRAFFIC_HORIZON, WATER, X0, X1, Y0, Y1, buildCity, inWater } from "./city";
 import { MoveCtx } from "./types";
 
 const city = buildCity(BLOCKS, ISLETS);
+
+/**
+ * The city as the film plays it: every stop knows when the camera arrives,
+ * which is what Tower Bridge and the crossing outside the palace take their
+ * cue from. The traffic is checked both ways: this is the schedule visitors see.
+ */
+function asFilmed(): { city: typeof city; end: number } {
+  const c = buildCity(BLOCKS, ISLETS);
+  const legs = planTour(c.stops, TOUR);
+  const tl = planTimeline(c.done, legs, CLOSEUP != null);
+  cueStops(legs, tl);
+  return { city: c, end: tl.end };
+}
+const filmed = asFilmed();
+/** Both schedules, and the last second worth looking at in each. */
+const SCHEDULES: [string, typeof city, number][] = [
+  ["with no tour", city, city.done + 100],
+  ["as the film times it", filmed.city, filmed.end],
+];
+const mod = (v: number, m: number) => ((v % m) + m) % m;
 
 // The renderer only draws what lies inside this band of depth (x + y + z).
 const NEAR = DEPTH.mid + DEPTH.half;
@@ -136,17 +157,16 @@ describe("the city", () => {
     expect(city.boats.gap).toBeGreaterThan(1);
   });
 
-  it("keeps buses, cabs and cars on the road, and never lets one run into the one in front", () => {
+  it.each(SCHEDULES)("keeps buses, cabs and cars on the road, and never lets one run into the one in front (%s)", (_name, c, until) => {
     const P: V3 = [0, 0, 0];
     const Q: V3 = [0, 0, 0];
     const off: string[] = [];
     const bumps: string[] = [];
     let seen = 0;
-    const from = city.done - 3.6;
-    for (let t = city.done; t < city.done + 100; t += 0.25) {
-      city.traffic.lanes.forEach((lane, a) => {
+    for (let t = c.done; t < until; t += 0.25) {
+      c.traffic.lanes.forEach((lane, a) => {
         const L = lane.route.length;
-        const at = lane.vehicles.map((_, b) => city.traffic.at(a, b, t, from));
+        const at = lane.vehicles.map((_, b) => c.traffic.at(a, b, t));
         lane.vehicles.forEach((v, b) => {
           seen++;
           lane.route.pos(at[b], P);
@@ -156,7 +176,7 @@ describe("the city", () => {
           let ahead = -1;
           at.forEach((s, k) => {
             if (k === b) return;
-            const d = (((s - at[b]) % L) + L) % L;
+            const d = mod(s - at[b], L);
             if (d < gap) {
               gap = d;
               ahead = k;
@@ -174,30 +194,103 @@ describe("the city", () => {
     expect(bumps).toEqual([]);
   });
 
-  it("stops the traffic before Tower Bridge lifts, and the buses call at their stops", () => {
+  it.each(SCHEDULES)("has the bridge to itself whenever Tower Bridge lifts (%s)", (_name, c, until) => {
     const P: V3 = [0, 0, 0];
-    const from = city.done - 3.6;
     const caught: string[] = [];
     let lifted = 0;
-    let stopped = 0;
-    for (let t = city.done; t < city.done + 110; t += 0.1) {
-      const up = city.bridgeLift(t) > 0.02;
-      if (up) lifted++;
-      city.traffic.lanes.forEach((lane, a) => {
+    for (let t = c.done - 0.6; t < until; t += 0.1) {
+      // any tilt at all: a bus on a leaf that has only just begun to move is still a bus on a moving leaf
+      if (!(c.bridgeLift(t) > 0.001)) continue;
+      lifted++;
+      c.traffic.lanes.forEach((lane, a) => {
         lane.vehicles.forEach((v, b) => {
-          const s = city.traffic.at(a, b, t, from);
-          if (v.bus && Math.abs(city.traffic.at(a, b, t + 0.1, from) - s) < 1e-4) stopped++;
-          if (!up) return;
-          lane.route.pos(s, P);
+          lane.route.pos(c.traffic.at(a, b, t), P);
           const onLeaves = P[0] > TOWER_BRIDGE.x0 && P[0] < TOWER_BRIDGE.x1 && P[1] > TOWER_BRIDGE.y0 - v.len / 2 && P[1] < TOWER_BRIDGE.y1 + v.len / 2;
           if (onLeaves && caught.length < 5) caught.push(`a vehicle at y=${P[1].toFixed(1)} when the leaves are up, t=${t.toFixed(1)}`);
         });
       });
     }
-    // the bridge opens two or three times in that stretch, and some bus is standing still much of the time
+    // the bridge opens once or more in that stretch, for about eleven seconds a time
     expect(lifted).toBeGreaterThan(100);
     expect(caught).toEqual([]);
-    expect(stopped).toBeGreaterThan(200);
+  });
+
+  it("keeps Tower Bridge clear whatever second the camera reaches the Tower", () => {
+    // The tour is retimed by anything that moves a stop. The bridge must not depend on the luck of today's timing.
+    const P: V3 = [0, 0, 0];
+    const caught: string[] = [];
+    for (let shift = -6; shift <= 6; shift += 1.5) {
+      const c = buildCity(BLOCKS, ISLETS);
+      const legs = planTour(c.stops, TOUR);
+      const tl = planTimeline(c.done, legs, CLOSEUP != null);
+      cueStops(legs, tl);
+      const tower = c.stops.find((q) => q.id === "tower");
+      if (!tower || tower.at == null) throw new Error("the Tower is not on the tour");
+      tower.at += shift;
+      for (let t = c.done - 0.6; t < tl.end; t += 0.1) {
+        if (!(c.bridgeLift(t) > 0.001)) continue;
+        c.traffic.lanes.forEach((lane, a) => {
+          lane.vehicles.forEach((v, b) => {
+            lane.route.pos(c.traffic.at(a, b, t), P);
+            const onLeaves = P[0] > TOWER_BRIDGE.x0 && P[0] < TOWER_BRIDGE.x1 && P[1] > TOWER_BRIDGE.y0 - v.len / 2 && P[1] < TOWER_BRIDGE.y1 + v.len / 2;
+            if (onLeaves && caught.length < 5) caught.push(`arriving ${shift} s off: a vehicle at y=${P[1].toFixed(1)}, t=${t.toFixed(1)}`);
+          });
+        });
+      }
+    }
+    expect(caught).toEqual([]);
+  });
+
+  it.each(SCHEDULES)("has every bus wait at every stop it comes to (%s)", (_name, c, until) => {
+    const missed: string[] = [];
+    let calls = 0;
+    c.traffic.lanes.forEach((lane, a) => {
+      const L = lane.route.length;
+      lane.vehicles.forEach((v, b) => {
+        if (!v.bus) return;
+        for (const stop of lane.stops) {
+          // seconds spent standing within a length of the stop, since the bus last drove past it
+          let stood = 0;
+          let before = c.traffic.at(a, b, c.done);
+          let ahead = mod(stop - before, L);
+          // a bus that first appears right on top of a stop cannot pull up at it
+          let fair = ahead > 6;
+          for (let t = c.done + 0.1; t < until; t += 0.1) {
+            const s = c.traffic.at(a, b, t);
+            const d = mod(stop - s, L);
+            if (d < 1 && Math.abs(s - before) < 1e-4) stood += 0.1;
+            if (ahead < 2 && d > L - 2) {
+              // it has just driven past the stop
+              if (fair) {
+                calls++;
+                if (stood < 2 && missed.length < 5) missed.push(`lane ${a}, bus ${b} passed a stop at t=${t.toFixed(1)} after standing ${stood.toFixed(1)} s`);
+              }
+              stood = 0;
+              fair = true;
+            }
+            before = s;
+            ahead = d;
+          }
+        }
+      });
+    });
+    expect(calls).toBeGreaterThan(8);
+    expect(missed).toEqual([]);
+  });
+
+  it("works the traffic out the same whether it is prepared for one loop or left to the first frame", () => {
+    const ready = asFilmed();
+    ready.city.traffic.prepare(ready.end + 1);
+    let seen = 0;
+    for (let t = ready.city.done - 0.6; t < ready.end; t += 0.5) {
+      ready.city.traffic.lanes.forEach((lane, a) => {
+        lane.vehicles.forEach((_, b) => {
+          seen++;
+          expect(ready.city.traffic.at(a, b, t)).toBe(filmed.city.traffic.at(a, b, t));
+        });
+      });
+    }
+    expect(seen).toBeGreaterThan(5000);
   });
 
   it("puts the footbridge where the two places it joins expect it", () => {

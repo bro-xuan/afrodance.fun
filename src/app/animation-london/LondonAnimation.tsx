@@ -7,7 +7,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./animation.module.css";
-import { type Caption, type London, createLondon } from "./london";
+import { type Caption, type London, createLondon, heldSecond } from "./london";
 import { BLOCKS, CLOSEUP, ISLETS, TOUR } from "./scene/blocks";
 
 export function LondonAnimation() {
@@ -33,9 +33,8 @@ export function LondonAnimation() {
     // just the controls and hands the animation to the recorder as window.film.
     if (q.has("clean")) stage.setAttribute("data-clean", "");
     if (q.has("rec")) stage.setAttribute("data-rec", "");
-    // ?t=12 holds the film at one second (anything that is not a number is ignored)
-    const at = q.get("t");
-    const freeze = at !== null && at.trim() !== "" && Number.isFinite(Number(at)) ? Number(at) : null;
+    // ?t=12 holds the film at one second (anything that is not a sensible number of seconds is ignored)
+    const freeze = heldSecond(q.get("t"));
     // with reduced motion asked for, the finished city stands still and there is nothing to pause
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) queueMicrotask(() => setStill(true));

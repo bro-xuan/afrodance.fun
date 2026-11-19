@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { planTimeline, planTour } from "./london";
+import { heldSecond, planTimeline, planTour } from "./london";
 import { BLOCKS, CLOSEUP, ISLETS, TOUR } from "./scene/blocks";
 import { BLOCK, TRAFFIC_HORIZON, blockOrigin, buildCity } from "./scene/city";
 
@@ -70,5 +70,13 @@ describe("the tour", () => {
     expect(CLOSEUP.y).toBeGreaterThan(oy);
     expect(CLOSEUP.y).toBeLessThan(oy + BLOCK + 10);
     expect(CLOSEUP.zoom).toBeGreaterThan(1.5);
+  });
+
+  it("holds the film at ?t= only when that is a sensible number of seconds", () => {
+    expect(heldSecond("30")).toBe(30);
+    expect(heldSecond("0")).toBe(0);
+    expect(heldSecond(" 12.5 ")).toBe(12.5);
+    // a number the drawing cannot survive (1e308 fills the page with NaN) is as good as no number
+    for (const bad of [null, "", "  ", "abc", "-1", "1e300", "1e308", "Infinity", "NaN", "3601"]) expect(heldSecond(bad)).toBeNull();
   });
 });

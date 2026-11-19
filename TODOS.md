@@ -82,7 +82,7 @@
 
 - **Try it on Safari, Firefox and a phone**
   **Priority:** P2
-  Built and checked in Chromium on an M3 only, where it holds 60 fps at 2880×1800. London is the heavier of the two films (about 250,000 fills and 200,000 strokes, 165 kB of code gzipped, about a quarter of a second to build the city on the M3), so a mid-range phone is the first thing to try: does the page start, how long does it freeze while the city is built, and what frame rate does the tour hold. The rest of Amsterdam's list applies here too (pinch on desktop Safari, coming back to a backgrounded tab on iOS).
+  Built and checked in Chromium on an M3 only, where it holds 60 fps at 2880×1800. London is the heavier of the two films (about 250,000 fills and 200,000 strokes, 165 kB of code gzipped, about a quarter of a second to build the city on the M3), so a mid-range phone is the first thing to try: does the page start, how long does it freeze while the city is built and the traffic worked out (both happen before the first frame), and what frame rate does the tour hold. In the wide view about 79,000 fill vertices and 46,000 strokes of moving things are sent to the GPU every frame, 2.3 times what Amsterdam sends, and the depth range is a quarter wider than Amsterdam's, which matters on a phone with a 16-bit depth buffer (look for windows flickering against their walls). The rest of Amsterdam's list applies here too (pinch on desktop Safari, coming back to a backgrounded tab on iOS).
 
 - **Give Amsterdam the phone title fix**
   **Priority:** P3

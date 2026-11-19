@@ -672,7 +672,8 @@ function inBridgeFrame(pen: Pen, x: number, draw: () => void): void {
   pen.pop();
 }
 
-function bridges(pen: Pen, tAt: (i: number, j: number) => number): number {
+/** Draw the five bridges. Returns when the last of them has its colour, and when Tower Bridge starts to be drawn. */
+function bridges(pen: Pen, tAt: (i: number, j: number) => number): [number, number] {
   const rng = new Rng(77);
   pen.rng = rng.fork();
   const when = (i: number) => Math.max(tAt(Math.max(0, i - 1), 1), tAt(Math.min(2, i), 1), tAt(Math.max(0, i - 1), 2), tAt(Math.min(2, i), 2)) + 0.9;
@@ -691,47 +692,57 @@ function bridges(pen: Pen, tAt: (i: number, j: number) => number): number {
     inBridgeFrame(pen, x, draw);
     done = Math.max(done, t + 2.0);
   }
-  return done;
+  return [done, when(3)];
 }
 
 /** The stretch of road (world y) that lifts when Tower Bridge opens, and the road it is on (world x). */
 export const TOWER_BRIDGE = { x0: GX, x1: GX + STREET, y0: RY1 - TB_B, y1: RY1 - TB_A };
 
-/** How long Tower Bridge's cycle is, and the moments in it, in seconds after the lights go red. */
+/**
+ * How long Tower Bridge's cycle is, and the moments in it, in seconds after
+ * the lights go red. The leaves wait nine and a half seconds before they
+ * move: a bus that has just crossed the stop line needs seven and a half to
+ * get clear of the far one.
+ */
 const TB_PERIOD = 40;
-const TB_RISE = 6.5;
-const TB_UP = 9.5;
-const TB_FALL = 14.7;
-const TB_DOWN = 17.7;
-const TB_GREEN = 18.2;
-const TB_SAIL = 2.2;
+const TB_RISE = 9.5;
+const TB_UP = 12.5;
+const TB_FALL = 17.7;
+const TB_DOWN = 20.7;
+const TB_GREEN = 21.2;
+const TB_SAIL = 5.2;
 const TB_PASSAGE = 16.3;
+/** On the tour the lights go red this long before the camera arrives, which puts the barge under the bridge as it gets there. */
+const TB_LEAD = 13.2;
 /** Where the barge waits either side of the bridge (world x). */
 const BARGE_EAST = X1 + 21;
 const BARGE_WEST = GX - 16;
 
 /** Tower Bridge at work: the lights, the barriers, the leaves, and the sailing barge it all happens for. Returns how far the leaves are up at a given second. */
 function towerBridgeLife(movers: Mover[], traffic: Traffic, born: number, shown: number, visit: () => number | null): (t: number) => number {
-  // On the tour the first lift is timed so the barge is under the bridge as the camera arrives.
+  // On the tour the first lift is timed so the barge is under the bridge as the camera arrives
+  // (but never so soon after the traffic appears that what is already on the bridge cannot get clear).
   const start = (): number => {
     const at = visit();
-    return at == null ? born + 9 : at - 10.2;
+    return at == null ? born + 6 : Math.max(at - TB_LEAD, born + 1);
   };
+  /** Which opening this is, and how far into it. Until the first one the bridge is at rest, the barge waiting downstream. */
   const cycle = (t: number): [number, number] => {
     const tt = t - start();
+    if (t <= born || tt < 0) return [-1, TB_PERIOD - 1];
     const n = Math.floor(tt / TB_PERIOD);
     return [n, tt - n * TB_PERIOD];
   };
-  const shut = (t: number) => t > born && cycle(t)[1] < TB_GREEN - 0.5;
+  const shut = (t: number) => cycle(t)[1] < TB_GREEN - 0.5;
   const liftAt = (t: number): number => {
-    const p = t > born ? cycle(t)[1] : TB_PERIOD - 1;
+    const p = cycle(t)[1];
     return 1.25 * (smooth(TB_RISE, TB_UP, p) - smooth(TB_FALL, TB_DOWN, p));
   };
   traffic.halts.push({ x: TOWER_X + LANE, y: RY1 + 5.2, r: 0.4, closed: shut });
   traffic.halts.push({ x: TOWER_X + STREET - LANE, y: RY0 - 5.2, r: 0.4, closed: shut });
   movers.push((m) => {
     if (m.t < shown || !m.sees(TOWER_X + 5, MID, 4, 26)) return;
-    const p = m.t > born ? cycle(m.t)[1] : TB_PERIOD - 1;
+    const p = cycle(m.t)[1];
     const lift = liftAt(m.t);
     const bar = smooth(0.3, 1.6, p) - smooth(TB_DOWN, TB_GREEN, p);
     const dp = m.pen;
@@ -1271,7 +1282,8 @@ export function buildCity(blocks: BlockDef[], islets: IsletDef[]): City {
     stops.push(stop);
   }
 
-  done = Math.max(done, bridges(pen, tAt));
+  const [bridgesDone, towerBridgeAt] = bridges(pen, tAt);
+  done = Math.max(done, bridgesDone);
   edges(pen);
 
   for (const s of islets) {
@@ -1322,7 +1334,8 @@ export function buildCity(blocks: BlockDef[], islets: IsletDef[]): City {
   roadTraffic(movers, traffic, born, stopPoints);
   const boats = riverTraffic(movers, born);
   const tower = stops.find((s) => s.id === "tower");
-  const bridgeLift = towerBridgeLife(movers, traffic, born, tAt(2, 1) + 1.6, () => tower?.at ?? null);
+  // (the leaves are drawn afresh each frame: they sketch in with the deck they hinge on, a quarter of a second after the piers)
+  const bridgeLift = towerBridgeLife(movers, traffic, born, towerBridgeAt + 0.25, () => tower?.at ?? null);
   fireworks(movers);
 
   // paper bounds of the land and the islets (the river's far reaches, and what floats on them, are left out: they run off the page)

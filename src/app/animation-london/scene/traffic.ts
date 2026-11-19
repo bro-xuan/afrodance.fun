@@ -8,7 +8,7 @@
 // to depend on the time alone. The whole loop is therefore worked out once,
 // in small steps, when the first frame asks for it, and looked up after that.
 
-import { V3 } from "../engine/math";
+import { V3, clamp } from "../engine/math";
 import { Sprite } from "../engine/mesh";
 import { Route } from "./motion";
 import { Mover } from "./types";
@@ -64,12 +64,14 @@ export class Lane {
 }
 
 const DT = 0.05;
-/** Seconds of traffic worked out in advance. One loop of the film has to fit inside it. */
+/** The most traffic ever worked out in advance, in seconds. One loop of the film has to fit inside it. */
 export const TRAFFIC_HORIZON = 150;
 const ACCEL = 3.4;
 const BRAKE = 5.5;
 const GAP = 0.9;
 const DWELL = 2.6;
+/** How far short of a stop line, or of the mark at a bus stop, a vehicle pulls up. */
+const SHORT = 0.2;
 
 const mod = (v: number, m: number) => ((v % m) + m) % m;
 
@@ -78,12 +80,23 @@ export class Traffic {
   readonly halts: Halt[] = [];
   /** For each lane, for each vehicle, its distance along the lane at every step. */
   private table: Float32Array[][] | null = null;
+  /** The second the traffic first shows: it is worked out from here on. Set by `mover`. */
   private t0 = 0;
 
-  /** Work the traffic out from second `from` onwards. Called once, the first time a position is asked for. */
-  private simulate(from: number): void {
-    this.t0 = from;
-    const steps = Math.ceil(TRAFFIC_HORIZON / DT) + 1;
+  /**
+   * Work the traffic out now, as far as second `until`, rather than in the
+   * middle of the first frame that shows a vehicle (where it costs a visible
+   * stutter). Call it once the tour is timed: bridges and crossings shut on
+   * the camera's cue.
+   */
+  prepare(until: number): void {
+    if (!this.table) this.simulate(until);
+  }
+
+  /** Work the traffic out from the second it first shows. Done once: by `prepare`, or failing that the first time a position is asked for. */
+  private simulate(until = this.t0 + TRAFFIC_HORIZON): void {
+    const from = this.t0;
+    const steps = Math.ceil(clamp(until - from, 1, TRAFFIC_HORIZON) / DT) + 1;
     const table: Float32Array[][] = [];
     for (const lane of this.lanes) {
       const L = lane.route.length;
@@ -118,13 +131,14 @@ export class Traffic {
             const j = ahead[i];
             room = mod(prev[j] - lane.vehicles[j].len / 2 - front, L) - GAP;
             // a gap of nearly a whole lap means the two have met nose to tail
-            if (room > L - q.len - lane.vehicles[j].len - GAP * 2) room = 0;
+            // (with only two on a lane it also means the other is right behind, so the rule cannot be used)
+            if (n > 2 && room > L - q.len - lane.vehicles[j].len - GAP * 2) room = 0;
           }
           for (const ln of lines) {
             if (!ln.closed(t)) continue;
             const d = mod(ln.s - front, L);
             // (a line just behind the front bumper is a lap away: the vehicle is already through)
-            if (d < L - 1.5) room = Math.min(room, d - 0.2);
+            if (d < L - 1.5) room = Math.min(room, d - SHORT);
           }
           let waiting = false;
           if (q.bus) {
@@ -140,8 +154,11 @@ export class Traffic {
                   continue;
                 }
                 if (d < 16) {
-                  room = Math.min(room, d);
-                  if (d < 0.25 && v[i] < 0.4) {
+                  // It pulls up a little short of the mark, as at a stop line. A bus that brakes to
+                  // the mark itself rolls a hair past it, and a stop just behind a bus is a lap away:
+                  // it would crawl up, never quite stand, and drive on without calling.
+                  room = Math.min(room, d - SHORT);
+                  if (d < SHORT + 0.25 && v[i] < 0.4) {
                     dwell[i] = t + DWELL;
                     served[i] = p;
                     waiting = true;
@@ -161,8 +178,8 @@ export class Traffic {
   }
 
   /** Distance along its lane of a vehicle at second t. */
-  at(lane: number, vehicle: number, t: number, from: number): number {
-    if (!this.table) this.simulate(from);
+  at(lane: number, vehicle: number, t: number): number {
+    if (!this.table) this.simulate();
     const row = (this.table as Float32Array[][])[lane][vehicle];
     const q = this.lanes[lane].vehicles[vehicle];
     const u = (t - this.t0) / DT;
@@ -173,8 +190,9 @@ export class Traffic {
     return row[k] + (row[k + 1] - row[k]) * (u - k);
   }
 
-  /** The one mover that places every vehicle. `from` is the second the traffic is worked out from. */
+  /** The one mover that places every vehicle. `from` is the second the traffic first shows, and is worked out from. */
   mover(from: number): Mover {
+    this.t0 = from;
     const P: V3 = [0, 0, 0];
     return (m) => {
       for (let a = 0; a < this.lanes.length; a++) {
@@ -183,10 +201,10 @@ export class Traffic {
         for (let b = 0; b < lane.vehicles.length; b++) {
           const q = lane.vehicles[b];
           if (m.t < q.born) continue;
-          const s = this.at(a, b, m.t, from);
+          const s = this.at(a, b, m.t);
           route.pos(s, P);
           if (!m.sees(P[0], P[1], P[2])) continue;
-          const moving = q.pedals ? this.at(a, b, m.t + 0.12, from) - s > 0.02 : true;
+          const moving = q.pedals ? this.at(a, b, m.t + 0.12) - s > 0.02 : true;
           m.put(q.sprite(route.heading(s, Math.min(q.len * 0.55, 4.2)), m.t, moving), P[0], P[1], P[2], q.born);
         }
       }

@@ -167,6 +167,12 @@ export function planTimeline(built: number, legs: Leg[], closeup: boolean): Time
   return { built, tourStart, arrivals, closeAt: close ? at + CLOSE_TRAVEL : null, tourEnd, outEnd, duskStart, nightEnd, end: nightEnd + 1.5 };
 }
 
+/** Tell each place when the camera arrives (and the last one when the close-up does), so its set pieces can happen while it is there. */
+export function cueStops(legs: Leg[], timeline: Timeline): void {
+  legs.forEach((l, i) => (l.stop.at = timeline.arrivals[i].at));
+  if (timeline.closeAt != null && legs.length > 0) legs[legs.length - 1].stop.closeAt = timeline.closeAt;
+}
+
 export function createFilm<S extends Scene>(canvas: HTMLCanvasElement, script: Script<S>, opts: FilmOptions = {}): Film<S> {
   const makeRenderer = (): Renderer => {
     const r = new Renderer(canvas);
@@ -200,11 +206,7 @@ export function createFilm<S extends Scene>(canvas: HTMLCanvasElement, script: S
   const timeline = planTimeline(city.done, legs, closeup != null);
   const { tourStart, outEnd, duskStart, nightEnd } = timeline;
   const fadeEnd = timeline.end;
-  // tell each place when the camera arrives, so its set pieces can happen while it is there
-  if (!opts.still) {
-    legs.forEach((l, i) => (l.stop.at = timeline.arrivals[i].at));
-    if (timeline.closeAt != null) legs[legs.length - 1].stop.closeAt = timeline.closeAt;
-  }
+  if (!opts.still) cueStops(legs, timeline);
 
   let keys: Key[] = [];
   const rekey = () => {
