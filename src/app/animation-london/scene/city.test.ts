@@ -71,7 +71,9 @@ function play(from: number, to: number, step: number, visit: (x: number, y: numb
   return dyn;
 }
 
-describe("the city", () => {
+// Every test here builds the whole city or plays it through a loop: a second or so on a quiet
+// laptop, ten times that on a busy one. Room for a busy machine, not for a hang.
+describe("the city", { timeout: 60_000 }, () => {
   it("puts one place on every square of the grid, and the camera visits them all", () => {
     expect(BLOCKS.map((b) => b.id).sort()).toEqual(PLAN.map((p) => p.id).sort());
     const squares = new Set(BLOCKS.map((b) => `${b.i},${b.j}`));

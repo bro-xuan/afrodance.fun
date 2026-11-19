@@ -5,7 +5,9 @@ import { BLOCKS, ISLETS } from "./blocks";
 import { buildCity } from "./city";
 import { MoveCtx } from "./types";
 
-describe("the lettering", () => {
+// Every test here builds the whole city or plays it through a loop: a second or so on a quiet
+// laptop, ten times that on a busy one. Room for a busy machine, not for a hang.
+describe("the lettering", { timeout: 60_000 }, () => {
   it("has a shape for every character the city writes, on its signs and as it moves", () => {
     // A character with no shape is skipped without a word: the sign just loses a letter.
     const missing = new Map<string, string>();
