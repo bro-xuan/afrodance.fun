@@ -28,7 +28,7 @@ const AX = AXIS_Y - ROW_Y[1];
 const GX = 11;
 
 /** Where the final close-up looks: the bubble man and his audience, under the columns. */
-export const gateSpot: [number, number, number] = [16.2, 27.2, 2.6];
+export const gateSpot: [number, number, number] = [17.6, 27.0, 3.3];
 
 function stroll(c: BlockCtx, pts: V2[], r = 1.0): Route {
   return new Route(
@@ -289,8 +289,9 @@ function adlon(c: BlockCtx, x0: number, y0: number, w: number, d: number): void 
       pen.box(x0 + a - 0.45, y0 + d - 1.25, h + 0.25, 0.9, 1.0, 0.9, wall, { top: C.copper, w: W_FINE });
       pen.wall("y+", x0 + a - 0.45, y0 + d - 1.25, h + 0.25, 0.9, 1.0).rect(0.18, 0.15, 0.72, 0.75, C.glass, { glow: rng.chance(0.5) ? 1 : 0, grain: 0.4 });
     }
-    const sg = pen.plane([x0 + w / 2 - 2.6, y0 + d + 0.06, h - 0.02], [1, 0, 0], [0, 0, 1], 2, true);
-    sg.text("ADLON", 2.6, 0.12, 0.62, { align: "c", color: C.gold, kind: L_MARK, w: 0.1, wobble: 0.2 });
+    const sg = pen.plane([x0 + w / 2 - 2.4, y0 + d + 0.08, 3.0], [1, 0, 0], [0, 0, 1], 2, true);
+    sg.rect(0, 0, 4.8, 1.05, C.copperDark, { outline: true, w: W_FINE, glow: 0.3 });
+    sg.text("ADLON", 2.4, 0.22, 0.6, { align: "c", color: C.gold, kind: L_MARK, w: 0.11, wobble: 0.2, layer: 1 });
   }, 0.16);
   flagOf(pen, x0 + 2, y0 + d - 0.6, h + 0.9, 3.4, "de", 0.9);
   flagOf(pen, x0 + w - 2.6, y0 + d - 0.6, h + 0.9, 3.4, "eu", 0.9);
@@ -474,8 +475,8 @@ export const brandenburgertor: BlockBuilder = (c) => {
   });
   for (let k = 0; k < 6; k++) cafeTable(pen, rng, 32.6 + (k % 3) * 3.4, 15.2 + Math.floor(k / 3) * 3.2, k % 2 ? C.white : C.green, 2 + (k % 3 === 1 ? 1 : 0));
 
-  parterre(c, 18.6, AX - 11.2, 28.6, AX - 4.6);
-  parterre(c, 18.6, AX + 4.6, 28.6, AX + 11.2);
+  parterre(c, 20.6, AX - 11.2, 29.6, AX - 4.6);
+  parterre(c, 20.6, AX + 4.6, 29.6, AX + 11.2);
 
   // Unter den Linden: two rows of limes either side of the promenade, benches under them, Old Fritz in the middle
   for (let x = 31.6; x < B - QUAY - 1; x += 3.3) {
@@ -543,10 +544,10 @@ export const brandenburgertor: BlockBuilder = (c) => {
     person(pen, gx + 1.3 + Math.cos(a) * rng.range(1.2, 2.6), gy + 0.6 + Math.sin(a) * rng.range(0.8, 2.2), 0, randomLook(rng), rng.pick(["stand", "stand", "wave"]), true, rng.chance(0.15) ? 0.72 : 1);
   }
   // the bear who waves for a living, and the family having its picture taken with him
-  bearSuit(pen, 15.7, AX - 8.9, false);
-  person(pen, 16.6, AX - 8.6, 0, randomLook(rng), "stand", true, 0.72);
-  person(pen, 14.8, AX - 8.6, 0, randomLook(rng), "cheer", false, 0.72);
-  person(pen, 17.4, AX - 6.6, 0, randomLook(rng), "wave", true);
+  bearSuit(pen, 15.6, AX - 9.6, false);
+  person(pen, 16.5, AX - 9.3, 0, randomLook(rng), "stand", true, 0.72);
+  person(pen, 14.7, AX - 9.3, 0, randomLook(rng), "cheer", false, 0.72);
+  person(pen, 17.6, AX - 8.6, 0, randomLook(rng), "wave", true);
   // a wedding couple, because there is always one
   const bride: Look = { skin: [246, 211, 184], hair: [124, 82, 48], top: C.white, legs: C.white, long: true, hat: null };
   const groom: Look = { skin: [238, 187, 150], hair: [43, 32, 25], top: C.charcoal, legs: C.charcoal, long: false, hat: null };
@@ -580,60 +581,74 @@ export const brandenburgertor: BlockBuilder = (c) => {
   }
   dog(pen, 30.4, 41.2, 0, C.cream, true);
 
-  // ---- the bubble man, just in front of the columns, and the children who have found him
-  const ax = 15.4;
-  const ay = AX - 4.3;
+  // ---- the bubble man, in the forecourt under the columns, and the children who have found him
+  const ax = 15.5;
+  const ay = AX - 4.1;
   const man: Look = { skin: [211, 154, 108], hair: [43, 32, 25], top: C.teal, legs: C.charcoal, long: false, hat: C.yellow };
   person(pen, ax, ay, 0, man, "cheer", false);
   pen.obj(() => {
-    // his bucket of soap
-    pen.cyl(ax - 0.8, ay + 0.5, 0, 0.3, 0.5, C.blue, { seg: 8, top: C.glassPale });
+    // two sticks and a loop of rope between them, and his bucket of soap
+    const cd = pen.card(ax, ay, 0);
+    cd.bar(-0.58, 1.86, -0.7, 3.2, 0.07, C.wood);
+    cd.bar(0.58, 1.86, 1.25, 3.05, 0.07, C.wood);
+    cd.line(
+      [
+        [-0.7, 3.2],
+        [0.1, 2.75],
+        [1.25, 3.05],
+      ],
+      { w: 0.05, color: C.white, kind: L_BAR, wobble: 0.3 },
+    );
+    pen.cyl(ax - 0.9, ay + 0.7, 0, 0.32, 0.5, C.blue, { seg: 8, top: C.glassPale });
   });
+  // children in an arc downwind of him, grown-ups behind them
   const kids: [number, number, boolean][] = [
-    [17.6, ay - 1.3, true],
-    [18.1, ay + 1.5, true],
-    [16.0, ay - 2.3, false],
-    [17.0, ay + 2.6, true],
+    [18.6, ay - 2.2, true],
+    [19.0, ay + 1.9, true],
+    [17.6, ay + 2.6, true],
+    [17.2, ay - 2.6, true],
   ];
   for (const [x, y, fl] of kids) person(pen, x, y, 0, randomLook(rng), rng.pick(["stand", "wave"]), fl, 0.72);
-  person(pen, 18.9, ay - 0.4, 0, randomLook(rng), "stand", true);
-  person(pen, 19.3, ay + 0.9, 0, randomLook(rng), "wave", true);
-  dog(pen, 15.4, ay + 2.9, 0, C.woodDark, false, 0.9);
+  person(pen, 19.3, ay - 3.4, 0, randomLook(rng), "stand", true);
+  person(pen, 18.4, ay + 3.6, 0, randomLook(rng), "wave", true);
+  person(pen, 19.6, ay + 3.3, 0, randomLook(rng), "stand", true);
+  dog(pen, 16.0, ay + 3.2, 0, C.woodDark, false, 0.9);
 
-  // two children who cannot stand still, each on their own spring
+  // three children who cannot stand still, each on their own spring; the last of them gets the big one
   const jumpers = [
-    { x: 16.7, y: ay - 0.2, look: randomLook(rng), ph: 0.0, flip: true },
-    { x: 17.3, y: ay + 1.0, look: randomLook(rng), ph: 1.7, flip: true },
-  ].map((j) => ({ ...j, sprite: makeSprite((p) => person(p, 0, 0, 0, j.look, "cheer", j.flip, 0.72), 0, 31) }));
+    { x: 17.9, y: ay - 0.9, look: randomLook(rng), ph: 0.0 },
+    { x: 18.5, y: ay + 0.5, look: randomLook(rng), ph: 1.7 },
+    { x: 19.5, y: ay - 0.4, look: randomLook(rng), ph: 0.9 },
+  ].map((j) => ({ ...j, sprite: makeSprite((p) => person(p, 0, 0, 0, j.look, "cheer", true, 0.72), 0, 31) }));
   for (const j of jumpers) {
     c.movers.push((m) => {
       const hop = Math.abs(Math.sin(m.t * 4.6 + j.ph));
-      m.put(j.sprite, c.ox + j.x, c.oy + j.y, c.oz + hop * hop * 0.55, c.done);
+      m.put(j.sprite, c.ox + j.x, c.oy + j.y, c.oz + hop * hop * 0.6, c.done);
     });
   }
 
-  // the bubbles: a steady stream of small ones, and a giant one when the camera comes to look
+  // the bubbles: a steady stream of small ones, and a giant when the camera comes to look
   const wx = c.ox + ax;
   const wy = c.oy + ay;
   const wz = c.oz;
-  const pale: RGB = [176, 222, 240];
-  const rose: RGB = [246, 190, 215];
-  const ring = (cd: Plane, r: number, wob: number, alpha: number) => {
+  const pale: RGB = [150, 208, 236];
+  const rose: RGB = [246, 176, 208];
+  const ring = (cd: Plane, r: number, wob: number, alpha: number, squash = 1) => {
     const pts: V2[] = [];
-    const n = r > 0.6 ? 18 : 10;
+    const n = r > 0.6 ? 20 : 10;
     for (let k = 0; k < n; k++) {
       const a = (k / n) * Math.PI * 2;
-      const rr = r * (1 + 0.07 * Math.sin(2 * a + wob) + 0.04 * Math.sin(3 * a - wob * 1.3));
-      pts.push([Math.cos(a) * rr, Math.sin(a) * rr]);
+      const rr = r * (1 + 0.06 * Math.sin(2 * a + wob) + 0.035 * Math.sin(3 * a - wob * 1.3));
+      pts.push([Math.cos(a) * rr * squash, (Math.sin(a) * rr) / squash]);
     }
     cd.line(pts, { closed: true, color: pale, w: 0.1 + r * 0.05, alpha, kind: L_MARK, wobble: 0 });
-    cd.arc(0, 0, r * 0.7, r * 0.7, 0.5, 1.5, { color: C.white, w: 0.1 + r * 0.06, alpha, kind: L_MARK, wobble: 0, seg: 5 });
-    cd.arc(0, 0, r * 0.78, r * 0.78, 3.6, 4.6, { color: rose, w: 0.08 + r * 0.04, alpha: alpha * 0.85, kind: L_MARK, wobble: 0, seg: 5 });
+    cd.arc(0, 0, r * 0.7 * squash, (r * 0.7) / squash, 0.5, 1.5, { color: C.white, w: 0.1 + r * 0.07, alpha, kind: L_MARK, wobble: 0, seg: 6 });
+    cd.arc(0, 0, r * 0.8 * squash, (r * 0.8) / squash, 3.5, 4.7, { color: rose, w: 0.08 + r * 0.05, alpha: alpha * 0.9, kind: L_MARK, wobble: 0, seg: 6 });
   };
   c.movers.push((m) => {
     if (m.t < c.done || !m.sees(wx + 2, wy, wz + 3, 14)) return;
     const s = c.stay();
-    // small ones: each lives 3.6 s, rising and drifting east on the wind
+    // small ones: each lives a few seconds, rising and drifting east on the wind
     for (let k = 0; k < 13; k++) {
       const life = 3.9;
       const tt = m.t + k * 0.31;
@@ -642,34 +657,34 @@ export const brandenburgertor: BlockBuilder = (c) => {
       const h1 = hash1(gen * 7.13 + k * 3.7);
       const h2 = hash1(gen * 3.31 + k * 9.1);
       const h3 = hash1(gen * 5.77 + k * 1.3);
-      const x = wx + 0.5 + u * (2.6 + h1 * 2.6);
-      const y = wy + (h2 - 0.5) * 3.4 * u;
-      const z = wz + 2.3 + u * (1.2 + h3 * 3.4) + Math.sin(u * 9 + k) * 0.12;
-      const r = (0.24 + 0.34 * h3) * Math.min(1, u * 5);
+      const x = wx + 0.6 + u * (2.8 + h1 * 2.8);
+      const y = wy + (h2 - 0.5) * 3.6 * u;
+      const z = wz + 2.9 + u * (1.0 + h3 * 3.6) + Math.sin(u * 9 + k) * 0.12;
+      const r = (0.22 + 0.3 * h3) * Math.min(1, u * 5);
       const alpha = u < 0.86 ? 0.9 : ((1 - u) / 0.14) * 0.9;
       ring(m.pen.card(x, y, z), r, tt * 3 + k, alpha);
     }
-    // the giant: it swells off his rope for a second, wobbles away over the children, and one of them bursts it
-    const beats = s ? [s.at + 0.5, ...(s.closeup ? [s.closeup.at + 0.35] : [])] : [c.done + 1.5];
+    // the giant: it swells off his rope, wobbles away over the children, and the tallest jump bursts it
+    const beats = s ? [s.at + 0.4, ...(s.closeup ? [s.closeup.at + 0.15] : [])] : [c.done + 1.5];
     for (const b of beats) {
       const u = m.t - b;
-      if (u < 0 || u > 3.0) continue;
-      const grow = Math.min(1, u / 1.1);
-      const r = 0.3 + 1.35 * grow * (2 - grow);
-      const drift = Math.max(0, u - 0.9);
-      const x = wx + 0.9 + drift * 0.75;
-      const y = wy + 0.1 + drift * 0.28;
-      const z = wz + 2.5 + drift * 0.5 + Math.sin(u * 4) * 0.08;
-      if (u < 2.55) ring(m.pen.card(x, y, z), r, u * 5, 0.95);
+      if (u < 0 || u > 3.05) continue;
+      const grow = Math.min(1, u / 1.25);
+      const r = 0.35 + 1.75 * grow * (2 - grow);
+      const drift = Math.max(0, u - 1.1);
+      const x = wx + 1.5 + drift * 1.25;
+      const y = wy + drift * 0.1;
+      const z = wz + 3.1 + r * 0.25 + drift * 0.22 + Math.sin(u * 4) * 0.08;
+      if (u < 2.6) ring(m.pen.card(x, y, z), r, u * 5, 0.95, 1 + 0.12 * (1 - grow) + 0.05 * Math.sin(u * 7));
       else {
         // gone: a ring of drops where it was
-        const f = (u - 2.55) / 0.45;
+        const f = (u - 2.6) / 0.45;
         const cd = m.pen.card(x, y, z);
-        for (let k = 0; k < 12; k++) {
-          const a = (k / 12) * Math.PI * 2 + 0.2;
-          cd.seg(Math.cos(a) * r * (1 + f * 0.5), Math.sin(a) * r * (1 + f * 0.5) - f * f * 0.5, Math.cos(a) * r * (1.12 + f * 0.6), Math.sin(a) * r * (1.12 + f * 0.6) - f * f * 0.5, {
+        for (let k = 0; k < 14; k++) {
+          const a = (k / 14) * Math.PI * 2 + 0.2;
+          cd.seg(Math.cos(a) * r * (1 + f * 0.45), Math.sin(a) * r * (1 + f * 0.45) - f * f * 0.6, Math.cos(a) * r * (1.14 + f * 0.6), Math.sin(a) * r * (1.14 + f * 0.6) - f * f * 0.6, {
             color: pale,
-            w: 0.08,
+            w: 0.11,
             alpha: 1 - f,
             kind: L_MARK,
             wobble: 0,
@@ -690,16 +705,16 @@ export const brandenburgertor: BlockBuilder = (c) => {
   for (let k = 0; k < 7; k++) c.movers.push(walker(through, rng, c.done + rng.range(0, 1)));
   // round the two halves of the square
   const north = stroll(c, [
-    [17.5, AX - 12.3],
-    [29.6, AX - 12.3],
-    [29.6, AX - 3.5],
-    [17.5, AX - 3.5],
+    [19.6, AX - 12.3],
+    [30.5, AX - 12.3],
+    [30.5, AX - 3.5],
+    [19.6, AX - 3.5],
   ]);
   const south = stroll(c, [
-    [17.5, AX + 3.5],
-    [29.6, AX + 3.5],
-    [29.6, AX + 12.3],
-    [17.5, AX + 12.3],
+    [19.6, AX + 3.5],
+    [30.5, AX + 3.5],
+    [30.5, AX + 12.3],
+    [19.6, AX + 12.3],
   ]);
   for (let k = 0; k < 5; k++) c.movers.push(walker(north, rng, c.done + rng.range(0, 1)));
   for (let k = 0; k < 4; k++) c.movers.push(walker(south, rng, c.done + rng.range(0, 1)));

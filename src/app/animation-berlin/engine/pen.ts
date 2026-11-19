@@ -240,6 +240,12 @@ const GLYPHS: Record<string, number[][]> = {
   "&": [[4, 0, 1, 4.6, 1, 5.4, 1.8, 6, 2.6, 5.4, 2.6, 4.6, 0, 1.6, 0, 0.8, 1, 0, 2.2, 0, 4, 2.2]],
 };
 
+/** Can this character be lettered? (One with no shape is skipped without a word: the sign just loses a letter.) */
+export function hasGlyph(ch: string): boolean {
+  for (const c of ch.toUpperCase()) if (c !== " " && !(c in GLYPHS)) return false;
+  return true;
+}
+
 // ---------------------------------------------------------------- planes
 
 /**

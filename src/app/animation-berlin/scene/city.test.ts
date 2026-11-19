@@ -41,6 +41,44 @@ function play(from: number, to: number, step: number, visit: (x: number, y: numb
   return dyn;
 }
 
+/**
+ * Where everything stamped by each mover is at two moments, `gap` seconds
+ * apart: keyed by which mover it was and which of its stamps (a tram makes
+ * three), so that the same thing is compared with itself.
+ */
+function pairs(t: number, gap: number): Map<string, [[number, number, number], [number, number, number]]> {
+  const at = (when: number) => {
+    const out = new Map<string, [number, number, number]>();
+    const dyn = new Mesh(1 << 12, 1 << 12);
+    const pen = new Pen(dyn, 1);
+    city.movers.forEach((mover, i) => {
+      let n = 0;
+      const m: MoveCtx = {
+        mesh: dyn,
+        pen,
+        t: when,
+        clock: when,
+        night: 0,
+        nightAt: Infinity,
+        put(_s: Sprite, x: number, y: number, z: number) {
+          out.set(i + ":" + n++, [x, y, z]);
+        },
+        sees: () => true,
+      };
+      mover(m);
+    });
+    return out;
+  };
+  const a = at(t);
+  const b = at(t + gap);
+  const both = new Map<string, [[number, number, number], [number, number, number]]>();
+  for (const [k, p] of a) {
+    const q = b.get(k);
+    if (q) both.set(k, [p, q]);
+  }
+  return both;
+}
+
 describe("the city", () => {
   it("puts one place on every square of the grid, and the camera visits them all", () => {
     expect(BLOCKS.map((b) => b.id).sort()).toEqual(PLAN.map((p) => p.id).sort());
@@ -130,40 +168,51 @@ describe("the city", () => {
     // Along a street, whatever heads east (+x) keeps to its south half and whatever
     // heads west to its north; down a street, southbound keeps west. On this page
     // that is the right-hand side of the way each one is facing.
-    const before = new Map<number, [number, number]>();
     const wrong: string[] = [];
     let checked = 0;
-    for (const t of [city.done + 20, city.done + 20.4]) {
-      let k = 0;
-      play(t, t + 0.01, 1, (x, y, z) => {
-        const id = k++;
-        if (Math.abs(z) > 0.05) return;
-        const was = before.get(id);
-        before.set(id, [x, y]);
-        if (!was) return;
-        const dx = x - was[0];
-        const dy = y - was[1];
-        // only what is driving straight along the middle of a stretch of street
-        const streetsY = [Y0, ...ROW_Y.map((r) => r + BLOCK)];
-        const streetsX = [X0, COL_X[0] + BLOCK, X1 - LANE];
-        for (const y0 of streetsY) {
-          if (y > y0 && y < y0 + LANE && Math.abs(dy) < 0.02 && Math.abs(dx) > 0.8 && COL_X.some((c) => x > c + 8 && x < c + BLOCK - 8)) {
-            checked++;
-            if (dx > 0 !== y > y0 + LANE / 2 && wrong.length < 5) wrong.push(`heading ${dx > 0 ? "east" : "west"} at ${x.toFixed(1)}, ${y.toFixed(1)}`);
-          }
+    const streetsY = [Y0, ...ROW_Y.map((r) => r + BLOCK)];
+    const streetsX = [X0, COL_X[0] + BLOCK, X1 - LANE];
+    for (const [, [a, b]] of pairs(city.done + 20, 0.4)) {
+      if (Math.abs(a[2]) > 0.05) continue;
+      const [x, y] = b;
+      const dx = b[0] - a[0];
+      const dy = b[1] - a[1];
+      // only what is driving straight along the middle of a stretch of street
+      for (const y0 of streetsY) {
+        if (y > y0 && y < y0 + LANE && Math.abs(dy) < 0.02 && Math.abs(dx) > 0.8 && COL_X.some((c) => x > c + 8 && x < c + BLOCK - 8)) {
+          checked++;
+          if (dx > 0 !== y > y0 + LANE / 2 && wrong.length < 5) wrong.push(`heading ${dx > 0 ? "east" : "west"} at ${x.toFixed(1)}, ${y.toFixed(1)}`);
         }
-        for (const x0 of streetsX) {
-          if (x > x0 && x < x0 + LANE && Math.abs(dx) < 0.02 && Math.abs(dy) > 0.8 && ROW_Y.some((r) => y > r + 8 && y < r + BLOCK - 8)) {
-            checked++;
-            if (dy > 0 !== x < x0 + LANE / 2 && wrong.length < 5) wrong.push(`heading ${dy > 0 ? "south" : "north"} at ${x.toFixed(1)}, ${y.toFixed(1)}`);
-          }
+      }
+      for (const x0 of streetsX) {
+        if (x > x0 && x < x0 + LANE && Math.abs(dx) < 0.02 && Math.abs(dy) > 0.8 && ROW_Y.some((r) => y > r + 8 && y < r + BLOCK - 8)) {
+          checked++;
+          if (dy > 0 !== x < x0 + LANE / 2 && wrong.length < 5) wrong.push(`heading ${dy > 0 ? "south" : "north"} at ${x.toFixed(1)}, ${y.toFixed(1)}`);
         }
-      });
+      }
     }
     expect(checked).toBeGreaterThan(20);
     expect(wrong).toEqual([]);
-    // and on the river the boats pass port to port: downstream (north) along the east bank
-    expect(RX1 - RX0).toBeGreaterThan(LANE);
+  });
+
+  it("sends the boats downstream along the east bank and back up along the west", () => {
+    // (north is downstream; the east bank is the right-hand side of a boat heading north)
+    const wrong: string[] = [];
+    let checked = 0;
+    for (const at of [20, 50, 80]) {
+      for (const [, [a, b]] of pairs(city.done + at, 0.4)) {
+        const [x, y] = b;
+        if (Math.abs(a[2] - WATER) > 0.05 || nearIslet(x, y)) continue;
+        // between the bridges, clear of where the lanes draw together for the Oberbaumbrücke
+        if (y < Y0 + 4 || y > ROW_Y[1] + BLOCK || x < RX0 || x > RX1) continue;
+        const dy = b[1] - a[1];
+        if (Math.abs(dy) < 0.3) continue;
+        checked++;
+        if (dy < 0 !== x > (RX0 + RX1) / 2 && wrong.length < 5) wrong.push(`heading ${dy < 0 ? "north" : "south"} at ${x.toFixed(1)}, ${y.toFixed(1)}`);
+      }
+    }
+    expect(checked).toBeGreaterThan(3);
+    expect(wrong).toEqual([]);
   });
 
   it("never lets two boats, cars or trams run into each other, and finds room for all of them", () => {

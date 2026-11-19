@@ -688,7 +688,8 @@ export function pinkPipes(pen: Pen, pts: V2[], h = 3.0, z = 0): void {
 /** A picnic: a blanket and two or three people who brought their own beer. */
 export function picnic(pen: Pen, rng: Rng, x: number, y: number, z = 0, n = 2): void {
   const col = rng.pick([C.red, C.blue, C.yellow, C.pink, C.teal, C.white]);
-  pen.floor(z, 2).rect(x - 1.05, y - 0.75, x + 1.05, y + 0.75, col, { outline: true, w: W_FINE });
+  // (a few layers up, so the rug lies on a lawn that has its own tufts and stripes)
+  pen.floor(z, 4).rect(x - 1.05, y - 0.75, x + 1.05, y + 0.75, col, { outline: true, w: W_FINE });
   const spots: V2[] = [
     [-0.45, 0],
     [0.5, 0.2],

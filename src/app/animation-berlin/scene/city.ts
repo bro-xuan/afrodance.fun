@@ -12,6 +12,8 @@
 import { C30, Rng, V2, V3, clamp, paperX, paperY } from "../engine/math";
 import { Mesh } from "../engine/mesh";
 import { F_WATER, L_MARK, L_RIPPLE, L_SPARK, Pen, Plane } from "../engine/pen";
+import { ampel } from "./berlin";
+import { beyond } from "./beyond";
 import { axisBridges, elevated, oberbaum, roadBridge } from "./bridges";
 import { FRAME } from "./frame";
 import {
@@ -69,6 +71,8 @@ export interface BlockDef {
   build: BlockBuilder;
   /** Stretches of the riverside walk to leave without a railing (local y, along the bank): steps down to the water, a gangway. */
   gaps?: [number, number][];
+  /** Stretches of the riverside walk the city leaves alone: no benches, no idlers (local y). A memorial wants quiet. */
+  quiet?: [number, number][];
 }
 
 export interface IsletDef {
@@ -415,14 +419,16 @@ function dressSidewalk(c: BlockCtx, side: Side): void {
  * rail. Limes only on the west bank: on the east one they would stand between
  * the camera and the river.
  */
-function dressBank(c: BlockCtx, side: "xp" | "xm", gaps: [number, number][]): void {
+function dressBank(c: BlockCtx, side: "xp" | "xm", gaps: [number, number][], quiet: [number, number][]): void {
   const { pen, rng } = c;
   const [fx, fy, rot] = EDGE_FRAMES[side];
-  // the gaps are given along local y; along this edge that is a (west bank) or BLOCK - a (east bank)
-  const open = (a: number) => {
+  // the stretches are given along local y; along this edge that is a (west bank) or BLOCK - a (east bank)
+  const within = (list: [number, number][], a: number) => {
     const y = side === "xp" ? a : BLOCK - a;
-    return gaps.some(([g0, g1]) => y > g0 && y < g1);
+    return list.some(([g0, g1]) => y > g0 && y < g1);
   };
+  const open = (a: number) => within(gaps, a);
+  const hush = (a: number) => within(gaps, a) || within(quiet, a);
   pen.push(fx, fy, 0, rot);
   c.early(() => {
     const g = pen.floor(0, 1);
@@ -450,7 +456,7 @@ function dressBank(c: BlockCtx, side: "xp" | "xm", gaps: [number, number][]): vo
     }
   }
   for (let a = 11; a < BLOCK - 8; a += 12) {
-    if (open(a) || rng.chance(0.3)) continue;
+    if (rng.chance(0.3) || hush(a) || hush(a - 1.2) || hush(a + 1.2)) continue;
     // benches face the water
     bench(pen, a, 2.2, 180);
     if (rng.chance(0.75)) person(pen, a - 0.45, 2.0, 0.3, randomLook(rng), "sit", rng.chance(0.5));
@@ -458,10 +464,34 @@ function dressBank(c: BlockCtx, side: "xp" | "xm", gaps: [number, number][]): vo
   }
   for (let k = 0; k < 4; k++) {
     const a = rng.range(3, BLOCK - 3);
-    if (open(a)) continue;
-    person(pen, a, 0.75, 0, randomLook(rng), rng.pick(["stand", "stand", "wave"]), rng.chance(0.5), rng.chance(0.15) ? 0.72 : 1);
+    const look = randomLook(rng);
+    const pose = rng.pick(["stand", "stand", "wave"] as const);
+    const flip = rng.chance(0.5);
+    const small = rng.chance(0.15);
+    if (hush(a)) continue;
+    person(pen, a, 0.75, 0, look, pose, flip, small ? 0.72 : 1);
   }
   pen.pop();
+}
+
+/**
+ * A pedestrian light at every street corner of a block, with the little men of
+ * the East, who after 1990 took over the whole city: green on two corners,
+ * red on the other two.
+ */
+function crossings(c: BlockCtx): void {
+  const k = 0.95;
+  const corners: [number, number][] = [
+    [k, k],
+    [BLOCK - k, k],
+    [BLOCK - k, BLOCK - k],
+    [k, BLOCK - k],
+  ];
+  corners.forEach(([x, y], n) => {
+    // not on a corner that is a river bank: there is nothing to cross to
+    if ((c.river === "xp" && x > BLOCK / 2) || (c.river === "xm" && x < BLOCK / 2)) return;
+    ampel(c.pen, x, y, 0, (n + c.i + c.j) % 2 === 0);
+  });
 }
 
 // ---------------------------------------------------------------- traffic
@@ -969,9 +999,10 @@ export function buildCity(blocks: BlockDef[], islets: IsletDef[]): City {
     slab(pen, c);
     pen.reveal = normal;
     for (const side of ["ym", "xm", "xp", "yp"] as const) {
-      if (side === c.river) dressBank(c, side, b.gaps ?? []);
+      if (side === c.river) dressBank(c, side, b.gaps ?? [], b.quiet ?? []);
       else dressSidewalk(c, side);
     }
+    crossings(c);
     b.build(c);
     pen.pop();
     done = Math.max(done, c.done);
@@ -1033,7 +1064,9 @@ export function buildCity(blocks: BlockDef[], islets: IsletDef[]): City {
     const far = blocks.find((b) => b.i === AFTER + 1 && b.j === ROWS - 1);
     const farStop = far ? stops.find((q) => q.id === far.id) : undefined;
     elevated(pen, movers, t + 2.2, () => farStop?.at ?? null);
-    done = Math.max(done, t + 2.4);
+    // and, in the river just upstream of the bridge, the Molecule Man and the swimming-pool barge
+    beyond(pen, movers, t + 0.6, t + 2.6);
+    done = Math.max(done, t + 2.8);
   }
 
   pen.rng = new Rng(31337);

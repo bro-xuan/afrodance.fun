@@ -25,7 +25,7 @@ const AXIS_GAP: [number, number] = [AXIS_Y - ROW_Y[1] - AXIS_W / 2 - 0.3, AXIS_Y
 
 export const PLAN: BlockPlan[] = [
   { id: "brandenburgertor", i: 1, j: 1, t: 0.4, name: "Brandenburger Tor", note: "the Quadriga looks down Unter den Linden", gaps: [AXIS_GAP] },
-  { id: "reichstag", i: 1, j: 0, t: 1.0, name: "Reichstag", note: "a glass dome over the parliament", gaps: [[17, 33]] },
+  { id: "reichstag", i: 1, j: 0, t: 1.0, name: "Reichstag", note: "a glass dome over the parliament", gaps: [[17, 33]], quiet: [[7, 17]] },
   { id: "tiergarten", i: 0, j: 1, t: 1.4, name: "Tiergarten", note: "Goldelse on her column, above the trees" },
   { id: "alexanderplatz", i: 2, j: 1, t: 1.8, name: "Alexanderplatz", note: "the TV tower and the World Clock", gaps: [AXIS_GAP] },
   { id: "kreuzberg", i: 1, j: 2, t: 2.2, name: "Kreuzberg", note: "Checkpoint Charlie, döner and a swim in the Spree", gaps: [[22, 28]] },
