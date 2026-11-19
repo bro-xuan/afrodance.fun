@@ -22,6 +22,7 @@ export function AmsterdamAnimation() {
   const [night, setNight] = useState(false);
   const [wide, setWide] = useState(true);
   const [failed, setFailed] = useState(false);
+  const [still, setStill] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -32,15 +33,20 @@ export function AmsterdamAnimation() {
     // just the controls and hands the animation to the recorder as window.amsterdam.
     if (q.has("clean")) stage.setAttribute("data-clean", "");
     if (q.has("rec")) stage.setAttribute("data-rec", "");
-    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // ?t=12 holds the film at one second (anything that is not a number is ignored)
+    const at = q.get("t");
+    const freeze = at !== null && at.trim() !== "" && Number.isFinite(Number(at)) ? Number(at) : null;
+    // with reduced motion asked for, the finished city stands still and there is nothing to pause
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) queueMicrotask(() => setStill(true));
     let api: Amsterdam;
     try {
       api = createAmsterdam(
         canvas,
         { blocks: BLOCKS, islets: ISLETS, tour: TOUR, closeup: CLOSEUP },
         {
-          still,
-          freeze: q.has("t") ? Number(q.get("t")) : null,
+          still: reduced,
+          freeze,
           onCaption: (c) => {
             setCaption(c);
             if (c) setShown(c);
@@ -49,10 +55,15 @@ export function AmsterdamAnimation() {
           onExplore: setExploring,
           onNight: setNight,
           onWide: setWide,
+          onError: (err) => {
+            console.error(err);
+            setFailed(true);
+          },
         },
       );
-    } catch {
-      // no WebGL2: the fallback message is shown instead
+    } catch (err) {
+      // usually no WebGL2; whatever it was, say so in the console and show the message instead
+      console.error(err);
       queueMicrotask(() => setFailed(true));
       return;
     }
@@ -71,8 +82,8 @@ export function AmsterdamAnimation() {
       // leave browser shortcuts alone, and let a focused button or link answer its own keys
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (e.key === " " && e.target instanceof Element && e.target.closest("button, a")) return;
+      const step = 90;
       if (e.key === " ") {
-        e.preventDefault();
         if (api.paused) api.play();
         else api.pause();
         setPaused(api.paused);
@@ -80,6 +91,15 @@ export function AmsterdamAnimation() {
         api.restart();
         setPaused(false);
       } else if (e.key === "Escape") api.resume();
+      // the keyboard's way of dragging and scrolling: arrows look around, plus and minus zoom
+      else if (e.key === "ArrowLeft") api.look(-step, 0);
+      else if (e.key === "ArrowRight") api.look(step, 0);
+      else if (e.key === "ArrowUp") api.look(0, -step);
+      else if (e.key === "ArrowDown") api.look(0, step);
+      else if (e.key === "+" || e.key === "=") api.look(0, 0, 1.25);
+      else if (e.key === "-" || e.key === "_") api.look(0, 0, 0.8);
+      else return;
+      e.preventDefault();
       wake();
     };
     window.addEventListener("pointermove", wake);
@@ -123,7 +143,7 @@ export function AmsterdamAnimation() {
 
       {failed && (
         <p className={styles.fallback}>
-          This drawing needs WebGL2, which this browser does not have switched on. Any recent Chrome, Safari, Firefox or Edge will show it.
+          This drawing needs WebGL2 and could not start it in this browser. Any recent Chrome, Safari, Firefox or Edge will show it.
         </p>
       )}
 
@@ -137,7 +157,8 @@ export function AmsterdamAnimation() {
           afrodance.fun
         </Link>
 
-        <div className={styles.caption} data-show={visible} aria-live="polite">
+        {/* not a live region: a caption every few seconds, for ever, is no kindness to a screen reader */}
+        <div className={styles.caption} data-show={visible} aria-hidden={!visible}>
           <strong>{shown?.name}</strong>
           <span>{shown?.note}</span>
         </div>
@@ -150,22 +171,26 @@ export function AmsterdamAnimation() {
               back to the tour
             </button>
           )}
-          <button type="button" className={styles.button} onClick={toggle} aria-label={paused ? "Play" : "Pause"} title={paused ? "Play (space)" : "Pause (space)"}>
-            {paused ? (
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M8.5 5.5 18.5 12 8.5 18.5Z" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M8.5 5.5v13M15.5 5.5v13" />
-              </svg>
-            )}
-          </button>
-          <button type="button" className={styles.button} onClick={restart} aria-label="Draw it again" title="Draw it again (R)">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5.5 12a6.5 6.5 0 1 0 2.2-4.9M5 4.5v3.4h3.4" />
-            </svg>
-          </button>
+          {!still && (
+            <>
+              <button type="button" className={styles.button} onClick={toggle} aria-label={paused ? "Play" : "Pause"} title={paused ? "Play (space)" : "Pause (space)"}>
+                {paused ? (
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8.5 5.5 18.5 12 8.5 18.5Z" />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8.5 5.5v13M15.5 5.5v13" />
+                  </svg>
+                )}
+              </button>
+              <button type="button" className={styles.button} onClick={restart} aria-label="Draw it again" title="Draw it again (R)">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5.5 12a6.5 6.5 0 1 0 2.2-4.9M5 4.5v3.4h3.4" />
+                </svg>
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

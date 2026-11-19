@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { planTimeline, planTour } from "./amsterdam";
 import { BLOCKS, CLOSEUP, ISLETS, TOUR } from "./scene/blocks";
-import { BLOCK, PITCH, buildCity } from "./scene/city";
+import { BLOCK, BOAT_HORIZON, PITCH, buildCity } from "./scene/city";
 
 const city = buildCity(BLOCKS, ISLETS);
 const legs = planTour(city.stops, TOUR);
@@ -48,6 +48,8 @@ describe("the tour", () => {
     expect(tl.nightEnd - tl.duskStart).toBeGreaterThan(6);
     expect(tl.end).toBeGreaterThan(tl.nightEnd);
     expect(tl.end).toBeLessThan(90);
+    // the canal boats are only checked against each other this far into the timeline
+    expect(tl.end).toBeLessThan(BOAT_HORIZON);
     // without a close-up the loop is shorter by exactly the close-up
     expect(planTimeline(city.done, legs, false).end).toBeLessThan(tl.end);
   });

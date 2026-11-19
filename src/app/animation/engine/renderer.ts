@@ -56,25 +56,29 @@ uniform float uClock;
 uniform float uNight;
 out vec4 outColor;
 void main() {
+  // The grain is looked up first, before anything can branch or discard: a
+  // texture's mip level comes from how its coordinates change across
+  // neighbouring pixels, and that is only defined in straight-line code.
+  // Lookups inside a branch name their level outright (textureLod) instead.
+  float tooth = texture(uNoise, vPaper * 0.085).g;
+  float streak = texture(uNoise, vec2(vPaper.x * 0.013 + vPaper.y * 0.11, vPaper.y * 0.02 - vPaper.x * 0.06)).b;
 ${
   wipe
     ? `  float f = (vRev.x - uReveal.x) / uReveal.y;
   if (f < 1.0) {
-    float edge = texture(uNoise, vPaper * 0.021).r;
+    float edge = textureLod(uNoise, vPaper * 0.021, 0.0).r;
     if (f * 1.35 < vRev.y + edge * 0.35) discard;
   }`
     : ""
 }
   float g = vRev.z;
   vec3 c = vCol;
-  float tooth = texture(uNoise, vPaper * 0.085).g;
   c *= 1.0 + (tooth - 0.5) * 0.13 * g;
-  float streak = texture(uNoise, vec2(vPaper.x * 0.013 + vPaper.y * 0.11, vPaper.y * 0.02 - vPaper.x * 0.06)).b;
   c = mix(c, vec3(1.0), smoothstep(0.64, 0.86, streak) * 0.2 * g);
   int kind = int(vFx.w * 255.0 + 0.5);
   if (kind == 1) {
     float w = sin(vPaper.y * 5.2 + sin(vPaper.x * 0.9 + uClock * 0.7) * 1.4 + uClock * 0.5);
-    float mask = texture(uNoise, vPaper * 0.03 + vec2(uClock * 0.004, 0.0)).a;
+    float mask = textureLod(uNoise, vPaper * 0.03 + vec2(uClock * 0.004, 0.0), 0.0).a;
     c = mix(c, vec3(1.0), smoothstep(0.9, 1.0, w) * smoothstep(0.5, 0.72, mask) * 0.6);
   }
   if (uNight > 0.0) {
@@ -225,7 +229,8 @@ void main() {
   vec2 q = vUv - 0.5;
   float vig = smoothstep(0.35, 0.95, dot(q, q) * 2.2);
   float m = 1.0 - (fibre - 0.5) * 0.07 - (blot - 0.5) * 0.035 - vig * 0.07;
-  outColor = vec4(uPaper * uFade, m * (1.0 - uFade));
+  // (the fade back to blank paper keeps the grain, so nothing jumps when the loop starts again)
+  outColor = vec4(uPaper * uFade * m, m * (1.0 - uFade));
 }`;
 
 function compile(gl: WebGL2RenderingContext, type: number, src: string): WebGLShader {
@@ -242,9 +247,14 @@ function compile(gl: WebGL2RenderingContext, type: number, src: string): WebGLSh
 
 function program(gl: WebGL2RenderingContext, vs: string, fs: string): WebGLProgram {
   const p = gl.createProgram() as WebGLProgram;
-  gl.attachShader(p, compile(gl, gl.VERTEX_SHADER, vs));
-  gl.attachShader(p, compile(gl, gl.FRAGMENT_SHADER, fs));
+  const v = compile(gl, gl.VERTEX_SHADER, vs);
+  const f = compile(gl, gl.FRAGMENT_SHADER, fs);
+  gl.attachShader(p, v);
+  gl.attachShader(p, f);
   gl.linkProgram(p);
+  // once linked, the program keeps what it needs: the shaders can go
+  gl.deleteShader(v);
+  gl.deleteShader(f);
   if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error("link: " + gl.getProgramInfoLog(p));
   return p;
 }
@@ -344,6 +354,7 @@ export class Renderer {
   private dFill: Batch;
   private dLine: Batch;
   private noise: WebGLTexture;
+  private quad: WebGLBuffer;
   private postVao: WebGLVertexArrayObject;
   width = 1;
   height = 1;
@@ -379,11 +390,11 @@ export class Renderer {
 
     this.sFill = this.fillBatch();
     this.dFill = this.fillBatch();
-    const quad = gl.createBuffer() as WebGLBuffer;
-    gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+    this.quad = gl.createBuffer() as WebGLBuffer;
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.quad);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, -1, 1, -1, 0, 1, 1, 1]), gl.STATIC_DRAW);
-    this.sLine = this.lineBatch(quad);
-    this.dLine = this.lineBatch(quad);
+    this.sLine = this.lineBatch(this.quad);
+    this.dLine = this.lineBatch(this.quad);
     this.postVao = gl.createVertexArray() as WebGLVertexArrayObject;
 
     const size = 256;
@@ -581,6 +592,8 @@ export class Renderer {
       gl.deleteBuffer(b.cbuf);
       gl.deleteVertexArray(b.vao);
     }
+    gl.deleteBuffer(this.quad);
+    gl.deleteVertexArray(this.postVao);
     gl.deleteTexture(this.noise);
     gl.deleteProgram(this.fillP);
     gl.deleteProgram(this.solidP);

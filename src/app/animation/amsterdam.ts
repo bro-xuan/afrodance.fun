@@ -27,6 +27,8 @@ export interface AmsterdamOptions {
   onWide?: (wide: boolean) => void;
   /** Called when evening falls or lifts, so the page furniture can change colour with it. */
   onNight?: (night: boolean) => void;
+  /** Called if the drawing stops for good: the graphics context was lost and came back unusable. */
+  onError?: (err: unknown) => void;
   /** Hold the timeline at this second (for stills and tests). */
   freeze?: number | null;
   /** Start the timeline here instead of at the blank page. */
@@ -50,6 +52,8 @@ export interface Amsterdam {
   resume(): void;
   /** Jump to a second of the timeline and stay there; null lets it run on from that point. */
   hold(t: number | null): void;
+  /** Take the camera from the keyboard: move by so many pixels, and scale the zoom. */
+  look(dx: number, dy: number, factor?: number): void;
   destroy(): void;
   readonly city: City;
   /** When each part of the loop happens, in timeline seconds. */
@@ -159,7 +163,7 @@ export function createAmsterdam(canvas: HTMLCanvasElement, plan: Plan, opts: Ams
   const fullX = (b.x0 + b.x1) / 2;
   // The whole city in view, with a strip along the top left clear for the title.
   let band = 54;
-  const fullZoom = () => Math.min(cssW / ((b.x1 - b.x0) * 1.04), (cssH - band) / ((b.y1 - b.y0) * 1.04));
+  const fullZoom = () => Math.min(cssW / ((b.x1 - b.x0) * 1.04), Math.max(8, cssH - band) / ((b.y1 - b.y0) * 1.04));
   const fullY = () => (b.y0 + b.y1) / 2 - band / 2 / fullZoom();
   const tourZoom = () => Math.min(cssW / 104, cssH / 66);
 
@@ -227,6 +231,8 @@ export function createAmsterdam(canvas: HTMLCanvasElement, plan: Plan, opts: Ams
   let raf = 0;
   let last = 0;
   let disposed = false;
+  /** Something other than time has changed (the size, the camera) and the picture needs drawing again. */
+  let dirty = true;
   let caption: Stop | null = null;
   let dark = false;
   let exploring = false;
@@ -269,6 +275,10 @@ export function createAmsterdam(canvas: HTMLCanvasElement, plan: Plan, opts: Ams
     band = 3.5 * (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16);
     renderer.resize(cssW, cssH, Math.min(window.devicePixelRatio || 1, density));
     rekey();
+    // Changing a canvas's size wipes it. Draw again straight away, or the
+    // page shows a blank frame at every step of a window being dragged wider.
+    dirty = true;
+    if (!lost && !first) draw();
   };
 
   const frame = (now: number) => {
@@ -278,26 +288,30 @@ export function createAmsterdam(canvas: HTMLCanvasElement, plan: Plan, opts: Ams
     const dt = Math.min(0.05, gap / 1000);
     last = now;
     if (lost) return;
-    // a run of slow frames (under about 40 a second) drops the resolution a notch
-    if (held == null && gap > 25 && gap < 250) {
-      if (++slow > 45 && density > 1 && (window.devicePixelRatio || 1) > 1) {
-        density = Math.max(1, Math.min(density, window.devicePixelRatio || 1) - 0.5);
-        slow = 0;
-        resize();
-      }
-    } else if (slow > 0) slow--;
-    if (!opts.still) clock += dt;
-    if (held != null) {
+    const running = held == null && playing && !opts.still;
+    if (running) {
+      // A run of slow frames (under 25 a second) drops the resolution a notch.
+      // A display that is merely capped at 30 a second, as phones are when
+      // saving power, stays sharp.
+      if (gap > 40 && gap < 250) {
+        if (++slow > 45 && density > 1 && (window.devicePixelRatio || 1) > 1) {
+          density = Math.max(1, Math.min(density, window.devicePixelRatio || 1) - 0.5);
+          slow = 0;
+          resize();
+        }
+      } else if (slow > 0) slow--;
+      // the wind and the water run on their own clock, and stop when the film is paused
+      t += dt;
+      clock += dt;
+      if (t >= fadeEnd) t = 0;
+    } else if (held != null) {
       // held frames are repeatable: the wind and the water follow the timeline too
       t = held;
       clock = held;
-    } else if (playing) {
-      if (opts.still) t = outEnd;
-      else {
-        t += dt;
-        if (t >= fadeEnd) t = 0;
-      }
-    }
+    } else if (opts.still) t = outEnd;
+    // With time standing still (paused, held, or reduced motion) the picture
+    // only needs drawing when something else has changed.
+    if (!running && !dirty) return;
     if (opts.onFrame) {
       const t0 = performance.now();
       draw();
@@ -347,6 +361,7 @@ export function createAmsterdam(canvas: HTMLCanvasElement, plan: Plan, opts: Ams
       opts.onNight?.(dark);
     }
     renderer.draw({ time: t, clock, camX: cam.x, camY: cam.y, zoom: cam.zoom, night, fade, dyn, settled: t > city.settled });
+    dirty = false;
     if (first) {
       first = false;
       opts.onReady?.();
@@ -354,7 +369,7 @@ export function createAmsterdam(canvas: HTMLCanvasElement, plan: Plan, opts: Ams
   };
 
   // ---- taking the camera: drag to pan, wheel or pinch to zoom
-  const pointers = new Map<number, { x: number; y: number }>();
+  const pointers = new Map<number, { x: number; y: number; sx: number; sy: number; moved: boolean }>();
   let pinch = 0;
   const startExplore = () => {
     if (exploring) return;
@@ -371,25 +386,40 @@ export function createAmsterdam(canvas: HTMLCanvasElement, plan: Plan, opts: Ams
     user.y = clamp(user.y, b.y0, b.y1);
   };
   const onDown = (e: PointerEvent) => {
+    // only the main mouse button drags: a right click opens a menu and its release is never reported
+    if (e.pointerType === "mouse" && e.button !== 0) return;
     try {
       canvas.setPointerCapture(e.pointerId);
     } catch {
       // the pointer is already gone; the drag simply ends when it leaves the canvas
     }
-    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, moved: false });
     if (pointers.size === 2) {
       const [p, q] = [...pointers.values()];
       pinch = Math.hypot(p.x - q.x, p.y - q.y);
     }
   };
+  const onUp = (e: PointerEvent) => {
+    pointers.delete(e.pointerId);
+    pinch = 0;
+  };
   const onMove = (e: PointerEvent) => {
     const p = pointers.get(e.pointerId);
     if (!p) return;
+    // a mouse with no button down was released somewhere we did not hear about
+    if (e.pointerType === "mouse" && e.buttons === 0) {
+      onUp(e);
+      return;
+    }
     const dx = e.clientX - p.x;
     const dy = e.clientY - p.y;
     p.x = e.clientX;
     p.y = e.clientY;
-    if (!exploring && Math.abs(dx) + Math.abs(dy) < 1) return;
+    // a press becomes a drag once it has travelled a few pixels, however slowly
+    if (!p.moved) {
+      if (pointers.size === 1 && Math.hypot(p.x - p.sx, p.y - p.sy) < 3) return;
+      p.moved = true;
+    }
     startExplore();
     if (pointers.size === 1) {
       user.x -= dx / user.zoom;
@@ -397,37 +427,72 @@ export function createAmsterdam(canvas: HTMLCanvasElement, plan: Plan, opts: Ams
     } else if (pointers.size === 2) {
       const [a, c] = [...pointers.values()];
       const d = Math.hypot(a.x - c.x, a.y - c.y);
-      if (pinch > 0) user.zoom *= d / pinch;
+      if (pinch > 0 && d > 0) {
+        // zoom about the point between the two fingers
+        const r = canvas.getBoundingClientRect();
+        const mx = (a.x + c.x) / 2 - r.left - cssW / 2;
+        const my = (a.y + c.y) / 2 - r.top - cssH / 2;
+        const wx = user.x + mx / user.zoom;
+        const wy = user.y + my / user.zoom;
+        user.zoom *= d / pinch;
+        limit();
+        user.x = wx - mx / user.zoom;
+        user.y = wy - my / user.zoom;
+      }
       pinch = d;
+      // the fingers carry the map with them: one finger's move shifts their midpoint by half as much
+      user.x -= dx / 2 / user.zoom;
+      user.y -= dy / 2 / user.zoom;
     }
     limit();
-  };
-  const onUp = (e: PointerEvent) => {
-    pointers.delete(e.pointerId);
-    pinch = 0;
+    dirty = true;
   };
   const onWheel = (e: WheelEvent) => {
     e.preventDefault();
+    // a mouse wheel may count in lines or pages instead of pixels (Firefox does)
+    const dy = e.deltaMode === 1 ? e.deltaY * 32 : e.deltaMode === 2 ? e.deltaY * 600 : e.deltaY;
+    // a sideways swipe is not a zoom, and no reason to leave the tour
+    if (dy === 0) return;
     startExplore();
     const r = canvas.getBoundingClientRect();
     const mx = e.clientX - r.left - cssW / 2;
     const my = e.clientY - r.top - cssH / 2;
     const wx = user.x + mx / user.zoom;
     const wy = user.y + my / user.zoom;
-    // a mouse wheel may count in lines or pages instead of pixels (Firefox does)
-    const dy = e.deltaMode === 1 ? e.deltaY * 32 : e.deltaMode === 2 ? e.deltaY * 600 : e.deltaY;
     // ctrl is how browsers report a trackpad pinch: small numbers, so each counts for more
     user.zoom *= Math.exp(-dy * (e.ctrlKey ? 0.012 : 0.0016));
     limit();
     user.x = wx - mx / user.zoom;
     user.y = wy - my / user.zoom;
     limit();
+    dirty = true;
+  };
+  // Desktop Safari reports a trackpad pinch as gesture events of its own, and
+  // zooms the whole page unless they are answered. (On a touch screen the
+  // fingers are already followed one by one, above.)
+  let gesture = 1;
+  const onGestureStart = (e: Event) => {
+    e.preventDefault();
+    gesture = 1;
+  };
+  const onGestureChange = (e: Event) => {
+    e.preventDefault();
+    const scale = (e as Event & { scale?: number }).scale;
+    if (!scale || pointers.size > 0) return;
+    startExplore();
+    user.zoom *= scale / gesture;
+    gesture = scale;
+    limit();
+    dirty = true;
   };
   canvas.addEventListener("pointerdown", onDown);
   canvas.addEventListener("pointermove", onMove);
   canvas.addEventListener("pointerup", onUp);
   canvas.addEventListener("pointercancel", onUp);
+  canvas.addEventListener("lostpointercapture", onUp);
   canvas.addEventListener("wheel", onWheel, { passive: false });
+  canvas.addEventListener("gesturestart", onGestureStart);
+  canvas.addEventListener("gesturechange", onGestureChange);
   // If the browser takes the graphics context away (a sleeping tab, a driver
   // reset), wait for it to come back and hand the city to the new one.
   const onLost = (e: Event) => {
@@ -435,8 +500,14 @@ export function createAmsterdam(canvas: HTMLCanvasElement, plan: Plan, opts: Ams
     lost = true;
   };
   const onRestored = () => {
-    renderer = new Renderer(canvas);
-    renderer.setStatic(city.mesh);
+    try {
+      renderer = new Renderer(canvas);
+      renderer.setStatic(city.mesh);
+    } catch (err) {
+      // it came back unusable: say so, rather than leave a frozen picture with live-looking buttons
+      opts.onError?.(err);
+      return;
+    }
     lost = false;
     resize();
   };
@@ -444,7 +515,17 @@ export function createAmsterdam(canvas: HTMLCanvasElement, plan: Plan, opts: Ams
   canvas.addEventListener("webglcontextrestored", onRestored);
   const ro = new ResizeObserver(resize);
   ro.observe(canvas);
-  resize();
+  // The pixel ratio can change with no change of size: the window moves to
+  // another screen, or the page is zoomed. A media query on the current ratio
+  // fires when it stops being true.
+  let ratio: MediaQueryList | null = null;
+  const onRatio = () => {
+    ratio?.removeEventListener("change", onRatio);
+    ratio = window.matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`);
+    ratio.addEventListener("change", onRatio);
+    resize();
+  };
+  onRatio();
   raf = requestAnimationFrame(frame);
 
   return {
@@ -462,6 +543,7 @@ export function createAmsterdam(canvas: HTMLCanvasElement, plan: Plan, opts: Ams
     restart() {
       t = 0;
       playing = true;
+      dirty = true;
       if (exploring) {
         exploring = false;
         opts.onExplore?.(false);
@@ -470,23 +552,40 @@ export function createAmsterdam(canvas: HTMLCanvasElement, plan: Plan, opts: Ams
     resume() {
       if (!exploring) return;
       exploring = false;
+      dirty = true;
       opts.onExplore?.(false);
     },
     hold(at) {
       held = at;
+      dirty = true;
+    },
+    look(dx, dy, factor = 1) {
+      startExplore();
+      user.x += dx / user.zoom;
+      user.y += dy / user.zoom;
+      user.zoom *= factor;
+      limit();
+      dirty = true;
     },
     destroy() {
       disposed = true;
       cancelAnimationFrame(raf);
       ro.disconnect();
+      ratio?.removeEventListener("change", onRatio);
       canvas.removeEventListener("pointerdown", onDown);
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerup", onUp);
       canvas.removeEventListener("pointercancel", onUp);
+      canvas.removeEventListener("lostpointercapture", onUp);
       canvas.removeEventListener("wheel", onWheel);
+      canvas.removeEventListener("gesturestart", onGestureStart);
+      canvas.removeEventListener("gesturechange", onGestureChange);
       canvas.removeEventListener("webglcontextlost", onLost);
       canvas.removeEventListener("webglcontextrestored", onRestored);
       if (!lost) renderer.dispose();
+      // hand the drawing buffer's memory back now, not whenever the canvas happens to be collected
+      canvas.width = 1;
+      canvas.height = 1;
     },
   };
 }

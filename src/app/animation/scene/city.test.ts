@@ -14,8 +14,11 @@ const city = buildCity(BLOCKS, ISLETS);
 const NEAR = DEPTH_MID + DEPTH_HALF;
 const FAR = DEPTH_MID - DEPTH_HALF;
 
-/** Run every mover over a stretch of the timeline and report where each sprite lands. */
-function play(from: number, to: number, step: number, visit: (x: number, y: number, z: number, t: number) => void): Mesh {
+/**
+ * Run every mover over a stretch of the timeline and report where each sprite
+ * lands. From `nightAt` on it is dark, which is when the fireworks go up.
+ */
+function play(from: number, to: number, step: number, visit: (x: number, y: number, z: number, t: number) => void, nightAt = Infinity): Mesh {
   const dyn = new Mesh(1 << 12, 1 << 12);
   const pen = new Pen(dyn, 1);
   for (let t = from; t < to; t += step) {
@@ -24,8 +27,8 @@ function play(from: number, to: number, step: number, visit: (x: number, y: numb
       pen,
       t,
       clock: t,
-      night: 0,
-      nightAt: 1e9,
+      night: t >= nightAt ? 1 : 0,
+      nightAt,
       put(_s: Sprite, x: number, y: number, z: number) {
         visit(x, y, z, t);
       },
@@ -129,5 +132,21 @@ describe("the city", () => {
     expect(seen).toBeGreaterThan(5000);
     for (let i = 0; i < dyn.fn * FV; i++) expect(Number.isFinite(dyn.fv[i])).toBe(true);
     for (let i = 0; i < dyn.ln * LV; i++) expect(Number.isFinite(dyn.lv[i])).toBe(true);
+  });
+
+  it("keeps the fireworks, drawn by hand each frame, inside the depth range too", () => {
+    let sparks = 0;
+    for (let t = 70; t < 80; t += 0.25) {
+      const dyn = play(t, t + 0.01, 1, () => {}, 70);
+      sparks += dyn.ln;
+      for (let i = 0; i < dyn.ln; i++) {
+        for (let k = 0; k < 6; k += 3) {
+          const d = dyn.lv[i * LV + k] + dyn.lv[i * LV + k + 1] + dyn.lv[i * LV + k + 2];
+          if (!(d > FAR + 10 && d < NEAR - 10)) throw new Error(`a stroke drawn at t=${t} is at depth ${d}`);
+        }
+      }
+    }
+    // far more strokes than the day's hand-drawn movers make: the rockets went up
+    expect(sparks).toBeGreaterThan(20000);
   });
 });

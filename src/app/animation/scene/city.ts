@@ -527,6 +527,8 @@ interface Hull {
 }
 
 const BOAT_SPEED = 3;
+/** How many seconds of the timeline the canal boats are checked against each other for. One loop must fit inside it. */
+export const BOAT_HORIZON = 120;
 const HP: V3 = [0, 0, 0];
 
 /** Do two boats overlap at time t? Each is a rectangle lying along its heading. */
@@ -612,7 +614,7 @@ function traffic(pen: Pen, movers: Mover[], born: number): number {
   ];
   const STEP = 0.35;
   const from = born - 1;
-  const steps = Math.ceil((84 - from) / STEP);
+  const steps = Math.ceil((BOAT_HORIZON - from) / STEP);
   /** Where a boat is at every step of the timeline. */
   const track = (h: Hull): Float32Array => {
     const out = new Float32Array(steps * 2);
@@ -972,8 +974,10 @@ export function buildCity(blocks: BlockDef[], islets: IsletDef[]): City {
   }
   night(pen, { x0, y0, x1, y1 }, islets);
   // when the last thing to be drawn in has all its colour (a second after it starts)
+  // (the buffers are looked up afresh: adding the stars may have moved them)
   let latest = 0;
-  for (let k = 3; k < mesh.fn * 6; k += 6) if (fv[k] > latest) latest = fv[k];
+  const fv2 = mesh.fv;
+  for (let k = 3; k < mesh.fn * 6; k += 6) if (fv2[k] > latest) latest = fv2[k];
   const lv = mesh.lv;
   for (let k = 6; k < mesh.ln * 12; k += 12) if (lv[k] > latest) latest = lv[k];
   return { mesh, movers, stops, bounds: { x0, y0, x1, y1 }, done, settled: latest + 1.05, boatClashes };

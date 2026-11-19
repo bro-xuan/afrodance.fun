@@ -23,7 +23,8 @@ describe("the /animation page", () => {
   });
 
   it("starts with no caption showing, no fallback message and no way back to a tour it has not left", () => {
-    expect(html).toMatch(/data-show="false"[^>]*aria-live="polite"/);
+    expect(html).toMatch(/data-show="false"[^>]*aria-hidden="true"/);
+    expect(html).not.toContain("aria-live");
     expect(html).not.toContain("WebGL2");
     expect(html).not.toContain("back to the tour");
   });
