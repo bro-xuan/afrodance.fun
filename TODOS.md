@@ -74,6 +74,32 @@
   **Priority:** P4
   The page and the recorded video are silent. Water, bicycle bells, a street organ at the Dam and a tram would suit it; it has to start muted and only on a tap.
 
+## London (/animation-london)
+
+- **Link the page from the home page**
+  **Priority:** P2
+  `/animation-london` is live but nothing points to it, the same as Amsterdam. One card for both films may be enough; it needs its own pixel-art scene in `src/components/visuals/` (`projects.test.ts` checks every card has one). Found by /ship on feat/london-animation, 2026-11-19.
+
+- **Try it on Safari, Firefox and a phone**
+  **Priority:** P2
+  Built and checked in Chromium on an M3 only, where it holds 60 fps at 2880×1800. London is the heavier of the two films (about 250,000 fills and 200,000 strokes, 165 kB of code gzipped, about a quarter of a second to build the city on the M3), so a mid-range phone is the first thing to try: does the page start, how long does it freeze while the city is built, and what frame rate does the tour hold. The rest of Amsterdam's list applies here too (pinch on desktop Safari, coming back to a backgrounded tab on iOS).
+
+- **Give Amsterdam the phone title fix**
+  **Priority:** P3
+  On a phone-width screen the title and "drawn in code" ran under the afrodance.fun link in the other corner. London's stylesheet stacks the two lines below 40rem; Amsterdam's still has the overlap, and the same rule in `animation-amsterdam/animation.module.css` fixes it.
+
+- **One engine for both films**
+  **Priority:** P3
+  London carries its own copy of the engine (`engine/`, `film.ts`, and the general parts of `scene/kit.ts`, `motion.ts`, `boats.ts`), on purpose: Amsterdam was already live and was left untouched. London's copy has since gained things Amsterdam's lacks (neon that glows in its own colour, digits in the lettering, traffic that queues). Before a third city, move the shared part to one place and point both films at it.
+
+- **The controls lie over Greenwich in the wide view**
+  **Priority:** P4
+  With the whole city in view, the hint and the two buttons in the bottom right corner sit on top of the Greenwich island until they fade (they fade when the pointer rests). Either keep a strip clear along the bottom the way the top is kept clear for the title, or move the island.
+
+- **Sound for the film**
+  **Priority:** P4
+  Silent, like Amsterdam. Big Ben already strikes on cue; a bus, the river, a busker and the fireworks would suit it. It has to start muted and only on a tap.
+
 ## Code health
 
 - **Fix pre-existing ESLint errors in subpages**
