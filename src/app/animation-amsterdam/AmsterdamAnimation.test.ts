@@ -6,7 +6,7 @@ import { AmsterdamAnimation } from "./AmsterdamAnimation";
 // What the server sends before any drawing happens: the page has to make sense like this too.
 const html = renderToStaticMarkup(createElement(AmsterdamAnimation));
 
-describe("the /animation page", () => {
+describe("the /animation-amsterdam page", () => {
   it("is a canvas that says what it shows, under a title", () => {
     expect(html).toContain("<canvas");
     expect(html).toContain('role="img"');

@@ -56,11 +56,11 @@
   **Priority:** P4
   From /design-review (2026-07-22): one Writing card has an italic subtitle and the other doesn't, and both show the same date (Jun 9, 2026), which reads as placeholder-ish. Add a subtitle to both or neither.
 
-## Amsterdam (/animation)
+## Amsterdam (/animation-amsterdam)
 
 - **Link the page from the home page**
   **Priority:** P2
-  `/animation` is live but nothing points to it. A card in `src/data/projects.ts` needs its own pixel-art scene in `src/components/visuals/` (every card has one, and `projects.test.ts` checks it). Found by /ship on feat/amsterdam-animation, 2026-11-19.
+  `/animation-amsterdam` is live but nothing points to it. A card in `src/data/projects.ts` needs its own pixel-art scene in `src/components/visuals/` (every card has one, and `projects.test.ts` checks it). Found by /ship on feat/amsterdam-animation, 2026-11-19.
 
 - **Try it on Safari, Firefox and a phone**
   **Priority:** P2

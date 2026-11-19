@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     title: "Amsterdam, drawn in code",
     description,
     type: "website",
-    url: "/animation",
+    url: "/animation-amsterdam",
   },
   twitter: {
     card: "summary_large_image",
