@@ -28,7 +28,7 @@ export const PLAN: BlockPlan[] = [
   { id: "reichstag", i: 1, j: 0, t: 1.0, name: "Reichstag", note: "a glass dome over the parliament", gaps: [[17, 33]], quiet: [[7, 17]] },
   { id: "tiergarten", i: 0, j: 1, t: 1.4, name: "Tiergarten", note: "Goldelse on her column, above the trees" },
   { id: "alexanderplatz", i: 2, j: 1, t: 1.8, name: "Alexanderplatz", note: "the TV tower and the World Clock", gaps: [AXIS_GAP] },
-  { id: "kreuzberg", i: 1, j: 2, t: 2.2, name: "Kreuzberg", note: "Checkpoint Charlie, döner and a swim in the Spree", gaps: [[22, 28]] },
+  { id: "kreuzberg", i: 1, j: 2, t: 2.2, name: "Kreuzberg", note: "Checkpoint Charlie, and the longest kebab queue in town", gaps: [[22, 28]] },
   { id: "charlottenburg", i: 0, j: 0, t: 2.6, name: "Schloss Charlottenburg", note: "a queen's summer palace and its garden" },
   { id: "prenzlauerberg", i: 2, j: 0, t: 3.0, name: "Prenzlauer Berg", note: "Sunday karaoke in the Mauerpark" },
   { id: "citywest", i: 0, j: 2, t: 3.4, name: "City West", note: "the broken church on the Ku'damm" },
@@ -43,7 +43,7 @@ export const ISLET_PLAN: IsletPlan[] = [
   { id: "museumsinsel", x: ISLAND.x0 + 20, y: ISLAND.y0 + 20, t: 2.0, name: "Museumsinsel", note: "the cathedral and the museums, on an island in the Spree", island: true, quick: false },
   { id: "wannsee", x: -MARGIN - 52, y: ROW_Y[1] + 12, t: 4.3, name: "Wannsee", note: "pack your swimming things" },
   { id: "tempelhof", x: COL_X[1] + 18, y: GRID_Y + MARGIN + 54, t: 4.6, name: "Tempelhofer Feld", note: "an airport handed over to kites and skates" },
-  { id: "treptow", x: GRID_X + MARGIN + 36, y: ROW_Y[1] + 44, t: 4.9, name: "Treptower Park", note: "the old big wheel in the woods" },
+  { id: "treptow", x: GRID_X + MARGIN + 40, y: ROW_Y[1] + 11, t: 4.9, name: "Treptower Park", note: "the old big wheel in the woods" },
 ];
 
 /** The camera's route: down the west, along the south, up the east, and in to the island and the Gate last. */

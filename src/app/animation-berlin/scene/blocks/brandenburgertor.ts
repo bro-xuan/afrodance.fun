@@ -10,9 +10,9 @@
 // the island keeps to it, so nothing stands between y = AX - 2.5 and AX + 2.5
 // east of the Gate.
 
-import { RGB, Rng, V2, V3, hash1, scaleRGB } from "../../engine/math";
+import { RGB, V2, V3, hash1 } from "../../engine/math";
 import { L_BAR, L_LIGHT, L_MARK, Pen, Plane } from "../../engine/pen";
-import { buddyBear, dog, flagOf, fountain, imbiss, litfass, queue } from "../berlin";
+import { buddyBear, dog, flagOf, fountain, imbiss, litfass, pinkPipes, queue } from "../berlin";
 import { uSign } from "../bridges";
 import { AXIS_Y, BLOCK, QUAY, ROW_Y } from "../city";
 import { W_FINE, W_THIN, Look, bench, bikeRow, cafeTable, flowerBed, lamp, person, randomLook, tree, windowAt, windowGrid } from "../kit";
@@ -515,6 +515,18 @@ export const brandenburgertor: BlockBuilder = (c) => {
   queue(pen, rng, 37.0, AX + 7.2, 4, 1, 0.15);
   buddyBear(pen, 43.0, AX + 5.0, C.blue);
 
+  // along the southern pavement, the pink pipes that have followed the building sites up and down this street for years
+  pinkPipes(
+    pen,
+    [
+      [30.8, 43.1],
+      [37.4, 43.1],
+      [37.4, 42.1],
+      [43.3, 42.1],
+    ],
+    3.3,
+  );
+
   // behind the Gate, on the western side: the U-Bahn, bikes, and people taking the picture everybody takes
   uSign(pen, E + 1.4, AX - 9.5, 0);
   bikeRow(pen, rng, E + 0.9, AX - 7.6, 7, 0, 0.62);
@@ -733,7 +745,4 @@ export const brandenburgertor: BlockBuilder = (c) => {
       m.put(frames[flap][vx - vy < 0 ? 1 : 0], c.ox + GX + Math.cos(a) * r * 0.7, c.oy + AX + Math.sin(a) * r, c.oz + 18 + Math.sin(m.t * 0.7 + ph) * 1.1, born);
     });
   }
-  void L_BAR;
-  void scaleRGB;
-  void Rng;
 };

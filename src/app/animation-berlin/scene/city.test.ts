@@ -4,7 +4,8 @@ import { Pen } from "../engine/pen";
 import { planTimeline, planTour } from "../film";
 import { BLOCKS, CLOSEUP, DRAWN, ISLETS, TOUR } from "./blocks";
 import { ISLET_PLAN, PLAN } from "./blocks/plan";
-import { BLOCK, COLS, COL_X, LANE, ROWS, ROW_Y, RX0, RX1, WATER, X0, X1, Y0, Y1, buildCity, inWater, onBase, onBlock, onDeck, onIsland } from "./city";
+import { TRACK_Y, TRACK_Z } from "./bridges";
+import { BLOCK, COLS, COL_X, ISLAND, LANE, ROWS, ROW_Y, RX0, RX1, WATER, X0, X1, Y0, Y1, buildCity, inWater, islandOutline, onBase, onBlock, onDeck, onIsland } from "./city";
 import { FRAME } from "./frame";
 import { MoveCtx } from "./types";
 
@@ -93,8 +94,9 @@ describe("the city", () => {
     }
     const ids = [...PLAN.map((p) => p.id), ...ISLET_PLAN.map((p) => p.id)];
     expect(new Set(ids).size).toBe(ids.length);
-    // a drawing registered under a mistyped id would never be used
+    // a drawing registered under a mistyped id would never be used, and a place with none would be bare paving
     for (const id of Object.keys(DRAWN)) expect(ids).toContain(id);
+    for (const id of ids) expect(Object.keys(DRAWN)).toContain(id);
     expect([...TOUR].sort()).toEqual([...ids].sort());
     const stops = city.stops.map((s) => s.id);
     for (const id of TOUR) expect(stops).toContain(id);
@@ -143,8 +145,8 @@ describe("the city", () => {
       if (Math.abs(z - WATER) > 0.05 || nearIslet(x, y)) return;
       afloat++;
       if (y > Y0 && y < Y1) inTown++;
-      // a boat is about three wide: its middle keeps a good unit of water on every side
-      if (!inWater(x, y, 1) && aground.length < 5) aground.push(`${x.toFixed(1)}, ${y.toFixed(1)} at t=${t.toFixed(1)}`);
+      // the widest boat is 3.2 across: its middle keeps more than half of that from every bank and from the island
+      if (!inWater(x, y, 1.7) && aground.length < 5) aground.push(`${x.toFixed(1)}, ${y.toFixed(1)} at t=${t.toFixed(1)}`);
     });
     expect(afloat).toBeGreaterThan(2000);
     // and there is always something to watch between the bridges
@@ -213,6 +215,61 @@ describe("the city", () => {
     }
     expect(checked).toBeGreaterThan(3);
     expect(wrong).toEqual([]);
+  });
+
+  it("puts Museum Island in mid-river, with water for the boats on both sides", () => {
+    for (const [x, y] of islandOutline()) {
+      expect(x).toBeGreaterThan(RX0 + 6);
+      expect(x).toBeLessThan(RX1 - 6);
+      expect(y).toBeGreaterThan(ROW_Y[1]);
+      expect(y).toBeLessThan(ROW_Y[1] + BLOCK);
+    }
+    expect(onIsland((ISLAND.x0 + ISLAND.x1) / 2, (ISLAND.y0 + ISLAND.y1) / 2)).toBe(true);
+    expect(inWater((ISLAND.x0 + ISLAND.x1) / 2, (ISLAND.y0 + ISLAND.y1) / 2)).toBe(false);
+    expect(inWater(RX0 + 3, ROW_Y[1] + 24)).toBe(true);
+    expect(inWater(RX1 - 3, ROW_Y[1] + 24)).toBe(true);
+    // and the Museumsinsel stop stands on it
+    const stop = city.stops.find((q) => q.id === "museumsinsel");
+    expect(stop && onIsland(stop.x, stop.y, 1)).toBe(true);
+  });
+
+  it("sends the U1 over the Oberbaumbrücke while the camera is in Friedrichshain", () => {
+    // the film tells each stop when the camera arrives; do the same here
+    const legs = planTour(city.stops, TOUR);
+    legs.forEach((l, i) => {
+      l.stop.at = tl.arrivals[i].at;
+      l.stop.leave = tl.arrivals[i].leave;
+    });
+    try {
+      const stay = tl.arrivals.find((a) => a.id === "friedrichshain");
+      expect(stay).toBeDefined();
+      if (!stay) return;
+      const train = (t: number) => {
+        const xs: number[] = [];
+        play(t, t + 0.01, 1, (x, y, z) => {
+          if (Math.abs(z - TRACK_Z) < 1e-6 && Math.abs(y - TRACK_Y) < 1e-6) xs.push(x);
+        });
+        return xs;
+      };
+      // four cars, on the bridge for the middle of the stay
+      const mid = train((stay.at + stay.leave) / 2);
+      expect(mid.length).toBe(4);
+      const centre = mid.reduce((s, x) => s + x, 0) / mid.length;
+      expect(centre).toBeGreaterThan(RX0);
+      expect(centre).toBeLessThan(RX1);
+      // and it never leaves its viaduct: between the two stations, all loop long
+      for (let t = city.done + 3; t < tl.end; t += 1.7) {
+        for (const x of train(t)) {
+          expect(x).toBeGreaterThan(COL_X[1] + 8);
+          expect(x).toBeLessThan(COL_X[2] + 34);
+        }
+      }
+    } finally {
+      for (const l of legs) {
+        l.stop.at = undefined;
+        l.stop.leave = undefined;
+      }
+    }
   });
 
   it("never lets two boats, cars or trams run into each other, and finds room for all of them", () => {

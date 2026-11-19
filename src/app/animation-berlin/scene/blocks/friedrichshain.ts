@@ -547,7 +547,8 @@ function pigeon(pen: Pen, up: boolean, flip: boolean): void {
 
 export const friedrichshain: BlockBuilder = (c) => {
   const { pen, rng } = c;
-  c.focus(24, 25.5, 1);
+  // aimed south-west of the middle and a little wider, so the Oberbaumbrücke and the U1 crossing it are in the picture
+  c.focus(13.5, 40, 0.85);
   const black = (): Look => ({ ...randomLook(rng), top: C.black, legs: rng.pick([C.black, C.charcoal, C.black]), hat: null });
 
   // the ground: grass between the Wall and the river, the gallery's pavement, the yard's worn asphalt

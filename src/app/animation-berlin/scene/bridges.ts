@@ -193,7 +193,6 @@ function crenels(L: number, h: number, step = 1.1, gap = 0.45): V2[] {
 export function oberbaum(pen: Pen, rng: Rng, L: number, wd: number): void {
   const wz = WATER;
   const D = wd + CLOISTER;
-  const mid = L / 2;
   const side = (L - 11 - 6 * 1.2) / 4;
   const arches: Arch[] = [];
   {

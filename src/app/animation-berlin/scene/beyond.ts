@@ -6,7 +6,7 @@
 import { RGB, Rng, V2, V3 } from "../engine/math";
 import { F_WATER, L_BAR, L_LIGHT, L_MARK, Pen } from "../engine/pen";
 import { liegestuhl } from "./berlin";
-import { REACH_S, RIVER_MID, RX0, WATER, Y1 } from "./grid";
+import { REACH_S, RX0, WATER, Y1 } from "./grid";
 import { W_FINE, W_THIN, person, randomLook } from "./kit";
 import { makeSprite } from "./motion";
 import { C } from "./palette";
@@ -242,5 +242,4 @@ export function beyond(pen: Pen, movers: Mover[], t: number, born: number): void
       }
     }
   });
-  void RIVER_MID;
 }

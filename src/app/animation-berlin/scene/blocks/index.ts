@@ -8,13 +8,11 @@ import { brandenburgertor, gateSpot } from "./brandenburgertor";
 import { charlottenburg } from "./charlottenburg";
 import { citywest } from "./citywest";
 import { friedrichshain } from "./friedrichshain";
-import { island } from "./island";
 import { kreuzberg } from "./kreuzberg";
 import { museumsinsel } from "./museumsinsel";
 import { ISLET_PLAN, PLAN, TOUR } from "./plan";
 import { prenzlauerberg } from "./prenzlauerberg";
 import { reichstag } from "./reichstag";
-import { park, sampleFor, square, terrace } from "./sample";
 import { tempelhof } from "./tempelhof";
 import { tiergarten } from "./tiergarten";
 import { treptow } from "./treptow";
@@ -43,15 +41,16 @@ export const DRAWN: Record<string, Drawn> = {
   treptow: { build: treptow },
 };
 
-export const BLOCKS: BlockDef[] = PLAN.map((p) => ({ ...p, build: DRAWN[p.id]?.build ?? sampleFor(p.i, p.j) }));
+/** A place on the plan with no drawing would be bare paving: say so at once rather than ship it. */
+function drawing(id: string): BlockBuilder {
+  const d = DRAWN[id];
+  if (!d) throw new Error(`nothing is drawn for "${id}": register it in DRAWN`);
+  return d.build;
+}
 
-export const ISLETS: IsletDef[] = ISLET_PLAN.map((p) => ({ ...p, build: DRAWN[p.id]?.build ?? (p.island ? () => {} : island) }));
+export const BLOCKS: BlockDef[] = PLAN.map((p) => ({ ...p, build: drawing(p.id) }));
 
-/** The starter's stand-ins: a place drawn with one of these is not really drawn yet. */
-const SAMPLES = new Set<BlockBuilder>([square, terrace, park, island]);
-
-/** Places still borrowing a sample (or, for an island, drawing nothing). Empty before shipping. */
-export const SAMPLED: string[] = [...PLAN, ...ISLET_PLAN].map((p) => p.id).filter((id) => !DRAWN[id] || SAMPLES.has(DRAWN[id].build));
+export const ISLETS: IsletDef[] = ISLET_PLAN.map((p) => ({ ...p, build: drawing(p.id) }));
 
 /** The tour ends close in on the spot its last stop marks, if it marks one. */
 const last = PLAN.find((p) => p.id === TOUR[TOUR.length - 1]);

@@ -257,6 +257,12 @@
 }
 
 @media (max-width: 40rem) {
+  /* on a phone the title stacks, so it stays clear of the link in the other corner */
+  .title {
+    flex-direction: column;
+    gap: 0.3rem;
+    align-items: flex-start;
+  }
   .title h1 {
     font-size: 2rem;
   }

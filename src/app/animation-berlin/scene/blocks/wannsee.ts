@@ -335,7 +335,7 @@ function pier(pen: Pen, a: V2, b: V2, z: number): void {
 
 export const wannsee: BlockBuilder = (c) => {
   const { pen, rng } = c;
-  c.focus(16.4, 16.4, 1.1);
+  c.focus(16.2, 16.2, 1.22);
 
   // ---- the ground: the lake, the high land behind the beach, and the beach sloping between them
   const hornL = bay(HORN_L, RHO);
@@ -446,7 +446,7 @@ export const wannsee: BlockBuilder = (c) => {
     pen.end();
     pen.floor(TOP, 2).ticks(-2, -2, 30, 42, { n: 330, len: 0.5, ang: 1.2, jit: 0.5, color: C.grassDark, w: 0.06, inside: (a, b) => onHigh(a, b, 0.7) });
     // the path through the wood, behind the bath house
-    pen.floor(TOP, 1).line([ds(-12.4, -11.5), ds(-12.0, -5), ds(-12.0, 3), ds(-12.6, 10), ds(-11.6, 13.5)], { w: 1.2, color: C.path, kind: L_MARK, wobble: 0.5, layer: 1 });
+    pen.floor(TOP, 1).line([ds(-12.3, -7.4), ds(-12.0, -3), ds(-12.0, 3), ds(-12.5, 7.5), ds(-11.9, 10.2)], { w: 1.2, color: C.path, kind: L_MARK, wobble: 0.5, layer: 1 });
   });
 
   // everything from here stands on the high ground, until the beach
@@ -580,6 +580,25 @@ export const wannsee: BlockBuilder = (c) => {
     person(pen, a - 0.6, 2.1, BATH_H + 0.3, randomLook(rng), "bust", false);
     if (rng.chance(0.7)) person(pen, a + 0.6, 2.2, BATH_H + 0.3, randomLook(rng), "bust", true);
   }
+  // a string of bulbs along the roof, for the evening
+  pen.obj(() => {
+    for (let a = 0.6; a < BATH_L - 0.3; a += 1.05) {
+      pen.stroke(
+        [
+          [a, BATH_W - 0.15, BATH_H + 0.78],
+          [a, BATH_W - 0.15, BATH_H + 0.9],
+        ],
+        { w: 0.14, color: C.lamp, kind: L_BAR, wobble: 0 },
+      );
+      pen.stroke(
+        [
+          [a, BATH_W - 0.15, BATH_H + 0.82],
+          [a, BATH_W - 0.15, BATH_H + 0.86],
+        ],
+        { w: 0.5, kind: L_LIGHT, wobble: 0, alpha: 0.85 },
+      );
+    }
+  }, 0.2);
   flagOf(pen, 0.8, 0.6, BATH_H, 3.4, "berlin", 0.85);
   flagOf(pen, BATH_L / 2, 0.6, BATH_H, 3.8, "de", 0.85);
   flagOf(pen, BATH_L - 0.8, 0.6, BATH_H, 3.4, "berlin", 0.85);
@@ -777,7 +796,6 @@ export const wannsee: BlockBuilder = (c) => {
     [4.2, C.teal],
     [10.2, C.orange],
     [-23.2, C.blue],
-    [14.6, C.red],
   ] as [number, RGB][]) {
     const p = beach(s, 1.9);
     parasol(pen, p[0], p[1], p[2], col);
@@ -842,15 +860,15 @@ export const wannsee: BlockBuilder = (c) => {
     }
     pen.box(qx - 1.6, qy - 1.6, LAKE + 0.3, 3.2, 3.2, 0.14, C.wood, { top: C.wood, w: W_THIN });
     pen.floor(LAKE + 0.45, 1).ticks(qx - 1.5, qy - 1.5, qx + 1.5, qy + 1.5, { n: 12, len: 2.2, ang: 0, jit: 0.02, color: C.woodDark, w: 0.05 });
-    // the slide: a frame, a ladder, and a blue chute out into the lake
-    const sx = qx + 1.0;
+    // the slide: a frame, and a blue chute down into the water alongside the shore
+    const sx = qx + 0.9;
     const sy = qy - 1.0;
-    for (const o of [-0.35, 0.35]) pen.pole([sx, sy + o, LAKE + 0.44], [sx, sy + o, LAKE + 2.7], 0.09, C.white);
+    for (const o of [-0.35, 0.35]) pen.pole([sx + o, sy, LAKE + 0.44], [sx + o, sy, LAKE + 2.7], 0.09, C.white);
     pen.box(sx - 0.45, sy - 0.45, LAKE + 2.6, 0.9, 0.9, 0.1, C.wood, { w: W_FINE });
     const chute: V3[] = [];
     for (let k = 0; k <= 8; k++) {
       const u = k / 8;
-      chute.push([sx + 0.3 + u * 3.0, sy - u * 0.5, LAKE + 2.65 - 2.5 * (u * 0.55 + 0.45 * u * u)]);
+      chute.push([sx + u * 0.3, sy - 0.3 - u * 3.0, LAKE + 2.65 - 2.5 * (u * 0.55 + 0.45 * u * u)]);
     }
     pen.stroke(chute, { w: 0.62, color: C.blueDark, kind: L_BAR, wobble: 0 });
     pen.stroke(chute, { w: 0.4, color: C.sky, kind: L_BAR, wobble: 0, bias: 0.012 });
@@ -873,7 +891,7 @@ export const wannsee: BlockBuilder = (c) => {
   });
   person(pen, qx - 0.6, qy - 0.3, LAKE + 0.44, { ...swim(3), top: SKIN[1] }, "stand", false, 0.72);
   person(pen, qx - 0.1, qy - 0.8, LAKE + 0.44, { ...swim(4), top: SKIN[3] }, "wave", false, 0.72);
-  person(pen, qx + 1.0, qy - 1.0, LAKE + 2.7, { ...swim(5), top: SKIN[0] }, "cheer", true, 0.72);
+  person(pen, qx + 0.9, qy - 1.0, LAKE + 2.7, { ...swim(5), top: SKIN[0] }, "cheer", true, 0.72);
   person(pen, qx - 1.25, qy + 1.2, LAKE + 0.24, { ...swim(6), top: SKIN[2] }, "sit", true);
   // an air bed and a flamingo; then heads, and arms, in the water inside the buoys
   const lilo = bay(-14 * DEG, RHO - 2.5);
@@ -1070,15 +1088,15 @@ export const wannsee: BlockBuilder = (c) => {
         const a = (q - 1.5) * 0.22;
         cd.line(
           [
-            [a, 0],
-            [a * 1.4 + Math.sin(m.t * 7 + q) * 0.08, 0.35 + 0.25 * f],
-            [a * 0.6, 0.7 + 0.5 * f],
+            [a * 1.3, 0],
+            [a * 1.9 + Math.sin(m.t * 7 + q) * 0.1, 0.5 + 0.35 * f],
+            [a * 0.7, 1.0 + 0.75 * f],
           ],
-          { color: q % 2 ? [255, 196, 90] : [255, 132, 60], w: 0.2 - q * 0.02, alpha: m.night, kind: L_SPARK, wobble: 0 },
+          { color: q % 2 ? [255, 206, 100] : [255, 132, 60], w: 0.32 - q * 0.03, alpha: m.night, kind: L_SPARK, wobble: 0 },
         );
       }
-      cd.seg(-0.02, 0.4, 0.02, 0.4, { w: 3.2, kind: L_LIGHT, wobble: 0, alpha: 0.26 + 0.08 * Math.sin(m.t * 11) });
-      cd.seg(-0.02, 0.3, 0.02, 0.3, { w: 1.0, kind: L_LIGHT, wobble: 0, alpha: 0.6 });
+      cd.seg(-0.02, 0.6, 0.02, 0.6, { w: 5.0, kind: L_LIGHT, wobble: 0, alpha: 0.34 + 0.08 * Math.sin(m.t * 11) });
+      cd.seg(-0.02, 0.4, 0.02, 0.4, { w: 1.6, kind: L_LIGHT, wobble: 0, alpha: 0.7 });
     });
   }
 

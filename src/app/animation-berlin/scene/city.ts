@@ -457,10 +457,10 @@ function dressBank(c: BlockCtx, side: "xp" | "xm", gaps: [number, number][], qui
   }
   for (let a = 11; a < BLOCK - 8; a += 12) {
     if (rng.chance(0.3) || hush(a) || hush(a - 1.2) || hush(a + 1.2)) continue;
-    // benches face the water
-    bench(pen, a, 2.2, 180);
-    if (rng.chance(0.75)) person(pen, a - 0.45, 2.0, 0.3, randomLook(rng), "sit", rng.chance(0.5));
-    if (rng.chance(0.5)) person(pen, a + 0.45, 2.0, 0.3, randomLook(rng), "sit", rng.chance(0.5));
+    // benches face the water, between the rail and the line the walkers keep to
+    bench(pen, a, 1.5, 180);
+    if (rng.chance(0.75)) person(pen, a - 0.45, 1.3, 0.3, randomLook(rng), "sit", rng.chance(0.5));
+    if (rng.chance(0.5)) person(pen, a + 0.45, 1.3, 0.3, randomLook(rng), "sit", rng.chance(0.5));
   }
   for (let k = 0; k < 4; k++) {
     const a = rng.range(3, BLOCK - 3);
@@ -556,57 +556,89 @@ function placeFleet<T extends Omit<Hull, "at">>(wanted: T[], from: number): { pl
     }
     return out;
   };
-  const meets = (h: Hull, path: Float32Array, o: Hull, opath: Float32Array): number => {
-    let hits = 0;
-    const reach = (h.a + o.a) * (h.a + o.a);
+  // the box each route lies in: two vehicles whose routes never come near each other need no walk through the film
+  const boxes = new Map<Route, [number, number, number, number]>();
+  const boxOf = (r: Route) => {
+    let b = boxes.get(r);
+    if (!b) {
+      b = [Infinity, Infinity, -Infinity, -Infinity];
+      for (const p of r.pts) {
+        if (p[0] < b[0]) b[0] = p[0];
+        if (p[1] < b[1]) b[1] = p[1];
+        if (p[0] > b[2]) b[2] = p[0];
+        if (p[1] > b[3]) b[3] = p[1];
+      }
+      boxes.set(r, b);
+    }
+    return b;
+  };
+  const meets = (h: Hull, path: Float32Array, o: Hull, opath: Float32Array): boolean => {
+    const reach = h.a + o.a;
+    if (h.route !== o.route) {
+      const p = boxOf(h.route);
+      const q = boxOf(o.route);
+      if (p[0] > q[2] + reach || q[0] > p[2] + reach || p[1] > q[3] + reach || q[1] > p[3] + reach) return false;
+    }
+    const r2 = reach * reach;
     for (let k = 0; k < steps; k++) {
       const dx = opath[k * 2] - path[k * 2];
       const dy = opath[k * 2 + 1] - path[k * 2 + 1];
-      if (dx * dx + dy * dy < reach && touching(h, o, from + k * STEP)) hits++;
+      if (dx * dx + dy * dy < r2 && touching(h, o, from + k * STEP)) return true;
     }
-    return hits;
+    return false;
   };
   const placed: { h: T & { at: number }; path: Float32Array }[] = [];
   let dropped = 0;
   // the longest first: a tram needs more clear road than a car, and finds it more easily on an empty one
   for (const w of wanted.slice().sort((p, q) => q.a - p.a)) {
-    // one place to try for every few units of the loop
-    const N = Math.max(40, Math.round(w.route.length / 4));
-    const hits: number[] = [];
-    for (let c = 0; c < N; c++) {
-      const h = { ...w, at: (c + 0.5) / N };
-      const path = track(h);
-      let n = 0;
-      for (const o of placed) {
-        n += meets(h, path, o.h, o.path);
-        if (n > 0) break;
-      }
-      hits.push(n);
-    }
-    // the middle of the widest clear stretch, going round the loop
-    let best = -1;
-    let bestRun = 0;
-    let run = 0;
-    for (let c = 0; c < N * 2; c++) {
-      if (hits[c % N] === 0) {
-        run++;
-        if (run > bestRun && run <= N) {
-          bestRun = run;
-          best = c - (run - 1) / 2;
+    // Try forty places round the loop; only if none of them is clear, look four times as closely.
+    // (Every place tried costs a walk through the whole film, and all this happens before the first frame.)
+    let found = -1;
+    for (const N of [40, 160]) {
+      const hits: boolean[] = [];
+      for (let c = 0; c < N; c++) {
+        const h = { ...w, at: (c + 0.5) / N };
+        const path = track(h);
+        let hit = false;
+        for (const o of placed) {
+          if (meets(h, path, o.h, o.path)) {
+            hit = true;
+            break;
+          }
         }
-      } else run = 0;
+        hits.push(hit);
+      }
+      // The middle of the widest clear stretch, going round the loop: one of the places
+      // that was tried, never a point between two of them. On a long loop the places are
+      // further apart than a boat is long, and half way between two clear ones may not be.
+      let best = -1;
+      let bestRun = 0;
+      let run = 0;
+      for (let c = 0; c < N * 2; c++) {
+        if (!hits[c % N]) {
+          run++;
+          if (run > bestRun && run <= N) {
+            bestRun = run;
+            best = c - Math.floor((run - 1) / 2);
+          }
+        } else run = 0;
+      }
+      if (best >= 0) {
+        found = (((best % N) + N) % N + 0.5) / N;
+        break;
+      }
     }
-    if (best < 0) {
+    if (found < 0) {
       dropped++;
       continue;
     }
-    const h = { ...w, at: (((best % N) + N) % N + 0.5) / N };
+    const h = { ...w, at: found };
     placed.push({ h, path: track(h) });
   }
   // and check the result independently, pair by pair
   let clashes = 0;
   for (let p = 0; p < placed.length; p++) {
-    for (let q = p + 1; q < placed.length; q++) clashes += meets(placed[p].h, placed[p].path, placed[q].h, placed[q].path) > 0 ? 1 : 0;
+    for (let q = p + 1; q < placed.length; q++) clashes += meets(placed[p].h, placed[p].path, placed[q].h, placed[q].path) ? 1 : 0;
   }
   return { placed: placed.map((x) => x.h), dropped, clashes };
 }

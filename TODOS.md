@@ -88,9 +88,9 @@
   **Priority:** P3
   On a phone-width screen the title and "drawn in code" ran under the afrodance.fun link in the other corner. London's stylesheet stacks the two lines below 40rem; Amsterdam's still has the overlap, and the same rule in `animation-amsterdam/animation.module.css` fixes it.
 
-- **One engine for both films**
+- **One engine for the three films**
   **Priority:** P3
-  London carries its own copy of the engine (`engine/`, `film.ts`, and the general parts of `scene/kit.ts`, `motion.ts`, `boats.ts`), on purpose: Amsterdam was already live and was left untouched. London's copy has since gained things Amsterdam's lacks (neon that glows in its own colour, digits in the lettering, traffic that queues). Before a third city, move the shared part to one place and point both films at it.
+  London carries its own copy of the engine (`engine/`, `film.ts`, and the general parts of `scene/kit.ts`, `motion.ts`, `boats.ts`), on purpose: Amsterdam was already live and was left untouched. London's copy has since gained things Amsterdam's lacks (neon that glows in its own colour, digits in the lettering, traffic that queues). Berlin is now a third copy: it was scaffolded from the drawn-in-code skill's starter (Amsterdam's engine, generalised), again without touching the two pages that were live, and has gained things of its own (umlauts in the lettering, a river through a street grid, a faster way of placing the traffic). Before a fourth city, move the shared part to one place and point the films at it; that means rewriting pages that are live, so decide it first.
 
 - **The controls lie over Greenwich in the wide view**
   **Priority:** P4
@@ -99,6 +99,24 @@
 - **Sound for the film**
   **Priority:** P4
   Silent, like Amsterdam. Big Ben already strikes on cue; a bus, the river, a busker and the fireworks would suit it. It has to start muted and only on a tap.
+
+## Berlin (/animation-berlin)
+
+- **Link the page from the home page**
+  **Priority:** P2
+  `/animation-berlin` is live but nothing points to it, the same as Amsterdam and London. One card for the three films may be enough; it needs its own pixel-art scene in `src/components/visuals/` (`projects.test.ts` checks every card has one). Found while shipping feat/berlin-animation, 2026-11-19.
+
+- **Try it on Safari, Firefox and a phone**
+  **Priority:** P2
+  Built and checked in Chromium on an M3 only, where it holds 60 fps at 2880×1800 by day and drops the odd frame in the wide view at night, when every lamp and the fireworks are lit. Berlin sits between the other two films (about 215,000 fills and 165,000 strokes, about 125 kB of code gzipped, about a quarter of a second to build the city on the M3). The first things to try on a mid-range phone: does the page start, how long does it freeze while the city is built and the traffic placed (both happen before the first frame), and what frame rate does the tour hold. The rest of Amsterdam's list applies here too (pinch on desktop Safari, coming back to a backgrounded tab on iOS).
+
+- **Give the other two films what Berlin's copy gained**
+  **Priority:** P3
+  Two small things in Berlin's copy would help the others as they stand, before any shared engine: the traffic is placed by trying forty places round each loop and looking closer only if none is clear, and never between two places it has tried (`placeFleet` in `animation-berlin/scene/city.ts`); and the phone title fix that Amsterdam is still waiting for (above).
+
+- **Sound for the film**
+  **Priority:** P4
+  Silent, like the other two. The U1 rattling over the Oberbaumbrücke, the Dom's bells (they already swing on cue), a tram bell on Alexanderplatz, the karaoke in the Mauerpark and the fireworks would suit it. It has to start muted and only on a tap.
 
 ## Code health
 
