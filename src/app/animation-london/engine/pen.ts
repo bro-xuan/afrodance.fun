@@ -239,6 +239,11 @@ const GLYPHS: Record<string, number[][]> = {
   "/": [[0.5, 0, 3.5, 6]],
 };
 
+/** Can this character be lettered? A character with no shape is left blank, so a sign would quietly lose it. */
+export function hasGlyph(ch: string): boolean {
+  return ch === " " || ch.toUpperCase() in GLYPHS;
+}
+
 // ---------------------------------------------------------------- planes
 
 /**
