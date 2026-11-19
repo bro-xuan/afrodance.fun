@@ -60,7 +60,8 @@ Open [http://localhost:3000](http://localhost:3000) to view the site.
 src/
 ├── app/
 │   ├── layout.tsx          # Root layout with pixel fonts
-│   └── page.tsx            # Homepage
+│   ├── page.tsx            # Homepage
+│   └── animation/          # /animation: an isometric Amsterdam that draws itself (WebGL2). engine/ is the pen and renderer, scene/ the city
 ├── components/
 │   ├── Hero.tsx            # Animated hero section
 │   ├── Agency.tsx          # The agency (Paper Kite) under the intro: scene, pitch, steps, promises
