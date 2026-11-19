@@ -3,6 +3,14 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.6.0.0] - 2026-11-19
+
+### Added
+- **Amsterdam, drawn in code, at /animation-amsterdam.** A blank page sketches itself into an isometric Amsterdam: the water spreads out first, then nine neighbourhoods arrive one after another as pencil lines that take their colour a moment later. The camera then goes round them (Centraal Station, the Oosterdok, De Gooyer and Artis, the Amstel, the Rijksmuseum, the markets, Vondelpark, the Jordaan, the Dam), swinging out on the way to four islands off the corners of the page (Noord, a tulip polder, the Arena, Schiphol), and ends close in on a wedding on the palace balcony. Then it pulls back and evening falls: windows light up, the bridges are strung with bulbs, fireworks go off, and the page fades to blank and starts again. One loop takes about 80 seconds.
+- **Everything in it moves, on cue.** Trams, trains, ferries, canal boats, cyclists and walkers follow their own routes; boats pass under the bridges and cyclists go over them. The Skinny Bridge opens for a barge as the camera arrives, a goal goes in at the Arena, and the plane that leaves Schiphol is overhead at the next stop.
+- **You can take the camera.** Drag to look around, scroll or pinch to zoom (arrow keys and plus and minus do the same), and "back to the tour" hands it back. Space pauses and R draws it again. With reduced motion switched on, the page shows the finished city standing still, and you can still look around it.
+- **Nothing in it is an image.** Every line and patch of colour is geometry the page works out when it loads, about 115 kB of code over the wire, drawn with WebGL2. Shared links show a picture of the finished city.
+
 ## [0.5.15.0] - 2026-11-18
 
 ### Changed

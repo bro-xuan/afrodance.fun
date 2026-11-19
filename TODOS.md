@@ -56,6 +56,24 @@
   **Priority:** P4
   From /design-review (2026-07-22): one Writing card has an italic subtitle and the other doesn't, and both show the same date (Jun 9, 2026), which reads as placeholder-ish. Add a subtitle to both or neither.
 
+## Amsterdam (/animation-amsterdam)
+
+- **Link the page from the home page**
+  **Priority:** P2
+  `/animation-amsterdam` is live but nothing points to it. A card in `src/data/projects.ts` needs its own pixel-art scene in `src/components/visuals/` (every card has one, and `projects.test.ts` checks it). Found by /ship on feat/amsterdam-animation, 2026-11-19.
+
+- **Try it on Safari, Firefox and a phone**
+  **Priority:** P2
+  It was built and checked in Chromium on an M3 only. The shaders were read for GLSL ES 3.00 problems but never compiled anywhere else. Things to look at on real devices: the page starts at all, pinch zooms the map and not the page (desktop Safari sends `gesturechange`, handled in `amsterdam.ts` but untested), coming back to a backgrounded tab on iOS, and frame rate on a mid-range phone.
+
+- **Build the city off the main thread if phones stall**
+  **Priority:** P3
+  `buildCity` runs when the page mounts: about a quarter of a second on an M3, likely a second or more on a mid-range phone, with the paper and title already on screen. If a real device shows a long freeze, build in a Worker and transfer the four typed arrays, or yield between blocks.
+
+- **Sound for the film**
+  **Priority:** P4
+  The page and the recorded video are silent. Water, bicycle bells, a street organ at the Dam and a tram would suit it; it has to start muted and only on a tap.
+
 ## Code health
 
 - **Fix pre-existing ESLint errors in subpages**
