@@ -3,6 +3,14 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.8.0.0] - 2026-11-19
+
+### Added
+- **Berlin, drawn in code, at /animation-berlin.** A blank page sketches itself into an isometric Berlin: the Spree flows in first, then nine places arrive as pencil lines that take their colour a moment later. The camera goes round them (Schloss Charlottenburg, the Tiergarten, City West, Kreuzberg, Friedrichshain, Alexanderplatz, Prenzlauer Berg, the Reichstag, the Brandenburger Tor), swings out to Wannsee, Tempelhofer Feld and Treptower Park, stops at Museum Island in the middle of the river, and ends close in on a man blowing a giant soap bubble under the Gate. Then night falls, the TV tower and the Reichstag dome light up, fireworks go up, and the page fades to blank and starts again. One loop takes about 78 seconds.
+- **Berlin things happen on cue.** The yellow U1 rattles over the Oberbaumbrücke as the camera reaches Friedrichshain, the WELT balloon rises beside Checkpoint Charlie, the Dom's bells ring and its pigeons scatter, the Mauerpark karaoke crowd does a wave, Goldelse catches the sun, and the cinema premiere in City West is all camera flashes.
+- **A city with a river through it.** Cars, Trabis, yellow double-deckers and trams drive on the right, over the bridges across the Spree, and never collide; excursion boats and rafts keep to their side of the river under every bridge. The line where the Wall stood is set into the road in cobbles round the Gate, and every crossing has the little green Ampelmann.
+- **The same controls as the other two films.** Drag to look around, scroll or pinch to zoom, "back to the tour" hands the camera back, Space pauses and R draws it again; with reduced motion switched on the finished city stands still. Every line is geometry the page works out when it loads, about 122 kB of code over the wire, drawn with WebGL2.
+
 ## [0.7.0.0] - 2026-11-19
 
 ### Added

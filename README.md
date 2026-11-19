@@ -62,6 +62,7 @@ src/
 │   ├── layout.tsx          # Root layout with pixel fonts
 │   ├── page.tsx            # Homepage
 │   ├── animation-amsterdam/ # /animation-amsterdam: an isometric Amsterdam that draws itself (WebGL2). engine/ is the pen and renderer, scene/ the city
+│   ├── animation-berlin/   # /animation-berlin: the same kind of film for Berlin, scaffolded from the drawn-in-code skill, with its own copy of the engine. scene/grid.ts is the layout, scene/city.ts the ground, river and traffic, scene/blocks/ one file per place
 │   └── animation-london/   # /animation-london: the same kind of film for London, with its own copy of the engine. scene/blocks/ has one file per place
 ├── components/
 │   ├── Hero.tsx            # Animated hero section
