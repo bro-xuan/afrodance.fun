@@ -108,7 +108,7 @@
 
 - **Try it on Safari, Firefox and a phone**
   **Priority:** P2
-  Built and checked in Chromium on an M3 only, where it holds 60 fps at 2880×1800 by day and drops the odd frame in the wide view at night, when every lamp and the fireworks are lit. Berlin sits between the other two films (about 215,000 fills and 165,000 strokes, about 125 kB of code gzipped, about a quarter of a second to build the city on the M3). The first things to try on a mid-range phone: does the page start, how long does it freeze while the city is built and the traffic placed (both happen before the first frame), and what frame rate does the tour hold. The rest of Amsterdam's list applies here too (pinch on desktop Safari, coming back to a backgrounded tab on iOS).
+  Built and checked in Chromium on an M3 only, where at 2880×1800 it holds 60 fps on the tour and about 58 with the whole city in view (measured the same way, London gets about 49 there and Amsterdam 52 to 59). Berlin sits between the other two films (about 211,000 fills and 163,000 strokes, 122 kB of code gzipped, about a quarter of a second to build the city on the M3). It has no share image yet: `opengraph-image.jpg` and its `.alt.txt` next to the page were left out on purpose and can be made with the drawn-in-code skill's `record.mjs --og`. The first things to try on a mid-range phone: does the page start, how long does it freeze while the city is built and the traffic placed (both happen before the first frame), and what frame rate does the tour hold. The rest of Amsterdam's list applies here too (pinch on desktop Safari, coming back to a backgrounded tab on iOS).
 
 - **Give the other two films what Berlin's copy gained**
   **Priority:** P3
