@@ -3,6 +3,14 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.7.0.0] - 2026-11-19
+
+### Added
+- **London, drawn in code, at /animation-london.** A blank page sketches itself into an isometric London: the Thames flows in first, then nine places arrive one after another as pencil lines that take their colour a moment later. The camera then goes round them (Westminster, the South Bank, Bankside, London Bridge, the Tower, St Paul's, Bloomsbury, the West End, Buckingham Palace), swinging out on the way to four islands off the corners of the page (Wimbledon, Greenwich, Camden Lock, Notting Hill), and ends close in on a policeman holding up the traffic while a family of ducks crosses the road outside the palace. Then it pulls back and night falls: windows light up, the screens at Piccadilly glow, fireworks go up all along the river, and the page fades to blank and starts again. One loop takes about 80 seconds.
+- **London things happen on cue.** Tower Bridge lifts for a sailing barge as the camera arrives, and the buses and cabs queue at its lights until it comes down. Big Ben strikes three, a point is won on Centre Court, the time ball drops at Greenwich, a narrowboat rises in Camden Lock, the carnival float comes down Portobello Road, and it comes to swords on the stage of the Globe.
+- **The traffic behaves.** Red buses, black cabs, cars and cyclists drive on the left, queue behind a bus at its stop, and wait at the crossing when somebody steps out. River boats keep to their lanes under five bridges, and Tube trains run in the cut-away sides of the city, calling at Waterloo, London Bridge and Tower Hill.
+- **The same controls as Amsterdam.** Drag to look around, scroll or pinch to zoom, and "back to the tour" hands the camera back; Space pauses and R draws it again. With reduced motion switched on, the page shows the finished city standing still. Nothing in it is an image: every line is geometry the page works out when it loads, about 165 kB of code over the wire, drawn with WebGL2. Shared links show a picture of the finished city.
+
 ## [0.6.0.0] - 2026-11-19
 
 ### Added

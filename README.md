@@ -61,7 +61,8 @@ src/
 ├── app/
 │   ├── layout.tsx          # Root layout with pixel fonts
 │   ├── page.tsx            # Homepage
-│   └── animation-amsterdam/ # /animation-amsterdam: an isometric Amsterdam that draws itself (WebGL2). engine/ is the pen and renderer, scene/ the city
+│   ├── animation-amsterdam/ # /animation-amsterdam: an isometric Amsterdam that draws itself (WebGL2). engine/ is the pen and renderer, scene/ the city
+│   └── animation-london/   # /animation-london: the same kind of film for London, with its own copy of the engine. scene/blocks/ has one file per place
 ├── components/
 │   ├── Hero.tsx            # Animated hero section
 │   ├── Agency.tsx          # The agency (Paper Kite) under the intro: scene, pitch, steps, promises
