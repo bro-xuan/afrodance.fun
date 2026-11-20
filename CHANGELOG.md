@@ -3,6 +3,15 @@
 All notable changes to afrodance.fun are documented here.
 Format: `## [MAJOR.MINOR.PATCH.MICRO] - YYYY-MM-DD`
 
+## [0.9.0.0] - 2026-11-20
+
+### Changed
+- **A new home page, led by three kinds of project.** It opens with a short intro (the pixel portrait, who Stefan is, and his tags), then the selected projects in order: the apps, the newsletter and the art. Each has its own section below, in one calm column on warm paper with the pixel style kept.
+- **The apps turn over as a carousel.** Mora, Predictooor and ReferReady each get a full slide: Mora with two pixel phones and a pet walking between them, the web apps with their animated scenes. On a wide screen it moves on every eight seconds (the active tab fills up as it goes) and holds still while you're looking at it. Tabs, arrows and swipes pick one by hand.
+- **What People Made has its own section**, with the gallery in a pixel browser window, Subscribe, past issues, and the longer essays.
+- **The art hangs on a gallery wall.** Amsterdam, London and Berlin are gold-framed pictures with museum labels, and the analog camera museum hangs in a black frame of its own.
+- **Everything else moved into "Also made"**, one line each at the bottom: CineGlow, 3D of Everything, Market Intel, the BTC indicator, Paper Kite, China Migration, the NL House Buying Tool, Corporate Translator, Earl and InstaClaw. On a wide screen, hovering a row shows its animated scene beside the list.
+
 ## [0.8.0.0] - 2026-11-19
 
 ### Added

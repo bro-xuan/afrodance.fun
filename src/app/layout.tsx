@@ -14,14 +14,16 @@ const pixelify = Pixelify_Sans({
   variable: "--font-body",
 });
 
+// The home page's selected projects, in its order: the apps, the newsletter and the art.
+const description =
+  "Stefan Wang builds products on the internet, mostly with AI and crypto. Selected projects: Mora, an iOS app for couples, plus Predictooor and ReferReady; What People Made, a daily gallery of real AI use cases and a weekly AI newsletter; and Amsterdam, London and Berlin drawn in code, with a museum of every analog camera ever made.";
+
 export const metadata: Metadata = {
   title: "Stefan Wang — afrodance.fun",
-  description:
-    "Stefan Wang — building fun things on the internet, mostly AI and crypto. I curate the most awesome AI use cases every day, plus a weekly AI newsletter, and run an agentic social media agency for my apps' growth.",
+  description,
   openGraph: {
     title: "Stefan Wang — afrodance.fun",
-    description:
-      "Building fun things on the internet, mostly AI and crypto. I curate the most awesome AI use cases every day, plus a weekly AI newsletter, and run an agentic social media agency for my apps' growth.",
+    description,
     type: "website",
   },
 };

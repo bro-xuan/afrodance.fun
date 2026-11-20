@@ -1,228 +1,233 @@
-import { Project, FeaturedProject, AboutConfig, Agency, Article, NowItem } from "@/types";
+import type { App, ArtPiece, Essay, FeaturedApp, IndexEntry, Newsletter } from "@/types";
+
+// The home page leads with three kinds of project, in this order: the apps, the newsletter and
+// the art. Everything else is one row in the "Also made" index at the bottom.
 
 export const siteConfig = {
   name: "afrodance.fun",
-  tagline: "building fun things on the internet — mostly AI and crypto",
-  emoji: "🕹️",
+  owner: "Stefan Wang",
   socials: {
     github: "https://github.com/bro-xuan",
     twitter: "https://x.com/Erc721_stefan",
     linkedin: "https://www.linkedin.com/in/stefan-wang-6516bb187/",
     substack: "https://substack.com/@stefanwangeth",
   },
-  status: {
-    text: "Open to AM / Sales roles in AI or blockchain",
-    cta: "say hi",
-  },
+  /** Who's behind the site, beside the portrait. */
+  bio: "I build products on the internet, mostly with AI and crypto, from the Netherlands.",
+  /** The tags under the bio. */
+  tags: ["AI", "Crypto", "SaaS", "EN / 中文 / DE"],
 };
 
-export const aboutConfig: AboutConfig = {
-  greeting: "Hi, I'm Stefan.",
-  bio: "I run an agentic social media agency for local businesses, no marketing hire needed. We plan their posts every week from their own photos, and the owner just says yes on their phone. On the side I still build things that some people surprisingly use, mostly around AI and crypto, and run What People Made, a daily gallery of real AI use cases. Run a business, or know one that could use better posts? Let's talk.",
-  avatarUrl: "",
-  avatarFallback: "SW",
-  tags: [
-    { label: "AI", color: "bg-[#e8f5d4] text-[#3a6510]" },
-    { label: "Marketing", color: "bg-[#efe1f5] text-[#6c2f8a]" },
-    { label: "Crypto", color: "bg-[#d6eaf8] text-[#15608f]" },
-    { label: "SaaS", color: "bg-[#fef3cd] text-[#856404]" },
-    { label: "EN / 中文 / DE", color: "bg-[#fadbd8] text-[#a93226]" },
-  ],
-  skills: [
-    {
-      title: "Frontend",
-      items: ["React", "Next.js", "TypeScript", "Tailwind"],
-    },
-    {
-      title: "AI",
-      items: ["OpenAI API", "Anthropic API", "prompt engineering", "diffusion models"],
-    },
-    {
-      title: "On-chain",
-      items: ["Polymarket API", "Ethereum basics", "web3.js", "on-chain analytics"],
-    },
-  ],
-  likes: [],
-};
-
-// The agency, right under the intro. Its copy says only what the studio does today, with no
-// client names, results or prices. Its site is Paper Kite's own, on its own domain.
-export const agency: Agency = {
-  name: "Paper Kite",
-  url: "https://paperkite.eu",
-  intro: "The marketing person your business never hired.",
-  // The line paperkite.eu opens with (its hero, `spoken` in web/copy.ts in bro-xuan/ai-marketing).
-  headline: "Agentic social media scheduler for brands, local businesses and SaaS.",
-  facts: ["Planned every week", "You approve every post", "Instagram · TikTok · Facebook"],
+// ── 2. The newsletter ─────────────────────────────────────────────────────────────────────────
+// The sign-up is on whatpeoplemade.com itself, so "Subscribe" goes there (see 0.5.12.0).
+export const newsletter: Newsletter = {
+  title: "What People Made",
+  url: "https://www.whatpeoplemade.com",
+  tagline: "The awesomest things people made with AI",
   description:
-    "We get to know your business, then plan and write your posts every week from your own photos, in your voice. You say yes on your phone, each post goes out at the time you agreed, and what worked shapes next week.",
-  promises: [
-    "Your own photos, never stock pretending to be you",
-    "No fake reviews, and AI-made images say so",
-    "Your accounts stay yours: we never ask for a password",
-    "Prices, offers and opening hours only after you confirm them",
-  ],
+    "Every pick comes from a first-hand post on X. An AI editor reads the day's posts, a second model checks the pictures, and every pick lists the tools behind it.",
+  pitch:
+    "Once a week the best of it goes out as one email: the biggest AI stories and what they change, the best things people built, and the new tools worth trying.",
+  archiveUrl: "https://buttondown.com/afrodance/archive/",
 };
 
-export const articles: Article[] = [
+export const essays: Essay[] = [
   {
     title: "The End of Human Labor",
-    description: "",
     url: "https://stefanwang.substack.com/p/the-end-of-human-labor",
     date: "2026-06-09",
-    emoji: "🤖",
-    caption:
-      "Notes from an AI fireside chat with Google — why coding gets automated first, and what enterprises are quietly planning for knowledge work.",
     lang: "en",
   },
   {
     title: "AI时代的MBB",
-    description: "MBB in the age of AI — an insider's confession",
     url: "https://stefanwang.substack.com/p/aimbb",
     date: "2026-06-09",
-    emoji: "💼",
-    caption:
-      "Three years inside an MBB consultancy in Amsterdam — what AI does to a business built on selling people.",
     lang: "zh",
   },
 ];
 
-export const nowItems: NowItem[] = [
-  { emoji: "🔨", text: "Shipping side projects in AI and crypto" },
-  { emoji: "🐋", text: "Watching whales move on Polymarket — turned it into Predictooor" },
-  { emoji: "🤖", text: "Tinkering with Claude and OpenAI APIs for fun" },
-  { emoji: "🍻", text: "Down to chat if you're building in AI or crypto" },
-  { emoji: "🇳🇱", text: "Living in the Netherlands, ordering coffee in broken Dutch" },
+// ── 3. The art ────────────────────────────────────────────────────────────────────────────────
+// The three cities hang together as a series; the museum hangs on its own below them.
+// Amsterdam and London's pictures are their share images; Berlin's is the same kind of still
+// (the finished city, 1200×630), made for this page only: Berlin has no share image.
+export const drawnInCode: ArtPiece[] = [
+  {
+    title: "Amsterdam",
+    url: "/animation-amsterdam",
+    image: {
+      src: "/home/amsterdam.jpg",
+      alt: "An isometric drawing of Amsterdam seen from above: nine neighbourhoods separated by canals, with Centraal Station, the Rijksmuseum, a windmill, boats and bridges, and four small islands off the corners.",
+      width: 960,
+      height: 504,
+    },
+    caption: "Canals, trams and boats, and a wedding on the palace balcony.",
+    details: "115 kB of code, no images · 80 s loop",
+  },
+  {
+    title: "London",
+    url: "/animation-london",
+    image: {
+      src: "/home/london.jpg",
+      alt: "An isometric drawing of London seen from above: the Thames winding between nine neighbourhoods, with the Houses of Parliament, St Paul's, the Tower and Tower Bridge, the London Eye and the Shard, red buses on the streets, and four small islands off the corners.",
+      width: 960,
+      height: 504,
+    },
+    caption: "The Thames, Tower Bridge lifting for a barge, and ducks crossing outside the palace.",
+    details: "165 kB of code, no images · 80 s loop",
+  },
+  {
+    title: "Berlin",
+    url: "/animation-berlin",
+    image: {
+      src: "/home/berlin.jpg",
+      alt: "An isometric drawing of Berlin seen from above: the Spree winding past nine neighbourhoods, with the Brandenburger Tor, the Reichstag, the TV tower, the Berliner Dom on Museum Island and the Oberbaumbrücke, and islands for Wannsee, Tempelhofer Feld and Treptower Park.",
+      width: 960,
+      height: 504,
+    },
+    caption: "The Spree, the U1 over the Oberbaumbrücke, and a soap bubble under the Gate.",
+    details: "122 kB of code, no images · 78 s loop",
+  },
 ];
 
-// Shown wide above the project grid, with its newsletter's sign-up.
-export const featuredProject: FeaturedProject = {
-  title: "What People Made",
-  url: "https://www.whatpeoplemade.com",
-  facts: ["1,300+ real AI use cases", "New picks every day"],
-  description:
-    "Things people actually made with AI, from first-hand posts on X. An AI editor reads the day's posts, a second model checks the pictures, and every pick lists the tools behind it.",
-  newsletter: {
-    title: "I run a weekly AI newsletter",
-    pitch:
-      "One email a week: the biggest AI stories and what they change, the best things people built, and the new tools worth trying.",
-    subscribeUrl: "https://buttondown.com/afrodance",
-    archiveUrl: "https://buttondown.com/afrodance/archive/",
+export const museum: ArtPiece = {
+  title: "World Analog Photography Museum",
+  url: "https://analogcams.com",
+  image: {
+    src: "/home/museum.jpg",
+    alt: "The World Analog Photography Museum: its title over a wall of camera photos, from the Nikon F3 and the Hasselblad 500C to the Leica M6.",
+    width: 1200,
+    height: 630,
   },
-  stack: ["Python", "DeepSeek", "Claude Code", "Buttondown", "Cloudflare Workers"],
+  caption:
+    "A living museum of every analog camera and film ever made: one endless wall of cameras you can drag around, or a grid you can filter by brand.",
+  details: "7,800+ cameras · 165 brands · analogcams.com",
 };
 
-export const projects: Project[] = [
-  {
-    title: "CineGlow",
-    description:
-      "Relights the photos you already took — golden hour, film flash, neon rain — and you still look exactly like you. An iOS app, almost ready for the App Store.",
-    emoji: "🎞️",
-    color: "error",
-    stack: ["Expo / React Native", "Firebase", "Gemini"],
-    visual: "photo-relight",
+// ── 1. The apps ───────────────────────────────────────────────────────────────────────────────
+// Mora leads. Its App Store page isn't live yet (1.0 went to review on 2026-11-18): when it is,
+// point `url` at it and drop `status`.
+export const mora: FeaturedApp = {
+  name: "Mora",
+  url: "https://mora-app.fly.dev",
+  icon: {
+    src: "/home/mora-icon.png",
+    alt: "Mora's app icon: a lowercase m made of a purple arch and a peach arch.",
+    width: 256,
+    height: 256,
   },
+  tagline: "Everything for the two of you.",
+  description:
+    "One place for your relationship: how long you've been together, the days you want to remember, the distance between you, games to play together, and a question a day to keep you talking. You each use it on your own phone, side by side or miles apart.",
+  features: [
+    "A question a day, sealed until you've both answered",
+    "Day 1, Day 100, Day 1,000, with milestones and countdowns",
+    "13 games to play together, one phone each",
+    "A pet that walks on both your phones",
+  ],
+  audience: "For couples",
+  status: "Coming soon to the App Store",
+  facts: ["iPhone", "Free, and Mora Plus covers you both", "For couples 18+"],
+};
+
+export const apps: App[] = [
   {
-    title: "Predictooor",
-    description: "Real-time Polymarket whale tracker. Wallet leaderboards, large-position alerts, on-chain receipts.",
+    name: "Predictooor",
     url: "https://www.predictooor.xyz",
-    emoji: "🐋",
-    color: "success",
-    stack: ["Next.js", "Polymarket API", "Ethereum"],
+    audience: "For Polymarket traders",
+    tagline: "Track smart money before the market moves.",
+    description:
+      "Follow Polymarket wallets live, get a Telegram alert when a whale trades, and watch the biggest bets come in.",
     visual: "whale-tracker",
   },
   {
-    title: "ReferReady",
-    description: "Reference-call prep for job candidates. Sample questions, scripts, and frameworks — the underrated leverage point in hiring.",
+    name: "ReferReady",
     url: "https://referready.com",
-    emoji: "📋",
-    color: "primary",
-    stack: ["Next.js", "Stripe"],
+    audience: "For job seekers",
+    tagline: "Job referrals from people at your dream company.",
+    description:
+      "Find an employee who will refer you for the role you want. They keep the whole referral bonus.",
     visual: "reference-call",
   },
+];
+
+// ── Also made ─────────────────────────────────────────────────────────────────────────────────
+export const alsoMade: IndexEntry[] = [
   {
-    title: "Analog Camera Museum",
-    description: "Pixel-art portfolio showcasing every project on this list.",
-    url: "https://analogcams.com",
-    emoji: "📷",
-    color: "primary",
-    visual: "analog-camera",
+    title: "CineGlow",
+    line: "Relights the photos you took, and you still look like you",
+    kind: "iOS app, soon",
+    emoji: "🎞️",
+    visual: "photo-relight",
   },
   {
     title: "3D of Everything",
-    description: "Real machines to turn over, look inside and take apart in 3D, from a pocket watch to the 2026 Roadster. Built by a skill for coding agents, installed in one line.",
     url: "/3d-of-everything",
+    line: "Real machines to turn over and take apart in 3D",
+    kind: "3D",
     emoji: "⚙️",
-    color: "warning",
-    stack: ["three.js", "Agent skill"],
     visual: "machine-teardown",
   },
   {
-    title: "Corporate Translator",
-    description: "Decodes corporate jargon into plain English. Live BS score included.",
-    url: "/corperate_translator",
-    emoji: "💼",
-    color: "success",
-    visual: "jargon-decoder",
-  },
-  {
-    title: "Earl",
-    description: "AI-generated classical portraits from a single selfie. Diffusion models, museum-grade output.",
-    url: "https://www.earl.homes",
-    emoji: "🖼️",
-    color: "warning",
-    stack: ["Next.js", "Diffusion", "OpenAI API"],
-    visual: "portrait-frame",
-  },
-  {
-    title: "InstaClaw",
-    description: "Deploy AI assistants on EU infrastructure in 60 seconds. GDPR-friendly alternative to US-hosted LLM apps.",
-    url: "https://www.instaclaw.cloud",
-    emoji: "🤖",
-    color: "error",
-    stack: ["Next.js", "EU infra", "LLM APIs"],
-    visual: "instaclaw-deploy",
-  },
-  {
-    title: "NL House Buying Tool",
-    description: "End-to-end calculator for buying property in the Netherlands. Mortgage, tax, rent-vs-buy, regulation.",
-    url: "/NLHousebuying",
-    emoji: "🏠",
-    color: "primary",
-    visual: "house-build",
-  },
-  {
-    title: "China Migration",
-    description: "Three decades of inbound and outbound China migration, visualized as particle flows. UN DESA data, 1990–2020.",
-    url: "/china-migration",
-    emoji: "🌏",
-    color: "warning",
-    visual: "migration-flow",
-  },
-  {
     title: "Market Intel",
-    description: "BTC trading desk on one page: positioning, liquidations, options, flows and macro scored into an intraday, swing and macro bias. Check a trade before you take it.",
     url: "/marketintel",
+    line: "A BTC trading desk on one page",
+    kind: "trading",
     emoji: "📊",
-    color: "success",
-    stack: ["Next.js", "Binance / Deribit / OKX APIs", "Upstash"],
     visual: "market-intel",
   },
   {
     title: "BTC Bottom & Top Indicator",
-    description: "On-chain cycle dashboard — MVRV, NUPL, Pi Cycle & friends scored 0–100 to gauge how close Bitcoin is to a cycle bottom or top.",
     url: "/bottom_indicator",
+    line: "How close Bitcoin is to a cycle bottom or top",
+    kind: "on-chain",
     emoji: "📉",
-    color: "error",
-    stack: ["Next.js", "bitcoin-data.com", "On-chain"],
     visual: "btc-cycle",
   },
-  // Hidden until the /date-scoring route exists — linking to it today 404s.
-  // {
-  //   title: "Date Scoring",
-  //   description: "Satirical 1–100 date rating tool with red and green flag breakdowns.",
-  //   url: "/date-scoring",
-  //   emoji: "💘",
-  //   color: "primary",
-  // },
+  {
+    title: "Paper Kite",
+    url: "https://paperkite.eu",
+    line: "An agentic social media agency for local businesses",
+    kind: "agency",
+    emoji: "🪁",
+  },
+  {
+    title: "China Migration",
+    url: "/china-migration",
+    line: "Thirty years of migration in and out of China, as particle flows",
+    kind: "data viz",
+    emoji: "🌏",
+    visual: "migration-flow",
+  },
+  {
+    title: "NL House Buying Tool",
+    url: "/NLHousebuying",
+    line: "Mortgage, tax and rent-vs-buy for a home in the Netherlands",
+    kind: "calculator",
+    emoji: "🏠",
+    visual: "house-build",
+  },
+  {
+    title: "Corporate Translator",
+    url: "/corperate_translator",
+    line: "Corporate jargon into plain English, with a live BS score",
+    kind: "web toy",
+    emoji: "💼",
+    visual: "jargon-decoder",
+  },
+  {
+    title: "Earl",
+    url: "https://www.earl.homes",
+    line: "Classical portraits from a single selfie",
+    kind: "AI art",
+    emoji: "🖼️",
+    visual: "portrait-frame",
+  },
+  {
+    title: "InstaClaw",
+    url: "https://www.instaclaw.cloud",
+    line: "AI assistants on EU servers in 60 seconds",
+    kind: "AI hosting",
+    emoji: "🤖",
+    visual: "instaclaw-deploy",
+  },
 ];
