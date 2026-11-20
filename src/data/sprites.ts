@@ -27,6 +27,9 @@ export const SPRITE_PALETTE: Record<string, string> = {
   l: "#cdd6da", // light gray
   S: "#8a969c", // gray
   e: "#ef8c2b", // orange
+  v: "#c4b4fb", // lavender (Mora)
+  V: "#8b72dd", // deep lavender (Mora)
+  h: "#f7b898", // peach (Mora)
 };
 
 export type SpriteDef = {
@@ -350,6 +353,65 @@ export const ufo: SpriteDef = {
       ".kSSSSSSSSSk.",
       "...ttt.ttt...",
       "..t..t.t..t..",
+    ],
+  ],
+};
+
+// Mora's pet — a round lavender creature with peach cheeks, in Mora's own colours. Two frames
+// step its feet, so it toddles while it walks from one phone to the other on the home page.
+export const moraPet: SpriteDef = {
+  frames: [
+    [
+      "..kk....kk..",
+      ".kVk....kVk.",
+      ".kvvkkkkvvk.",
+      "kvvvvvvvvvvk",
+      "kvvkvvvvkvvk",
+      "kvvkvvvvkvvk",
+      "khhvvvvvvhhk",
+      "kvvvvkkvvvvk",
+      ".kvvvvvvvvk.",
+      "..kk....kk..",
+    ],
+    [
+      "..kk....kk..",
+      ".kVk....kVk.",
+      ".kvvkkkkvvk.",
+      "kvvvvvvvvvvk",
+      "kvvkvvvvkvvk",
+      "kvvkvvvvkvvk",
+      "khhvvvvvvhhk",
+      "kvvvvkkvvvvk",
+      ".kvvvvvvvvk.",
+      "...kk..kk...",
+    ],
+  ],
+};
+
+// The garden the pet walks in: a peach flower, a lavender one, and a little tree.
+export const moraFlowerPeach: SpriteDef = {
+  frames: [[".hhh.", "hhyhh", ".hhh.", "..G..", ".GG..", "..G..", "..GG.", "..G.."]],
+};
+
+export const moraFlowerLav: SpriteDef = {
+  frames: [[".vvv.", "vvyvv", ".vvv.", "..G..", "..GG.", "..G..", ".GG..", "..G.."]],
+};
+
+export const moraTree: SpriteDef = {
+  frames: [
+    [
+      "...GGG...",
+      "..GgGGG..",
+      ".GGGGgGG.",
+      "GgGGGGGGG",
+      "GGGGgGGGG",
+      ".GGGGGGG.",
+      "..GGGGG..",
+      "....n....",
+      "....n....",
+      "...nn....",
+      "....n....",
+      "....n....",
     ],
   ],
 };
